@@ -1,4 +1,4 @@
-import {Pipe, PipeOptions} from './pipes';
+import {Pipe, PipeOptions} from './pipes/pipes';
 
 class Langbase {
 	static pipe(options: PipeOptions): Pipe {

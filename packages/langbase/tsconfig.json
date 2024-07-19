@@ -1,5 +1,5 @@
 {
-	"extends": "./node_modules/@baseai/tsconfig/react-library.json",
+	"extends": "./node_modules/@langbase/tsconfig/react-library.json",
 	"include": ["."],
 	"exclude": ["*/dist", "dist", "build", "node_modules"],
 	"compilerOptions": {

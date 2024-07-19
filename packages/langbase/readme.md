@@ -2,36 +2,36 @@
 
 The AI framework for building declarative and composable AI-powered LLM products.
 
-## Getting Started with @baseai/core
+## Getting Started with @langbase/core
 
 ### Installation
 
-First, install the `@baseai/core` package using npm or yarn:
+First, install the `@langbase/core` package using npm or yarn:
 
 ```bash
-npm install @baseai/core
+npm install @langbase/core
 ```
 
 or
 
 ```bash
-pnpm add @baseai/core
+pnpm add @langbase/core
 ```
 
 or
 
 ```bash
-yarn add @baseai/core
+yarn add @langbase/core
 ```
 
 ### Usage
 
-To use the `generate` function from the `@baseai/core` package, follow these steps:
+To use the `generate` function from the `@langbase/core` package, follow these steps:
 
 1. **Import the `generate` function**:
 
     ```typescript
-    import {generate} from '@baseai/core';
+    import {generate} from '@langbase/core';
     ```
 
 2. **Set up environment variables**:
@@ -45,7 +45,7 @@ To use the `generate` function from the `@baseai/core` package, follow these ste
 3. **Generate a response using a prompt**:
 
     ```typescript
-    import {generate} from '@baseai/core';
+    import {generate} from '@langbase/core';
 
     async function exampleWithPrompt() {
     	const response = await generate({
@@ -62,7 +62,7 @@ To use the `generate` function from the `@baseai/core` package, follow these ste
 4. **Generate a response using messages array**:
 
     ```typescript
-    import {generate} from '@baseai/core';
+    import {generate} from '@langbase/core';
 
     async function exampleWithMessages() {
     	const response = await generate({
@@ -106,7 +106,7 @@ async function generate(params: GenerateParams): Promise<string>;
 #### Example
 
 ```typescript
-import {generate} from '@baseai/core';
+import {generate} from '@langbase/core';
 
 const responseFromPrompt = await generate({
 	model: 'gpt-3.5-turbo-0125',
@@ -285,7 +285,7 @@ The URL for the OpenAI API chat endpoint.
 ## Example Usage
 
 ```typescript
-import {generate} from '@baseai/core';
+import {generate} from '@langbase/core';
 
 const responseFromPrompt = await generate({
 	model: 'gpt-3.5-turbo-0125',
@@ -306,4 +306,4 @@ const responseFromMessages = await generate({
 console.log(responseFromMessages);
 ```
 
-This documentation provides a comprehensive guide for getting started with the `@baseai/core` package, as well as a detailed API reference for the `generate` function and its related components.
+This documentation provides a comprehensive guide for getting started with the `@langbase/core` package, as well as a detailed API reference for the `generate` function and its related components.
