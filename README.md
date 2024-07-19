@@ -1,3 +1,3 @@
-# Base AI
+# ⌘ Langbase AI SDK
 
-The AI framework for building declarative and composable AI-powered LLM products.
+⌘ Langbase AI SDK for JavaScript, TypeScript, and Python.
