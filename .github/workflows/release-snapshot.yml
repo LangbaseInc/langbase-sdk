@@ -16,7 +16,7 @@
 
 # Creating a Snapshot Release
 # 1. Push your branch to GitHub and commit a changeset. Generate a changeset with `pnpm changeset`.
-# 2. Go to the LangbaseInc/baseai repository on GitHub.
+# 2. Go to the LangbaseInc/langbase-sdk repository on GitHub.
 # 3. Navigate to Actions > Release Snapshot.
 # 4. Click "Run workflow", select your branch, and click "Run workflow".
 # Inspired by turbo repo.

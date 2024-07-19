@@ -48,10 +48,10 @@
 	"homepage": "https://langbase.com/docs",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/LangbaseInc/baseai.git"
+		"url": "git+https://github.com/LangbaseInc/langbase-sdk.git"
 	},
 	"bugs": {
-		"url": "https://github.com/LangbaseInc/baseai/issues"
+		"url": "https://github.com/LangbaseInc/langbase-sdk/issues"
 	},
 	"keywords": [
 		"ai",

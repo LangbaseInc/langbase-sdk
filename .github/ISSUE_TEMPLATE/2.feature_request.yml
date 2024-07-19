@@ -1,11 +1,11 @@
 name: Feature Request
-description: Propose a new feature for BaseAI.
+description: Propose a new feature for Langbase.
 labels: []
 body:
     - type: markdown
       attributes:
           value: |
-              Use this template to propose new features for BaseAI. If you need help with your project, [start a new thread in our discussions](https://github.com/LangbaseInc/baseai/discussions).
+              Use this template to propose new features for Langbase. If you need help with your project, [start a new thread in our discussions](https://github.com/LangbaseInc/langbase/discussions).
     - type: textarea
       attributes:
           label: Feature Description

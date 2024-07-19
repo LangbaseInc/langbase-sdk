@@ -1,15 +1,15 @@
 name: Bug report
-description: Report a bug for BaseAI.
+description: Report a bug for Langbase.
 labels: []
 body:
     - type: markdown
       attributes:
           value: |
-              This template is to report bugs for the BaseAI. If you need help with your own project, feel free to [start a new thread in our discussions](https://github.com/LangbaseInc/baseai/discussions).
+              This template is to report bugs for the Langbase. If you need help with your own project, feel free to [start a new thread in our discussions](https://github.com/LangbaseInc/langbase/discussions).
     - type: textarea
       attributes:
           label: Description
-          description: A detailed bug description for BaseAI and steps to reproduce it. Include the API, framework, and AI provider you're using.
+          description: A detailed bug description for Langbase and steps to reproduce it. Include the API, framework, and AI provider you're using.
           placeholder: |
               Steps to reproduce...
       validations:
