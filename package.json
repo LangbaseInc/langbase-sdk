@@ -1,0 +1,64 @@
+{
+	"private": true,
+	"name": "langbase",
+	"license": "Apache-2.0",
+	"scripts": {
+		"dev": "turbo dev",
+		"prepare": "husky",
+		"lint": "turbo lint",
+		"test": "turbo test",
+		"build": "turbo build",
+		"changeset": "changeset",
+		"publint": "turbo publint",
+		"type-check": "turbo type-check",
+		"version-packages": "changeset version",
+		"clean": "turbo clean && rm -rf node_modules",
+		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
+		"release": "turbo build --filter=docs^... && changeset publish",
+		"releasex": "turbo build && changeset publish",
+		"prettier-check": "prettier --check \"**/*.{js,ts,tsx,md,mdx}\"",
+		"prettier-fix": "prettier --write \"**/*.{js,ts,tsx,md,mdx}\"",
+		"devv": "turbo dev --no-cache  --concurrency 16 --continue",
+		"ci:release": "turbo clean && turbo build && changeset publish",
+		"clean-examples": "node .github/scripts/cleanup-examples-changesets.mjs && pnpm install --no-frozen-lockfile",
+		"ci:version": "changeset version && node .github/scripts/cleanup-examples-changesets.mjs && pnpm install --no-frozen-lockfile"
+	},
+	"devDependencies": {
+		"@baseai/eslint-config": "workspace:*",
+		"@changesets/cli": "^2.27.5",
+		"@types/node": "^20.11.24",
+		"eslint": "^8.57.0",
+		"husky": "^9.0.11",
+		"lint-staged": "^15.2.7",
+		"prettier": "^3.3.2",
+		"publint": "^0.2.8",
+		"turbo": "^2.0.4",
+		"vitest": "^1.6.0"
+	},
+	"packageManager": "pnpm@9.4.0",
+	"engines": {
+		"node": ">=18"
+	},
+	"lint-staged": {
+		"*": [
+			"prettier --ignore-unknown --write"
+		]
+	},
+	"homepage": "https://langbase.com/docs",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/LangbaseInc/baseai.git"
+	},
+	"bugs": {
+		"url": "https://github.com/LangbaseInc/baseai/issues"
+	},
+	"keywords": [
+		"ai",
+		"llm",
+		"baseai",
+		"base ai",
+		"langbase",
+		"langbase.com",
+		"generative AI"
+	]
+}

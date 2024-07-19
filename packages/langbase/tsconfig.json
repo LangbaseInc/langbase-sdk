@@ -1,0 +1,15 @@
+{
+	"extends": "./node_modules/@baseai/tsconfig/react-library.json",
+	"include": ["."],
+	"exclude": ["*/dist", "dist", "build", "node_modules"],
+	"compilerOptions": {
+		"target": "ES2018",
+		"stripInternal": true,
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"types": ["@types/node", "vitest/globals"],
+		"baseUrl": "." /* Specify the base directory to resolve non-relative module names. */,
+		"paths": {
+			"@/*": ["src/*"] // Maps all imports starting with "@" to the src folder
+		}
+	}
+}
