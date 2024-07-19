@@ -1,8 +1,8 @@
-# Base AI
+# Langbase SDK
 
 The AI framework for building declarative and composable AI-powered LLM products.
 
-## Getting Started with langbase
+## Getting Started with `langbase` SDK
 
 ### Installation
 
