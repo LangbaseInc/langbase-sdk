@@ -20,13 +20,14 @@ export class APIError extends Error {
 		super(APIError.makeMessage(status, error, message));
 		this.status = status;
 		this.headers = headers;
-		this.request_id = headers?.['x-request-id'];
+		this.request_id = headers?.['lb-request-id'];
 
 		const data = error as Record<string, any>;
 		this.error = data;
 		this.code = data?.['code'];
-		this.param = data?.['param'];
-		this.type = data?.['type'];
+		this.status = data?.['status'];
+		// this.param = data?.['param'];
+		// this.type = data?.['type'];
 	}
 
 	private static makeMessage(
