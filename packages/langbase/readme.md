@@ -28,7 +28,6 @@ yarn add langbase
 
 You can `generateText` or `streamText` based on the type of a pipe.
 
-
 ```TypeScript
 import 'dotenv/config';
 import {Pipe} from 'langbase';
