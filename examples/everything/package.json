@@ -5,7 +5,9 @@
 	"type": "module",
 	"main": "index.js",
 	"scripts": {
-		"test": "npx tsx index.ts"
+		"test": "npx tsx index.ts",
+		"generate-text": "npx tsx generate-text.ts",
+		"stream-text": "npx tsx stream-text.ts"
 	},
 	"keywords": [],
 	"author": "Ahmad Awais <me@AhmadAwais.com> (https://twitter.com/MrAhmadAwais)",
