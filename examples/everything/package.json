@@ -1,0 +1,17 @@
+{
+	"name": "everything",
+	"version": "0.0.1",
+	"description": "Everything example",
+	"type": "module",
+	"main": "index.js",
+	"scripts": {
+		"test": "npx tsx index.ts"
+	},
+	"keywords": [],
+	"author": "Ahmad Awais <me@AhmadAwais.com> (https://twitter.com/MrAhmadAwais)",
+	"license": "UNLICENSED",
+	"dependencies": {
+		"dotenv": "^16.4.5",
+		"langbase": "^0.0.0"
+	}
+}
