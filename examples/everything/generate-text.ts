@@ -13,6 +13,7 @@ const pipeStreamOff = new Pipe({
 const result = await pipeStreamOff.generateText({
 	messages: [{role: 'user', content: 'Who is an AI Engineer?'}],
 });
+console.log('✨ ~ result:', result);
 
 // 4. Done: You got the generated completion.
 console.log(result.completion);

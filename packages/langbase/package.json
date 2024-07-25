@@ -25,7 +25,8 @@
 		"test:e2e": "playwright test",
 		"test:edge:watch": "vitest --config vitest.edge.config.js",
 		"test:node:watch": "vitest --config vitest.node.config.js",
-		"test:ui:react:watch": "vitest --config vitest.ui.react.config.js"
+		"test:ui:react:watch": "vitest --config vitest.ui.react.config.js",
+		"test:pipe:example": "npx tsx ./src/pipes/example.ts --env-file=.env"
 	},
 	"dependencies": {
 		"dotenv": "^16.4.5",
