@@ -5,28 +5,25 @@ import {Pipe} from 'langbase';
 console.log('STREAM-OFF: generateText()');
 
 // 1. Initiate the Pipe.
-const pipeStreamOff = new Pipe({
+const pipe = new Pipe({
 	apiKey: process.env.PIPE_LESS_WORDY!,
 });
 
 // 3. Generate the text by asking a question.
-const result = await pipeStreamOff.generateText({
+const result = await pipe.generateText({
 	messages: [{role: 'user', content: 'Who is an AI Engineer?'}],
 });
 
 // 4. Done: You got the generated completion.
 console.log(result.completion);
 
+// ======= OR ======== //
+
 // STREAM: ON
 console.log('STREAM-ON: streamText()');
 
-// 1. Initiate the Pipe.
-const pipeStreaming = new Pipe({
-	apiKey: process.env.PIPE_LESS_WORDY_STREAM!,
-});
-
 // 2. Generate a stream by asking a question
-const stream = await pipeStreaming.streamText({
+const stream = await pipe.streamText({
 	messages: [{role: 'user', content: 'Who is an AI Engineer?'}],
 });
 

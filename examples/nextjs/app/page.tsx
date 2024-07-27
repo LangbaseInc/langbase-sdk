@@ -1,5 +1,5 @@
-import GenerateTextRouteHandler from '@/components/langbase/generate-text-route-handler';
-import StreamTextRouteHandler from '@/components/langbase/stream-text-route-handler';
+import GenerateTextExample from '@/components/langbase/generate-text';
+import StreamTextExample from '@/components/langbase/stream-text';
 
 export default function Home() {
 	return (
@@ -13,8 +13,8 @@ export default function Home() {
 						An AI agent that responds to your prompts.
 					</p>
 				</div>
-				<GenerateTextRouteHandler />
-				<StreamTextRouteHandler />
+				<GenerateTextExample />
+				<StreamTextExample />
 			</div>
 		</div>
 	);

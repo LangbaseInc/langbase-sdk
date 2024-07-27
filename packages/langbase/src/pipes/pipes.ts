@@ -78,7 +78,7 @@ export class Pipe {
 		return this.request.post<GenerateStreamResponse>({
 			endpoint: '/beta/generate',
 			body: {...options, stream: true},
-			stream: true,
+			stream: true, // TODO: @ahmadbilaldev - why we need to add here as well?
 		});
 	}
 }

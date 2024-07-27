@@ -5,12 +5,12 @@ import {Pipe} from 'langbase';
 console.log('STREAM-OFF: generateText()');
 
 // 1. Initiate the Pipe.
-const pipeStreamOff = new Pipe({
+const pipe = new Pipe({
 	apiKey: process.env.PIPE_LESS_WORDY!,
 });
 
 // 3. Generate the text by asking a question.
-const result = await pipeStreamOff.generateText({
+const result = await pipe.generateText({
 	messages: [{role: 'user', content: 'Who is an AI Engineer?'}],
 });
 
