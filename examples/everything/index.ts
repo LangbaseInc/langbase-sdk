@@ -20,6 +20,7 @@ console.log(result.completion);
 // ======= OR ======== //
 
 // STREAM: ON
+console.log('');
 console.log('STREAM-ON: streamText()');
 
 // 2. Generate a stream by asking a question
