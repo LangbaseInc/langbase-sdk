@@ -7,6 +7,6 @@ We welcome contributions to this project.
 
 ```bash
 pnpm changeset
-pnpm version
+pnpm version-packages
 pnpm release
 ```
