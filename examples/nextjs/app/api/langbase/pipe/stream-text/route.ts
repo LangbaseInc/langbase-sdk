@@ -1,5 +1,5 @@
 // import {Pipe} from 'langbase';
-import {Pipe} from './../../../../../../../packages/langbase/src/';
+import {Pipe} from 'langbase';
 
 import {NextRequest} from 'next/server';
 
