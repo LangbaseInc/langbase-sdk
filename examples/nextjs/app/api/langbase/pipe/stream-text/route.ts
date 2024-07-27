@@ -1,14 +1,14 @@
-import {Pipe} from 'langbase';
-import {NextRequest} from 'next/server';
+// import {Pipe} from 'langbase';
+import {Pipe} from './../../../../../../../packages/langbase/src/';
 
-export const runtime = 'edge';
+import {NextRequest} from 'next/server';
 
 export async function POST(req: NextRequest) {
 	const {prompt} = await req.json();
 
 	// 1. Initiate the Pipe.
 	const pipe = new Pipe({
-		apiKey: process.env.LANGBASE_PIPE_LESS_WORDY_STREAM!,
+		apiKey: process.env.LANGBASE_PIPE_LESS_WORDY!,
 	});
 
 	// 2. Generate a stream by asking a question
@@ -16,20 +16,6 @@ export async function POST(req: NextRequest) {
 		messages: [{role: 'user', content: prompt}],
 	});
 
-	// 3. Create a ReadableStream from the Langbase stream
-	const readableStream = new ReadableStream({
-		async start(controller) {
-			for await (const chunk of stream) {
-				controller.enqueue(JSON.stringify(chunk) + '\n');
-			}
-			controller.close();
-		},
-	});
-
-	// 4. Return the stream
-	return new Response(readableStream, {
-		headers: {
-			'Content-Type': 'application/x-ndjson',
-		},
-	});
+	// 3. Done, return the stream in a readable stream format.
+	return new Response(stream.toReadableStream());
 }

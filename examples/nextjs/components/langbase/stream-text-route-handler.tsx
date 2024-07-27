@@ -3,15 +3,16 @@
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {useState} from 'react';
+import {fromReadableStream} from './../../../../packages/langbase/src/lib/browser/stream';
 
-export default function ExampleGenerateTextRouteHandler() {
+export default function StreamTextRouteHandler() {
 	const [prompt, setPrompt] = useState('');
 	const [completion, setCompletion] = useState('');
 	const [loading, setLoading] = useState(false);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!prompt.trim()) return;
+		if (!prompt.trim() || loading) return;
 
 		setLoading(true);
 		setCompletion('');
@@ -19,61 +20,38 @@ export default function ExampleGenerateTextRouteHandler() {
 		try {
 			const response = await fetch('/api/langbase/pipe/stream-text', {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({prompt: prompt}),
+				body: JSON.stringify({prompt}),
+				headers: {'Content-Type': 'text/plain'},
 			});
 
-			if (!response.ok) {
-				throw new Error('Network response was not ok');
-			}
+			if (response.body) {
+				const stream = fromReadableStream(response.body);
 
-			const reader = response.body?.getReader();
-
-			if (!reader) {
-				throw new Error('Unable to read stream');
-			}
-
-			const decoder = new TextDecoder();
-			let buffer = '';
-
-			while (true) {
-				const {done, value} = await reader.read();
-				if (done) break;
-
-				buffer += decoder.decode(value, {stream: true});
-				const lines = buffer.split('\n');
-				buffer = lines.pop() || '';
-
-				for (const line of lines) {
-					if (line.trim()) {
-						const chunk = JSON.parse(line);
-						const content = chunk.choices[0]?.delta?.content || '';
-						setCompletion(prev => prev + content);
-					}
+				// Method #1 to get all of the chunk.
+				for await (const chunk of stream) {
+					console.log('✨ ~ chunk:', chunk);
+					const content = chunk?.choices[0]?.delta?.content;
+					content && setCompletion(prev => prev + content);
 				}
-			}
 
-			// Process any remaining data in the buffer
-			if (buffer.trim()) {
-				const chunk = JSON.parse(buffer);
-				const content = chunk.choices[0]?.delta?.content || '';
-				setCompletion(prev => prev + content);
+				// Method #2 to get only the chunk's content as delta of the chunks
+				// stream.on('content', content => {
+				// setCompletion(prev => prev + content);
+				// });
 			}
 		} catch (error) {
+			setLoading(false);
 			console.error('Error:', error);
-			setCompletion('An error occurred while generating the completion.');
 		} finally {
 			setLoading(false);
 		}
 	};
 
 	return (
-		<>
+		<div className="bg-neutral-200 rounded-md p-2 flex flex-col gap-2 w-full">
 			<div className="flex flex-col gap-2 w-full">
 				<p className="text-lg font-semibold">
-					2. Generate Text{' '}
+					2. Stream Text{' '}
 					<a
 						className="text-indigo-500"
 						href="https://langbase.com/docs"
@@ -97,17 +75,15 @@ export default function ExampleGenerateTextRouteHandler() {
 					value={prompt}
 					required
 				/>
-
 				<Button type="submit" className="w-full" disabled={loading}>
 					{loading ? 'AI is thinking...' : 'Ask AI'}
 				</Button>
 			</form>
-
 			{completion && (
 				<p className="mt-4">
-					<strong>Completion:</strong> {completion}
+					<strong>Stream:</strong> {completion}
 				</p>
 			)}
-		</>
+		</div>
 	);
 }

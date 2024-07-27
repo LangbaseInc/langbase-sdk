@@ -6,7 +6,7 @@ console.log('STREAM-ON: streamText()');
 
 // 1. Initiate the Pipe.
 const pipeStreaming = new Pipe({
-	apiKey: process.env.PIPE_LESS_WORDY_STREAM!,
+	apiKey: process.env.PIPE_LESS_WORDY!,
 });
 
 // 2. Generate a stream by asking a question

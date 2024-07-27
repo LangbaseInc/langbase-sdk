@@ -38,7 +38,7 @@ export default function GenerateTextRouteHandler() {
 	};
 
 	return (
-		<>
+		<div className="bg-neutral-200 rounded-md p-2 flex flex-col gap-2 w-full">
 			<div className="flex flex-col gap-2 w-full">
 				<p className="text-lg font-semibold">
 					1. Generate Text{' '}
@@ -76,6 +76,6 @@ export default function GenerateTextRouteHandler() {
 					<strong>Completion:</strong> {completion}
 				</p>
 			)}
-		</>
+		</div>
 	);
 }

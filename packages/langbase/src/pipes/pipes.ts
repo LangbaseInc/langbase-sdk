@@ -77,7 +77,7 @@ export class Pipe {
 	): Promise<GenerateStreamResponse> {
 		return this.request.post<GenerateStreamResponse>({
 			endpoint: '/beta/generate',
-			body: options,
+			body: {...options, stream: true},
 			stream: true,
 		});
 	}

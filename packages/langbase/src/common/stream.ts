@@ -17,7 +17,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 	}
 
 	/**
-	 * Creates a stream from a Server-Sent Events (SSE) response.
+	 * Creates a stream of AsyncIterator from a Server-Sent Events (SSE) response.
 	 *
 	 * @template Item - The type of items in the stream.
 	 * @param {Response} response - The SSE response object.
@@ -104,8 +104,6 @@ export class Stream<Item> implements AsyncIterable<Item> {
 	}
 
 	/**
-	 * Creates a stream from a readable stream and an abort controller.
-	 *
 	 * Generates a Stream from a newline-separated ReadableStream
 	 * where each item is a JSON value.
 	 *
@@ -198,8 +196,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 
 	/**
 	 * Converts this stream to a newline-separated ReadableStream of
-	 * JSON stringified values in the stream
-	 * which can be turned back into a Stream with `Stream.fromReadableStream()`.
+	 * JSON stringified values in the stream which can be turned back into a Stream with `Stream.fromReadableStream()`.
 	 */
 	toReadableStream(): ReadableStream {
 		const self = this;
