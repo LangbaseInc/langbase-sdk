@@ -11,7 +11,7 @@
 		"changeset": "changeset",
 		"publint": "turbo publint",
 		"type-check": "turbo type-check",
-		"version-packages": "changeset version",
+		"version-packages": "changeset version && pnpm clean-examples && pnpm install --no-frozen-lockfile",
 		"clean": "turbo clean",
 		"xclean": "turbo clean && rm -rf node_modules",
 		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
@@ -22,7 +22,7 @@
 		"prettier-fix": "prettier --write \"**/*.{js,ts,tsx,md,mdx}\"",
 		"devv": "turbo dev --no-cache  --concurrency 16 --continue",
 		"ci:release": "turbo clean && turbo build && changeset publish",
-		"clean-examples": "node .github/scripts/cleanup-examples-changesets.mjs && pnpm install --no-frozen-lockfile",
+		"clean-examples": "node .github/scripts/cleanup-examples-changesets.mjs",
 		"ci:version": "changeset version && node .github/scripts/cleanup-examples-changesets.mjs && pnpm install --no-frozen-lockfile"
 	},
 	"devDependencies": {
