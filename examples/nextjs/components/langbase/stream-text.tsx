@@ -2,8 +2,9 @@
 
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
-import {fromReadableStream} from 'langbase';
 import {useState} from 'react';
+// import {fromReadableStream} from 'langbase';
+import {fromReadableStream} from '../../../../packages/langbase/src/lib/browser/stream';
 
 export default function StreamTextExample() {
 	const [prompt, setPrompt] = useState('');
