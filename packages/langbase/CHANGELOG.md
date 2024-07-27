@@ -1,4 +1,4 @@
-# @langbase/core
+# `langbase` SDK
 
 ## 0.2.1
 
