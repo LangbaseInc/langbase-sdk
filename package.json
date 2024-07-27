@@ -11,7 +11,7 @@
 		"changeset": "changeset",
 		"publint": "turbo publint",
 		"type-check": "turbo type-check",
-		"version-packages": "changeset version",
+		"version": "changeset version && node .github/scripts/cleanup-examples-changesets.mjs",
 		"clean": "turbo clean && rm -rf node_modules",
 		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
 		"release": "turbo build && changeset publish",
