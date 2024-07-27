@@ -7,6 +7,5 @@ We welcome contributions to this project.
 ```bash
 pnpm changeset
 pnpm version-packages
-pnpm clean-examples
 pnpm release
 ```
