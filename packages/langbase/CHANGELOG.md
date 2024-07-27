@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 0.2.2
+
+### Patch Changes
+
+-   👌 IMPROVE: Readme docs and lingo
+
 ## 0.2.1
 
 ### Patch Changes
