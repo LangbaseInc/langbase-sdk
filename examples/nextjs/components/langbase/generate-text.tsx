@@ -73,7 +73,7 @@ export default function GenerateTextExample() {
 
 			{!loading && completion && (
 				<p className="mt-4">
-					<strong>Completion:</strong> {completion}
+					<strong>Generated completion:</strong> {completion}
 				</p>
 			)}
 		</div>

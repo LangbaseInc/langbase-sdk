@@ -2,9 +2,9 @@
 
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
+import {fromReadableStream} from 'langbase';
 import {useState} from 'react';
-// import {fromReadableStream} from 'langbase';
-import {fromReadableStream} from '../../../../packages/langbase/src/lib/browser/stream';
+// import {fromReadableStream} from '../../../../packages/langbase/src/lib/browser/stream';
 
 export default function StreamTextExample() {
 	const [prompt, setPrompt] = useState('');
@@ -27,11 +27,9 @@ export default function StreamTextExample() {
 
 			if (response.body) {
 				const stream = fromReadableStream(response.body);
-				console.log('✨ ~ stream:', stream);
 
 				// Method #1 to get all of the chunk.
 				for await (const chunk of stream) {
-					console.log('✨ ~ chunk:', chunk);
 					const content = chunk?.choices[0]?.delta?.content;
 					content && setCompletion(prev => prev + content);
 				}
