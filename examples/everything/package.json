@@ -1,7 +1,7 @@
 {
 	"private": true,
 	"name": "everything",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Everything example",
 	"type": "module",
 	"main": "index.js",
@@ -15,6 +15,6 @@
 	"license": "UNLICENSED",
 	"dependencies": {
 		"dotenv": "^16.4.5",
-		"langbase": "^0.0.0"
+		"langbase": "^0.1.0"
 	}
 }
