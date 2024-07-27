@@ -51,6 +51,8 @@ console.log('STREAM-OFF: generateText()');
 
 // 1. Initiate the Pipe.
 const pipe = new Pipe({
+	// Make sure you have a .env file with any pipe you wanna use.
+	// As a demo we're using a pipe that has less wordy responses.
 	apiKey: process.env.PIPE_LESS_WORDY!,
 });
 
