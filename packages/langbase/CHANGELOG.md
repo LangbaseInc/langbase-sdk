@@ -1,5 +1,11 @@
 # @langbase/core
 
+## 0.2.0
+
+### Minor Changes
+
+-   139e314: export browser readable stream method `fromReadableStream()`
+
 ## 0.1.0
 
 ### Minor Changes
