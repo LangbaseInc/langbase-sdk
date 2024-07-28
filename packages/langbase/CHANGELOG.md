@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 0.2.5
+
+### Patch Changes
+
+-   📖 DOC: Example and docs link
+
 ## 0.2.4
 
 ### Patch Changes
