@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 0.2.4
+
+### Patch Changes
+
+-   📖 DOC: readme and docs update
+
 ## 0.2.3
 
 ### Patch Changes
