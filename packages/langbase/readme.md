@@ -2,6 +2,12 @@
 
 The AI framework for building declarative and composable AI-powered LLM products.
 
+## Documentation
+
+Check the [Langbase SDK documentation](https://langbase.com/docs/langbase-sdk/overview) for more details.
+
+The following examples are for reference only. Prefer docs for the latest information.
+
 ## Getting Started with `langbase` SDK
 
 ### Installation
