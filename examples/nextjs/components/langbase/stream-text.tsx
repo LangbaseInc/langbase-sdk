@@ -54,7 +54,7 @@ export default function StreamTextExample() {
 					2. Stream Text{' '}
 					<a
 						className="text-indigo-500"
-						href="https://langbase.com/docs"
+						href="https://langbase.com/docs/langbase-sdk/stream-text"
 					>
 						`streamText()`
 					</a>{' '}

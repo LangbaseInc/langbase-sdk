@@ -44,7 +44,7 @@ export default function GenerateTextExample() {
 					1. Generate Text{' '}
 					<a
 						className="text-indigo-500"
-						href="https://langbase.com/docs"
+						href="https://langbase.com/docs/langbase-sdk/generate-text"
 					>
 						`generateText()`
 					</a>{' '}
