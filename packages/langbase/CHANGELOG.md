@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 0.2.3
+
+### Patch Changes
+
+-   👌 IMPROVE: TypeScript Types and examples
+
 ## 0.2.2
 
 ### Patch Changes
