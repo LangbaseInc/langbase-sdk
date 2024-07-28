@@ -45,8 +45,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.5
       langbase:
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: ^0.2.3
+        version: 0.2.3
 
   examples/nextjs:
     dependencies:
@@ -60,8 +60,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       langbase:
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: ^0.2.3
+        version: 0.2.3
       lucide-react:
         specifier: ^0.416.0
         version: 0.416.0(react@18.3.1)
@@ -2619,8 +2619,8 @@ packages:
     resolution: {integrity: sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==}
     engines: {node: '>=6'}
 
-  langbase@0.2.0:
-    resolution: {integrity: sha512-cEBBnXppG08AXt3VLiNln6H+WmqXHyf7Jhhv5zlQ4RuNEMpe/VbexV3HKYoyOMlNgZc9E+UQc0k+rsIi6+JplA==}
+  langbase@0.2.3:
+    resolution: {integrity: sha512-9NbzCbv225Sy7LIebCwFa1TpXRIFNg+lyzcQT75C95cSiZMxl49d9KLB711zAoyF6DzHcFxsJfbFXvFQgJ6JYQ==}
     engines: {node: '>=18'}
 
   language-subtag-registry@0.3.22:
@@ -6876,7 +6876,7 @@ snapshots:
 
   kleur@4.1.5: {}
 
-  langbase@0.2.0:
+  langbase@0.2.3:
     dependencies:
       dotenv: 16.4.5
       openai: 4.53.0
