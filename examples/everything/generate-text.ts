@@ -1,8 +1,11 @@
+/**
+ * Generates a text completion using `generateText()`
+ *
+ * @docs: https://langbase.com/docs/langbase-sdk/generate-text
+ */
+
 import 'dotenv/config';
 import {Pipe} from 'langbase';
-
-// STREAM: OFF
-console.log('STREAM-OFF: generateText()');
 
 // 1. Initiate the Pipe.
 const pipe = new Pipe({

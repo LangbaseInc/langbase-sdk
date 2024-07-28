@@ -1,24 +1,34 @@
 import {Request} from '../common/request';
 import {Stream} from '../common/stream';
 
+export type Role = 'user' | 'assistant' | 'system' | 'tool';
+
 export interface Message {
-	role: 'user' | 'assistant' | 'system';
+	role: Role;
 	content: string;
 }
 
 export interface GenerateOptions {
 	messages: Message[];
-	model?: string;
-	temperature?: number;
-	max_tokens?: number;
 }
 
-export interface Choice {
+interface ChoiceNonStream {
 	index: number;
-	delta?: {
-		content?: string;
-	};
-	message?: Message;
+	message: Message;
+	logprobs: boolean | null;
+	finish_reason: string;
+}
+
+interface ChoiceStream {
+	index: number;
+	delta: Delta;
+	logprobs: boolean | null;
+	finish_reason: string;
+}
+
+interface Delta {
+	role?: Role;
+	content?: string;
 }
 
 export interface Usage {
@@ -34,21 +44,21 @@ export interface GenerateNonStreamResponse {
 		object: string;
 		created: number;
 		model: string;
-		choices: Choice[];
+		choices: ChoiceNonStream[];
 		usage: Usage;
 		system_fingerprint: string | null;
 	};
 }
+
+export type GenerateStreamResponse = Stream<GenerateStreamChunk>;
 
 export interface GenerateStreamChunk {
 	id: string;
 	object: string;
 	created: number;
 	model: string;
-	choices: Choice[];
+	choices: ChoiceStream[];
 }
-
-export type GenerateStreamResponse = Stream<GenerateStreamChunk>;
 
 export interface PipeOptions {
 	apiKey: string;
