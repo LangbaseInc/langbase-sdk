@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 0.4.0
+
+### Minor Changes
+
+-   📦 NEW: TypeScript types in Stream Delta for tool calls
+
 ## 0.3.0
 
 ### Minor Changes
