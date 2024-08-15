@@ -3,10 +3,15 @@ import {Stream} from '../common/stream';
 
 export type Role = 'user' | 'assistant' | 'system' | 'tool';
 
+export interface Function {
+	name: string;
+	arguments: string;
+}
+
 export interface ToolCall {
 	id: string;
 	type: 'function';
-	function: Record<string, any>;
+	function: Function;
 }
 
 export interface Message {
