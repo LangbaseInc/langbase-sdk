@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 0.3.0
+
+### Minor Changes
+
+-   📦 NEW: Tool calls TypeScript types
+
 ## 0.2.5
 
 ### Patch Changes
