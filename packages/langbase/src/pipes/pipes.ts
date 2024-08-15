@@ -3,9 +3,23 @@ import {Stream} from '../common/stream';
 
 export type Role = 'user' | 'assistant' | 'system' | 'tool';
 
+export interface Function {
+	name: string;
+	arguments: string;
+}
+
+export interface ToolCall {
+	id: string;
+	type: 'function';
+	function: Function;
+}
+
 export interface Message {
 	role: Role;
-	content: string;
+	content: string | null;
+	name?: string;
+	tool_call_id?: string;
+	tool_calls?: ToolCall[];
 }
 
 export interface GenerateOptions {
