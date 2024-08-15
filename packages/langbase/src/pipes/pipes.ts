@@ -43,6 +43,7 @@ interface ChoiceStream {
 interface Delta {
 	role?: Role;
 	content?: string;
+	tool_calls?: ToolCall[];
 }
 
 export interface Usage {
