@@ -5,7 +5,14 @@ export type Role = 'user' | 'assistant' | 'system' | 'tool';
 
 export interface Message {
 	role: Role;
-	content: string;
+	content: string | null;
+	name?: string;
+	tool_call_id?: string;
+	tool_calls?: {
+		id: string;
+		type: 'function';
+		function: Record<string, any>;
+	}[];
 }
 
 export interface GenerateOptions {
