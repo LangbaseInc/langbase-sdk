@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 0.6.0
+
+### Minor Changes
+
+-   Support variables
+
 ## 0.5.0
 
 ### Minor Changes
