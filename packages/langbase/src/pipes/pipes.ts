@@ -32,6 +32,11 @@ export interface GenerateOptions {
 	variables?: Variable[];
 }
 
+export interface StreamOptions {
+	messages?: Message[];
+	variables?: Variable[];
+}
+
 interface ChoiceNonStream {
 	index: number;
 	message: Message;
@@ -104,9 +109,7 @@ export class Pipe {
 		});
 	}
 
-	async streamText(
-		options: GenerateOptions,
-	): Promise<GenerateStreamResponse> {
+	async streamText(options: StreamOptions): Promise<GenerateStreamResponse> {
 		return this.request.post<GenerateStreamResponse>({
 			endpoint: '/beta/generate',
 			body: {...options, stream: true},
