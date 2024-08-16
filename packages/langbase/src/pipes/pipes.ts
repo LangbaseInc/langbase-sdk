@@ -93,7 +93,8 @@ export class Pipe {
 	): Promise<GenerateNonStreamResponse> {
 		return this.request.post<GenerateNonStreamResponse>({
 			endpoint: '/beta/generate',
-			body: options,
+			body: {options, stream: false},
+			stream: false,
 		});
 	}
 
