@@ -22,8 +22,14 @@ export interface Message {
 	tool_calls?: ToolCall[];
 }
 
+export interface Variable {
+	name: string;
+	value: string;
+}
+
 export interface GenerateOptions {
-	messages: Message[];
+	messages?: Message[];
+	variables?: Variable[];
 }
 
 interface ChoiceNonStream {
@@ -93,7 +99,7 @@ export class Pipe {
 	): Promise<GenerateNonStreamResponse> {
 		return this.request.post<GenerateNonStreamResponse>({
 			endpoint: '/beta/generate',
-			body: {options, stream: false},
+			body: {...options, stream: false},
 			stream: false,
 		});
 	}
