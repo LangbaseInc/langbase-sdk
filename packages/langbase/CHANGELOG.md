@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 0.5.0
+
+### Minor Changes
+
+-   Switch off the stream in generateText()
+
 ## 0.4.0
 
 ### Minor Changes
