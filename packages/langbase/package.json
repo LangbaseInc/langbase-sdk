@@ -38,7 +38,7 @@
 		"@langbase/eslint-config": "workspace:*",
 		"@langbase/tsconfig": "workspace:*",
 		"@playwright/test": "^1.44.1",
-		"@types/node": "^20.11.24",
+		"@types/node": "^22.4.0",
 		"@vitejs/plugin-react": "^4.3.1",
 		"eslint": "^8.57.0",
 		"jsdom": "^24.1.0",
