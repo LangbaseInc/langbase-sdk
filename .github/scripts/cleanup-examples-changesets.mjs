@@ -37,7 +37,7 @@ for (const app of readdirSync(examplesDir)) {
 				`examples/${app}/CHANGELOG.md`,
 				examplesUrl,
 			);
-			console.log('Deleting', changelogUrl);
+			console.log('Deleting', changelogUrl.href);
 			unlinkSync(changelogUrl);
 		} catch (err) {
 			if (err.code !== 'ENOENT') throw err;
