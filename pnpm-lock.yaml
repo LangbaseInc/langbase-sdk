@@ -112,8 +112,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.5
       langbase:
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: ^1.1.0
+        version: 1.1.0
 
   packages/langbase:
     dependencies:
@@ -2621,6 +2621,10 @@ packages:
 
   langbase@1.0.0:
     resolution: {integrity: sha512-Ur54nXQBaYzGmoY2xfvAOD+n6dYvCZmkMaPH0dq2tkQ+D/smC3odOwl+4CFGHxm738XsvookQw7MxcPSFehvLw==}
+    engines: {node: '>=18'}
+
+  langbase@1.1.0:
+    resolution: {integrity: sha512-Fe5sNgsMMEjKGs8Itb4mVUPwZwH1GXJYAKiyF6kZMpCrarzGdzff64JXVqYSMTDy5p7cWGClka+6ycOpiSaf4A==}
     engines: {node: '>=18'}
 
   language-subtag-registry@0.3.22:
@@ -6877,6 +6881,15 @@ snapshots:
   kleur@4.1.5: {}
 
   langbase@1.0.0:
+    dependencies:
+      dotenv: 16.4.5
+      openai: 4.53.0
+      zod: 3.23.8
+      zod-validation-error: 3.3.0(zod@3.23.8)
+    transitivePeerDependencies:
+      - encoding
+
+  langbase@1.1.0:
     dependencies:
       dotenv: 16.4.5
       openai: 4.53.0
