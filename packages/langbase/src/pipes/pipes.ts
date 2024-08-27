@@ -117,3 +117,16 @@ export class Pipe {
 		});
 	}
 }
+
+/**
+ * Print stream to standard output (console).
+ * @param stream The stream to print
+ */
+export const printStreamToStdout = async (
+	stream: StreamText,
+): Promise<void> => {
+	for await (const chunk of stream) {
+		const textPart = chunk.choices[0]?.delta?.content || '';
+		process.stdout.write(textPart);
+	}
+};
