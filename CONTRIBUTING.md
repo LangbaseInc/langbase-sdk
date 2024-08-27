@@ -6,6 +6,7 @@ We welcome contributions to this project.
 
 ```bash
 # Bug, have to remove example pkg json changes.
-pnpm changeset && pnpm version-packages && grlz 'new version'
+pnpm changeset
+pnpm version-packages && grlz 'new version'
 pnpm release
 ```
