@@ -1,8 +1,15 @@
 # `langbase` SDK
 
+## 1.1.0
+
+### Minor Changes
+
+-   Export all pipe helper functions
+
 ## 1.0.0
 
 ### Major Changes
+
 -   📦 NEW: Chat support in both both [`generateText()`](https://langbase.com/docs/langbase-sdk/generate-text) and [`streamText()`](https://langbase.com/docs/langbase-sdk/stream-text)
 -   👌 IMPROVE: Example updates for Node, browser, Next.js, React, etc.
 -   👌 IMPROVE: ⌘ Langbase [SDK Docs](https://langbase.com/docs/langbase-sdk) and API reference for both [`generateText()`](https://langbase.com/docs/langbase-sdk/generate-text) and [`streamText()`](https://langbase.com/docs/langbase-sdk/stream-text)
@@ -59,7 +66,6 @@
     	messages: [{role: 'user', content: 'Who is an AI Engineer?'}],
     });
     ```
-
 
 ## 0.6.0
 
