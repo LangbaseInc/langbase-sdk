@@ -30,14 +30,18 @@ export interface Variable {
 export interface GenerateOptions {
 	messages?: Message[];
 	variables?: Variable[];
+	threadId?: string;
+	chat?: boolean;
 }
 
 export interface StreamOptions {
 	messages?: Message[];
 	variables?: Variable[];
+	threadId?: string | null;
+	chat?: boolean;
 }
 
-interface ChoiceNonStream {
+interface ChoiceGenerate {
 	index: number;
 	message: Message;
 	logprobs: boolean | null;
@@ -63,22 +67,26 @@ export interface Usage {
 	total_tokens: number;
 }
 
-export interface GenerateNonStreamResponse {
+export interface GenerateResponse {
 	completion: string;
-	raw: {
-		id: string;
-		object: string;
-		created: number;
-		model: string;
-		choices: ChoiceNonStream[];
-		usage: Usage;
-		system_fingerprint: string | null;
-	};
+	threadId?: string;
+	id: string;
+	object: string;
+	created: number;
+	model: string;
+	choices: ChoiceGenerate[];
+	usage: Usage;
+	system_fingerprint: string | null;
 }
 
-export type GenerateStreamResponse = Stream<GenerateStreamChunk>;
+export type StreamText = Stream<StreamChunk>;
 
-export interface GenerateStreamChunk {
+export interface StreamResponse {
+	stream: StreamText;
+	threadId: string | null;
+}
+
+export interface StreamChunk {
 	id: string;
 	object: string;
 	created: number;
@@ -106,11 +114,10 @@ export class Pipe {
 		});
 	}
 
-	async streamText(options: StreamOptions): Promise<GenerateStreamResponse> {
-		return this.request.post<GenerateStreamResponse>({
-			endpoint: '/beta/generate',
+	async streamText(options: StreamOptions): Promise<StreamResponse> {
+		return this.request.post<StreamResponse>({
+			endpoint: options.chat ? '/beta/chat' : '/beta/generate',
 			body: {...options, stream: true},
-			stream: true, // TODO: @ahmadbilaldev - why we need to add here as well?
 		});
 	}
 }
