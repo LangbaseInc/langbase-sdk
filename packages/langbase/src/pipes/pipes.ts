@@ -109,24 +109,10 @@ export class Pipe {
 		});
 	}
 
-	async streamText(options: StreamOptions): Promise<GenerateStreamResponse> {
-		return this.request.post<GenerateStreamResponse>({
-			endpoint: '/beta/generate',
+	async streamText(options: StreamOptions): Promise<StreamResponse> {
+		return this.request.post<StreamResponse>({
+			endpoint: options.chat ? '/beta/chat' : '/beta/generate',
 			body: {...options, stream: true},
-			stream: true, // TODO: @ahmadbilaldev - why we need to add here as well?
 		});
 	}
 }
-
-/**
- * Print stream to standard output (console).
- * @param stream The stream to print
- */
-export const printStreamToStdout = async (
-	stream: StreamText,
-): Promise<void> => {
-	for await (const chunk of stream) {
-		const textPart = chunk.choices[0]?.delta?.content || '';
-		process.stdout.write(textPart);
-	}
-};
