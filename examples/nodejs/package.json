@@ -11,6 +11,6 @@
   "license": "UNLICENSED",
   "dependencies": {
     "dotenv": "^16.4.5",
-    "langbase": "*"
+    "langbase": "^1.0.0"
   }
 }

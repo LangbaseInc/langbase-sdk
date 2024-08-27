@@ -7,12 +7,12 @@ export async function POST(req: NextRequest) {
 	const {prompt} = await req.json();
 
 	// 1. Initiate the Pipe.
-	const pipe = new Pipe({
+	const myPipe = new Pipe({
 		apiKey: process.env.LANGBASE_PIPE_LESS_WORDY!,
 	});
 
 	// 2. Generate a stream by asking a question
-	const stream = await pipe.streamText({
+	const {stream} = await myPipe.streamText({
 		messages: [{role: 'user', content: prompt}],
 	});
 

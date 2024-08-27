@@ -19,7 +19,7 @@ export default function StreamTextExample() {
 		setCompletion('');
 
 		try {
-			const response = await fetch('/api/langbase/pipe/stream-text', {
+			const response = await fetch('/langbase/pipe/stream-text', {
 				method: 'POST',
 				body: JSON.stringify({prompt}),
 				headers: {'Content-Type': 'text/plain'},

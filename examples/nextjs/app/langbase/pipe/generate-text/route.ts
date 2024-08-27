@@ -5,10 +5,10 @@ export async function POST(req: Request) {
 	const {prompt} = await req.json();
 
 	// 1. Initiate the Pipe.
-	const pipe = new Pipe({apiKey: process.env.LANGBASE_PIPE_LESS_WORDY!});
+	const myPipe = new Pipe({apiKey: process.env.LANGBASE_PIPE_LESS_WORDY!});
 
 	// 3. Generate the text by asking a question.
-	const result = await pipe.generateText({
+	const result = await myPipe.generateText({
 		// Add user question prompt here to generate completion.
 		messages: [{role: 'user', content: prompt}],
 	});

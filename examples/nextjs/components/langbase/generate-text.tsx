@@ -15,7 +15,7 @@ export default function GenerateTextExample() {
 
 		setLoading(true);
 		try {
-			const response = await fetch('/api/langbase/pipe/generate-text', {
+			const response = await fetch('/langbase/pipe/generate-text', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
