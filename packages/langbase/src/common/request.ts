@@ -16,6 +16,22 @@ interface RequestConfig {
 	timeout?: number;
 }
 
+interface SendOptions extends RequestOptions {
+	endpoint: string;
+}
+
+interface MakeRequestParams {
+	url: string;
+	options: RequestOptions;
+	headers: Record<string, string>;
+}
+
+interface HandleGenerateResponseParams {
+	response: Response;
+	isChat: boolean;
+	threadId: string | null;
+}
+
 export class Request {
 	private config: RequestConfig;
 
@@ -23,22 +39,14 @@ export class Request {
 		this.config = config;
 	}
 
-	private async send<T>(options: RequestOptions): Promise<T> {
-		const url = `${this.config.baseUrl}${options.endpoint}`;
-		const headers = {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${this.config.apiKey}`,
-			...options.headers,
-		};
+	// Main send function
+	private async send<T>({endpoint, ...options}: SendOptions): Promise<T> {
+		const url = this.buildUrl({endpoint});
+		const headers = this.buildHeaders({headers: options.headers});
 
 		let response: Response;
 		try {
-			response = await fetch(url, {
-				method: options.method,
-				headers,
-				body: JSON.stringify(options.body),
-				signal: AbortSignal.timeout(this.config.timeout || 30000),
-			});
+			response = await this.makeRequest({url, options, headers});
 		} catch (error) {
 			throw new APIConnectionError({
 				cause: error instanceof Error ? error : undefined,
@@ -46,26 +54,102 @@ export class Request {
 		}
 
 		if (!response.ok) {
-			let errorBody;
-			try {
-				errorBody = await response.json();
-			} catch {
-				errorBody = await response.text();
-			}
-			throw APIError.generate(
-				response.status,
-				errorBody,
-				response.statusText,
-				response.headers as unknown as Headers,
-			);
+			await this.handleErrorResponse({response});
 		}
 
-		if (options.stream) {
-			const controller = new AbortController();
-			return Stream.fromSSEResponse(response, controller) as unknown as T;
-		} else {
-			return response.json();
+		const threadId = response.headers.get('lb-thread-id');
+
+		if (options.body.stream) {
+			return this.handleStreamResponse({response}) as T;
 		}
+
+		return this.handleGenerateResponse({
+			response,
+			isChat: options.body.chat,
+			threadId,
+		});
+	}
+
+	private buildUrl({endpoint}: {endpoint: string}): string {
+		return `${this.config.baseUrl}${endpoint}`;
+	}
+
+	private buildHeaders({
+		headers,
+	}: {
+		headers?: Record<string, string>;
+	}): Record<string, string> {
+		return {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${this.config.apiKey}`,
+			...headers,
+		};
+	}
+
+	private async makeRequest({
+		url,
+		options,
+		headers,
+	}: MakeRequestParams): Promise<Response> {
+		return fetch(url, {
+			method: options.method,
+			headers,
+			body: JSON.stringify(options.body),
+			signal: AbortSignal.timeout(this.config.timeout || 30000),
+		});
+	}
+
+	private async handleErrorResponse({
+		response,
+	}: {
+		response: Response;
+	}): Promise<never> {
+		let errorBody;
+		try {
+			errorBody = await response.json();
+		} catch {
+			errorBody = await response.text();
+		}
+		throw APIError.generate(
+			response.status,
+			errorBody,
+			response.statusText,
+			response.headers as unknown as Headers,
+		);
+	}
+
+	private handleStreamResponse({response}: {response: Response}): {
+		stream: any;
+		threadId: string | null;
+	} {
+		const controller = new AbortController();
+		const stream = Stream.fromSSEResponse(response, controller);
+		return {stream, threadId: response.headers.get('lb-thread-id')};
+	}
+
+	private async handleGenerateResponse({
+		response,
+		isChat,
+		threadId,
+	}: HandleGenerateResponseParams): Promise<any> {
+		const generateResponse = await response.json();
+		const buildResponse = generateResponse.raw
+			? {
+					completion: generateResponse.completion,
+					...generateResponse.raw,
+				}
+			: generateResponse;
+
+		// Chat.
+		if (isChat && threadId) {
+			return {
+				threadId,
+				...buildResponse,
+			};
+		}
+
+		// Generate.
+		return buildResponse;
 	}
 
 	async post<T>(options: Omit<RequestOptions, 'method'>): Promise<T> {
