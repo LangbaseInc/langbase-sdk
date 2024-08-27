@@ -3,7 +3,10 @@
 ## 1.0.0
 
 ### Major Changes
-
+-   📦 NEW: Chat support in both both [`generateText()`](https://langbase.com/docs/langbase-sdk/generate-text) and [`streamText()`](https://langbase.com/docs/langbase-sdk/stream-text)
+-   👌 IMPROVE: Example updates for Node, browser, Next.js, React, etc.
+-   👌 IMPROVE: ⌘ Langbase [SDK Docs](https://langbase.com/docs/langbase-sdk) and API reference for both [`generateText()`](https://langbase.com/docs/langbase-sdk/generate-text) and [`streamText()`](https://langbase.com/docs/langbase-sdk/stream-text)
+-   ‼️ BREAKING: `ChoiceNonStream` type is now renamed to `ChoiceGenerate`.
 -   ‼️ BREAKING: [`generateText()`](https://langbase.com/docs/langbase-sdk/generate-text) now doesn't return raw instead all properties are included in the main response.
 
     #### BEFORE
@@ -39,9 +42,7 @@
     }
     ```
 
-    ‼️ BREAKING: `ChoiceNonStream` type is now renamed to `ChoiceGenerate`.
-
-    ‼️ BREAKING: [`streamText()`](https://langbase.com/docs/langbase-sdk/stream-text) now returns a threadId and stream as an object instead of returning stream alone.
+-   ‼️ BREAKING: [`streamText()`](https://langbase.com/docs/langbase-sdk/stream-text) now returns a threadId and stream as an object instead of returning stream alone.
 
     #### BEFORE
 
@@ -59,9 +60,6 @@
     });
     ```
 
-    📦 NEW: Chat support in both both [`generateText()`](https://langbase.com/docs/langbase-sdk/generate-text) and [`streamText()`](https://langbase.com/docs/langbase-sdk/stream-text)
-    👌 IMPROVE: Example updates for Node, browser, Next.js, React, etc.
-    👌 IMPROVE: ⌘ Langbase [SDK Docs](https://langbase.com/docs/langbase-sdk) and API reference for both [`generateText()`](https://langbase.com/docs/langbase-sdk/generate-text) and [`streamText()`](https://langbase.com/docs/langbase-sdk/stream-text)
 
 ## 0.6.0
 
