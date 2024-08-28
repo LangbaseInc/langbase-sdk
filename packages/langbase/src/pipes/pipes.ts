@@ -1,5 +1,6 @@
 import {Request} from '../common/request';
 import {Stream} from '../common/stream';
+import 'dotenv/config';
 
 export type Role = 'user' | 'assistant' | 'system' | 'tool';
 
@@ -101,11 +102,12 @@ export interface PipeOptions {
 
 export class Pipe {
 	private request: Request;
-	private demo = process.env.LB_DEMO || '';
+	private demo: string = '';
 
 	constructor(options: PipeOptions) {
 		const baseUrl = 'https://api.langbase.com';
 		this.request = new Request({apiKey: options.apiKey, baseUrl});
+		this.demo = process.env.LB_DEMO || ''
 	}
 
 	async generateText(options: GenerateOptions): Promise<GenerateResponse> {
