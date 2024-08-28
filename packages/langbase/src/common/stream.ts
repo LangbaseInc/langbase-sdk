@@ -25,25 +25,17 @@ export class Stream<Item> implements AsyncIterable<Item> {
 	 * @returns {Stream<AsyncIterator<Item, any, undefined>>} - The stream created from the SSE response.
 	 * @throws {Error} - If the stream has already been consumed.
 	 */
-	static fromSSEResponse<Item>(
-		response: Response,
-		controller: AbortController,
-	) {
+	static fromSSEResponse<Item>(response: Response, controller: AbortController) {
 		let consumed = false;
 
 		async function* iterator(): AsyncIterator<Item, any, undefined> {
 			if (consumed) {
-				throw new Error(
-					'Cannot iterate over a consumed stream, use `.tee()` to split the stream.',
-				);
+				throw new Error('Cannot iterate over a consumed stream, use `.tee()` to split the stream.');
 			}
 			consumed = true;
 			let done = false;
 			try {
-				for await (const sse of _iterSSEMessages(
-					response,
-					controller,
-				)) {
+				for await (const sse of _iterSSEMessages(response, controller)) {
 					if (done) continue;
 
 					if (sse.data.startsWith('[DONE]')) {
@@ -57,10 +49,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 						try {
 							data = JSON.parse(sse.data);
 						} catch (e) {
-							console.error(
-								`Could not parse message into JSON:`,
-								sse.data,
-							);
+							console.error(`Could not parse message into JSON:`, sse.data);
 							console.error(`From chunk:`, sse.raw);
 							throw e;
 						}
@@ -75,10 +64,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 						try {
 							data = JSON.parse(sse.data);
 						} catch (e) {
-							console.error(
-								`Could not parse message into JSON:`,
-								sse.data,
-							);
+							console.error(`Could not parse message into JSON:`, sse.data);
 							console.error(`From chunk:`, sse.raw);
 							throw e;
 						}
@@ -112,10 +98,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 	 * @param {AbortController} controller - The abort controller to control the stream.
 	 * @returns {Stream<Item>} - The created stream.
 	 */
-	static fromReadableStream<Item>(
-		readableStream: ReadableStream,
-		controller: AbortController,
-	) {
+	static fromReadableStream<Item>(readableStream: ReadableStream, controller: AbortController) {
 		let consumed = false;
 
 		async function* iterLines(): AsyncGenerator<string, void, unknown> {
@@ -135,9 +118,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 
 		async function* iterator(): AsyncIterator<Item, any, undefined> {
 			if (consumed) {
-				throw new Error(
-					'Cannot iterate over a consumed stream, use `.tee()` to split the stream.',
-				);
+				throw new Error('Cannot iterate over a consumed stream, use `.tee()` to split the stream.');
 			}
 			consumed = true;
 			let done = false;
@@ -173,9 +154,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 		const right: Array<Promise<IteratorResult<Item>>> = [];
 		const iterator = this.iterator();
 
-		const teeIterator = (
-			queue: Array<Promise<IteratorResult<Item>>>,
-		): AsyncIterator<Item> => {
+		const teeIterator = (queue: Array<Promise<IteratorResult<Item>>>): AsyncIterator<Item> => {
 			return {
 				next: () => {
 					if (queue.length === 0) {
@@ -269,9 +248,7 @@ export async function* _iterSSEMessages(
  * @param iterator - The async iterator that provides the SSE chunks.
  * @returns An async generator that yields Uint8Array chunks.
  */
-async function* iterSSEChunks(
-	iterator: AsyncIterableIterator<Bytes>,
-): AsyncGenerator<Uint8Array> {
+async function* iterSSEChunks(iterator: AsyncIterableIterator<Bytes>): AsyncGenerator<Uint8Array> {
 	let data = new Uint8Array();
 
 	for await (const chunk of iterator) {
@@ -439,9 +416,7 @@ class LineDecoder {
 			return [];
 		}
 
-		const trailingNewline = LineDecoder.NEWLINE_CHARS.has(
-			text[text.length - 1] || '',
-		);
+		const trailingNewline = LineDecoder.NEWLINE_CHARS.has(text[text.length - 1] || '');
 		let lines = text.split(LineDecoder.NEWLINE_REGEXP);
 
 		// if there is a trailing new line then the last entry will be an empty
@@ -493,9 +468,7 @@ class LineDecoder {
 			}
 
 			throw new Error(
-				`Unexpected: received non-Uint8Array/ArrayBuffer (${
-					(bytes as any).constructor.name
-				}) in a web platform. Please report this error.`,
+				`Unexpected: received non-Uint8Array/ArrayBuffer (${(bytes as any).constructor.name}) in a web platform. Please report this error.`,
 			);
 		}
 
@@ -537,11 +510,7 @@ export function _decodeChunks(chunks: string[]): string[] {
 function partition(str: string, delimiter: string): [string, string, string] {
 	const index = str.indexOf(delimiter);
 	if (index !== -1) {
-		return [
-			str.substring(0, index),
-			delimiter,
-			str.substring(index + delimiter.length),
-		];
+		return [str.substring(0, index), delimiter, str.substring(index + delimiter.length)];
 	}
 
 	return [str, '', ''];
@@ -553,9 +522,7 @@ function partition(str: string, delimiter: string): [string, string, string] {
  *
  * This polyfill was pulled from https://github.com/MattiasBuelens/web-streams-polyfill/pull/122#issuecomment-1627354490
  */
-export function readableStreamAsyncIterable<T>(
-	stream: any,
-): AsyncIterableIterator<T> {
+export function readableStreamAsyncIterable<T>(stream: any): AsyncIterableIterator<T> {
 	if (stream[Symbol.asyncIterator]) return stream;
 
 	const reader = stream.getReader();

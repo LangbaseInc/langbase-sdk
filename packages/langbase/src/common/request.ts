@@ -74,11 +74,7 @@ export class Request {
 		return `${this.config.baseUrl}${endpoint}`;
 	}
 
-	private buildHeaders({
-		headers,
-	}: {
-		headers?: Record<string, string>;
-	}): Record<string, string> {
+	private buildHeaders({headers}: {headers?: Record<string, string>}): Record<string, string> {
 		return {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${this.config.apiKey}`,
@@ -86,11 +82,7 @@ export class Request {
 		};
 	}
 
-	private async makeRequest({
-		url,
-		options,
-		headers,
-	}: MakeRequestParams): Promise<Response> {
+	private async makeRequest({url, options, headers}: MakeRequestParams): Promise<Response> {
 		return fetch(url, {
 			method: options.method,
 			headers,
@@ -99,11 +91,7 @@ export class Request {
 		});
 	}
 
-	private async handleErrorResponse({
-		response,
-	}: {
-		response: Response;
-	}): Promise<never> {
+	private async handleErrorResponse({response}: {response: Response}): Promise<never> {
 		let errorBody;
 		try {
 			errorBody = await response.json();
@@ -127,11 +115,7 @@ export class Request {
 		return {stream, threadId: response.headers.get('lb-thread-id')};
 	}
 
-	private async handleGenerateResponse({
-		response,
-		isChat,
-		threadId,
-	}: HandleGenerateResponseParams): Promise<any> {
+	private async handleGenerateResponse({response, isChat, threadId}: HandleGenerateResponseParams): Promise<any> {
 		const generateResponse = await response.json();
 		const buildResponse = generateResponse.raw
 			? {
@@ -164,9 +148,7 @@ export class Request {
 		return this.send<T>({...options, method: 'PUT'});
 	}
 
-	async delete<T>(
-		options: Omit<RequestOptions, 'method' | 'body'>,
-	): Promise<T> {
+	async delete<T>(options: Omit<RequestOptions, 'method' | 'body'>): Promise<T> {
 		return this.send<T>({...options, method: 'DELETE'});
 	}
 }

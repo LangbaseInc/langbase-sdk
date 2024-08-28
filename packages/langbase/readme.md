@@ -37,4 +37,4 @@ Please read the [SDK documentation](https://langbase.com/docs/langbase-sdk/overv
 
 ## Examples
 
-Check out  [more examples in the docs](https://langbase.com/docs/langbase-sdk/examples) →
+Check out [more examples in the docs](https://langbase.com/docs/langbase-sdk/examples) →

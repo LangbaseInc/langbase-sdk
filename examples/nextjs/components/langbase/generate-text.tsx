@@ -42,22 +42,14 @@ export default function GenerateTextExample() {
 			<div className="flex flex-col gap-2 w-full">
 				<p className="text-lg font-semibold">
 					1. Generate Text{' '}
-					<a
-						className="text-indigo-500"
-						href="https://langbase.com/docs/langbase-sdk/generate-text"
-					>
+					<a className="text-indigo-500" href="https://langbase.com/docs/langbase-sdk/generate-text">
 						`generateText()`
 					</a>{' '}
 					with Route Handler
 				</p>
-				<p className="text-muted-foreground">
-					Ask a prompt to generate a text completion.
-				</p>
+				<p className="text-muted-foreground">Ask a prompt to generate a text completion.</p>
 			</div>
-			<form
-				onSubmit={handleSubmit}
-				className="flex flex-col w-full items-center gap-2"
-			>
+			<form onSubmit={handleSubmit} className="flex flex-col w-full items-center gap-2">
 				<Input
 					type="text"
 					placeholder="Enter prompt message here"

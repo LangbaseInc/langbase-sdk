@@ -31,9 +31,7 @@ const config: PlaywrightTestConfig = {
 	// Number of retry attempts for failed tests
 	retries: 2,
 	// Reporter configuration based on whether the environment is CI
-	reporter: process.env.CI
-		? [['github'], ['json', {outputFile: 'test-results.json'}]]
-		: 'list',
+	reporter: process.env.CI ? [['github'], ['json', {outputFile: 'test-results.json'}]] : 'list',
 	// Projects configuration for different browsers/devices
 	projects: [
 		{

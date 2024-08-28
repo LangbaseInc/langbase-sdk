@@ -30,11 +30,7 @@ export class APIError extends Error {
 		// this.type = data?.['type'];
 	}
 
-	private static makeMessage(
-		status: number | undefined,
-		error: any,
-		message: string | undefined,
-	): string {
+	private static makeMessage(status: number | undefined, error: any, message: string | undefined): string {
 		const msg = error?.message
 			? typeof error.message === 'string'
 				? error.message
@@ -63,8 +59,7 @@ export class APIError extends Error {
 	): APIError {
 		if (!status) {
 			return new APIConnectionError({
-				cause:
-					errorResponse instanceof Error ? errorResponse : undefined,
+				cause: errorResponse instanceof Error ? errorResponse : undefined,
 			});
 		}
 
@@ -76,23 +71,13 @@ export class APIError extends Error {
 			case 401:
 				return new AuthenticationError(status, error, message, headers);
 			case 403:
-				return new PermissionDeniedError(
-					status,
-					error,
-					message,
-					headers,
-				);
+				return new PermissionDeniedError(status, error, message, headers);
 			case 404:
 				return new NotFoundError(status, error, message, headers);
 			case 409:
 				return new ConflictError(status, error, message, headers);
 			case 422:
-				return new UnprocessableEntityError(
-					status,
-					error,
-					message,
-					headers,
-				);
+				return new UnprocessableEntityError(status, error, message, headers);
 			case 429:
 				return new RateLimitError(status, error, message, headers);
 			default:
