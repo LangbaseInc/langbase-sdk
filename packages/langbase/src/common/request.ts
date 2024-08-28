@@ -86,7 +86,7 @@ export class Request {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${this.config.apiKey}`,
 			'lb-meta-external-user-id': this.config.ip || '',
-			demo: this.demo,
+			'lb-demo-id': this.demo,
 			...headers,
 		};
 	}
