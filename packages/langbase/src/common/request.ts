@@ -35,9 +35,11 @@ interface HandleGenerateResponseParams {
 
 export class Request {
 	private config: RequestConfig;
+	private demo: string = '';
 
 	constructor(config: RequestConfig) {
 		this.config = config;
+		this.demo = process.env.LB_DEMO || '';
 	}
 
 	// Main send function
@@ -84,6 +86,7 @@ export class Request {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${this.config.apiKey}`,
 			'lb-meta-external-user-id': this.config.ip || '',
+			demo: this.demo,
 			...headers,
 		};
 	}

@@ -103,25 +103,27 @@ export interface PipeOptions {
 
 export class Pipe {
 	private request: Request;
-	private demo: string = '';
 
 	constructor(options: PipeOptions) {
 		const baseUrl = 'https://api.langbase.com';
-		this.request = new Request({apiKey: options.apiKey, baseUrl, ip: options.ip});
-		this.demo = process.env.LB_DEMO || ''
+		this.request = new Request({
+			apiKey: options.apiKey,
+			baseUrl,
+			ip: options.ip,
+		});
 	}
 
 	async generateText(options: GenerateOptions): Promise<GenerateResponse> {
 		return this.request.post<GenerateResponse>({
 			endpoint: options.chat ? '/beta/chat' : '/beta/generate',
-			body: {...options, stream: false, demo: this.demo},
+			body: {...options, stream: false},
 		});
 	}
 
 	async streamText(options: StreamOptions): Promise<StreamResponse> {
 		return this.request.post<StreamResponse>({
 			endpoint: options.chat ? '/beta/chat' : '/beta/generate',
-			body: {...options, stream: true, demo: this.demo},
+			body: {...options, stream: true},
 		});
 	}
 }
