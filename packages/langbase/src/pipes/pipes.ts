@@ -88,6 +88,7 @@ export type StreamText = Stream<StreamChunk>;
 
 export interface StreamResponse {
 	threadId: string | null;
+	completion: string;
 }
 
 interface StreamCallResponse {
@@ -162,14 +163,21 @@ export const streamText = async (options: StreamOptions): Promise<StreamResponse
 
 	if (options.onStart) options.onStart();
 
+	let fullCompletion = ''; // Variable to accumulate the full completion text
+
 	for await (const rawChunk of stream) {
 		const chunk = processChunk({rawChunk});
 		if (options.onChunk) options.onChunk({chunk});
+
+		// Accumulate the completion text
+		if (isContent(chunk)) {
+			fullCompletion += chunk.content;
+		}
 	}
 
 	if (options.onFinish) options.onFinish();
 
-	return {threadId};
+	return {threadId, completion: fullCompletion};
 };
 
 export const processChunk = ({rawChunk}: {rawChunk: StreamChunk}): Chunk => {
