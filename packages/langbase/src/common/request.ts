@@ -1,13 +1,13 @@
-import {Headers} from './../../types'; // Ensure this import is correct
 import {APIConnectionError, APIError} from './errors';
 import {Stream} from './stream';
 
 interface RequestOptions {
 	endpoint: string;
 	method: string;
-	headers?: Headers;
+	headers?: Record<string, string>;
 	body?: any;
 	stream?: boolean;
+	rawResponse?: boolean;
 }
 
 interface RequestConfig {
@@ -30,6 +30,7 @@ interface HandleGenerateResponseParams {
 	response: Response;
 	isChat: boolean;
 	threadId: string | null;
+	rawResponse: boolean;
 }
 
 export class Request {
@@ -39,14 +40,13 @@ export class Request {
 		this.config = config;
 	}
 
-	// Main send function
 	private async send<T>({endpoint, ...options}: SendOptions): Promise<T> {
 		const url = this.buildUrl({endpoint});
 		const headers = this.buildHeaders({headers: options.headers});
 
 		let response: Response;
 		try {
-			response = await this.makeRequest({url, options, headers});
+			response = await this.makeRequest({url, options: {...options, endpoint}, headers});
 		} catch (error) {
 			throw new APIConnectionError({
 				cause: error instanceof Error ? error : undefined,
@@ -59,14 +59,15 @@ export class Request {
 
 		const threadId = response.headers.get('lb-thread-id');
 
-		if (options.body.stream) {
-			return this.handleStreamResponse({response}) as T;
+		if (options.body?.stream) {
+			return this.handleStreamResponse({response, rawResponse: options.body.rawResponse}) as T;
 		}
 
 		return this.handleGenerateResponse({
 			response,
-			isChat: options.body.chat,
+			isChat: options.body?.chat,
 			threadId,
+			rawResponse: options.body?.rawResponse ?? false,
 		});
 	}
 
@@ -102,20 +103,43 @@ export class Request {
 			response.status,
 			errorBody,
 			response.statusText,
-			response.headers as unknown as Headers,
+			Object.fromEntries(response.headers.entries()),
 		);
 	}
 
-	private handleStreamResponse({response}: {response: Response}): {
+	private handleStreamResponse({response, rawResponse}: {response: Response; rawResponse?: boolean}): {
 		stream: any;
 		threadId: string | null;
+		rawResponse?: {
+			headers: Record<string, string>;
+		};
 	} {
 		const controller = new AbortController();
 		const stream = Stream.fromSSEResponse(response, controller);
-		return {stream, threadId: response.headers.get('lb-thread-id')};
+		const result: {
+			stream: any;
+			threadId: string | null;
+			rawResponse?: {
+				headers: Record<string, string>;
+			};
+		} = {
+			stream,
+			threadId: response.headers.get('lb-thread-id'),
+		};
+		if (rawResponse) {
+			result.rawResponse = {
+				headers: Object.fromEntries(response.headers.entries()),
+			};
+		}
+		return result;
 	}
 
-	private async handleGenerateResponse({response, isChat, threadId}: HandleGenerateResponseParams): Promise<any> {
+	private async handleGenerateResponse({
+		response,
+		isChat,
+		threadId,
+		rawResponse,
+	}: HandleGenerateResponseParams): Promise<any> {
 		const generateResponse = await response.json();
 		const buildResponse = generateResponse.raw
 			? {
@@ -124,16 +148,21 @@ export class Request {
 				}
 			: generateResponse;
 
-		// Chat.
+		const result: any = {
+			...buildResponse,
+		};
+
 		if (isChat && threadId) {
-			return {
-				threadId,
-				...buildResponse,
+			result.threadId = threadId;
+		}
+
+		if (rawResponse) {
+			result.rawResponse = {
+				headers: Object.fromEntries(response.headers.entries()),
 			};
 		}
 
-		// Generate.
-		return buildResponse;
+		return result;
 	}
 
 	async post<T>(options: Omit<RequestOptions, 'method'>): Promise<T> {

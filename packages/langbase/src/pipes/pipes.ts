@@ -32,18 +32,20 @@ export interface GenerateOptions {
 	variables?: Variable[];
 	threadId?: string;
 	chat?: boolean;
+	rawResponse?: boolean;
 	pipe: Pipe;
 }
 
 export interface StreamOptions {
+	pipe: Pipe;
 	messages?: Message[];
 	variables?: Variable[];
 	threadId?: string | null;
 	chat?: boolean;
+	rawResponse?: boolean;
 	onStart?: () => void;
 	onChunk?: (options: {chunk: Chunk}) => void;
 	onFinish?: () => void;
-	pipe: Pipe;
 }
 
 interface ChoiceGenerate {
@@ -82,6 +84,9 @@ export interface GenerateResponse {
 	choices: ChoiceGenerate[];
 	usage: Usage;
 	system_fingerprint: string | null;
+	rawResponse?: {
+		headers: Record<string, string>;
+	};
 }
 
 export type StreamText = Stream<StreamChunk>;
@@ -89,11 +94,17 @@ export type StreamText = Stream<StreamChunk>;
 export interface StreamResponse {
 	threadId: string | null;
 	completion: string;
+	rawResponse?: {
+		headers: Record<string, string>;
+	};
 }
 
 interface StreamCallResponse {
 	stream: StreamText;
 	threadId: string | null;
+	rawResponse?: {
+		headers: Record<string, string>;
+	};
 }
 
 export interface StreamChunk {
@@ -156,20 +167,19 @@ export const generateText = async (options: GenerateOptions): Promise<GenerateRe
 };
 
 export const streamText = async (options: StreamOptions): Promise<StreamResponse> => {
-	const {stream, threadId} = await options.pipe.makeRequest<StreamCallResponse>({
+	const {stream, threadId, rawResponse} = await options.pipe.makeRequest<StreamCallResponse>({
 		endpoint: options.chat ? '/beta/chat' : '/beta/generate',
 		body: {...options, stream: true},
 	});
 
 	if (options.onStart) options.onStart();
 
-	let fullCompletion = ''; // Variable to accumulate the full completion text
+	let fullCompletion = '';
 
 	for await (const rawChunk of stream) {
 		const chunk = processChunk({rawChunk});
 		if (options.onChunk) options.onChunk({chunk});
 
-		// Accumulate the completion text
 		if (isContent(chunk)) {
 			fullCompletion += chunk.content;
 		}
@@ -177,7 +187,7 @@ export const streamText = async (options: StreamOptions): Promise<StreamResponse
 
 	if (options.onFinish) options.onFinish();
 
-	return {threadId, completion: fullCompletion};
+	return {threadId, completion: fullCompletion, rawResponse};
 };
 
 export const processChunk = ({rawChunk}: {rawChunk: StreamChunk}): Chunk => {
