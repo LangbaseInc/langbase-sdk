@@ -32,6 +32,7 @@ export interface GenerateOptions {
 	variables?: Variable[];
 	threadId?: string;
 	chat?: boolean;
+	demoRequest?: boolean;
 }
 
 export interface StreamOptions {
@@ -39,6 +40,7 @@ export interface StreamOptions {
 	variables?: Variable[];
 	threadId?: string | null;
 	chat?: boolean;
+	demoRequest?: boolean;
 }
 
 interface ChoiceGenerate {
