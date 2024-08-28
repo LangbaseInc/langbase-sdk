@@ -28,7 +28,8 @@
         "ASSISTANT_ID",
         "INKEEP_API_KEY",
         "INKEEP_INTEGRATION_ID",
-        "VERCEL_URL"
+        "VERCEL_URL",
+        "LB_DEMO"
       ],
       "outputs": [
         "dist/**",

@@ -32,7 +32,6 @@ export interface GenerateOptions {
 	variables?: Variable[];
 	threadId?: string;
 	chat?: boolean;
-	demo?: boolean;
 }
 
 export interface StreamOptions {
@@ -40,7 +39,6 @@ export interface StreamOptions {
 	variables?: Variable[];
 	threadId?: string | null;
 	chat?: boolean;
-	demo?: boolean;
 }
 
 interface ChoiceGenerate {
@@ -103,6 +101,7 @@ export interface PipeOptions {
 
 export class Pipe {
 	private request: Request;
+	private demo = process.env.LB_DEMO || '';
 
 	constructor(options: PipeOptions) {
 		const baseUrl = 'https://api.langbase.com';
@@ -112,14 +111,14 @@ export class Pipe {
 	async generateText(options: GenerateOptions): Promise<GenerateResponse> {
 		return this.request.post<GenerateResponse>({
 			endpoint: options.chat ? '/beta/chat' : '/beta/generate',
-			body: {...options, stream: false},
+			body: {...options, stream: false, demo: this.demo},
 		});
 	}
 
 	async streamText(options: StreamOptions): Promise<StreamResponse> {
 		return this.request.post<StreamResponse>({
 			endpoint: options.chat ? '/beta/chat' : '/beta/generate',
-			body: {...options, stream: true},
+			body: {...options, stream: true, demo: this.demo},
 		});
 	}
 }
