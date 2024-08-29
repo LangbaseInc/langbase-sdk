@@ -14,7 +14,7 @@ interface RequestConfig {
 	apiKey: string;
 	baseUrl: string;
 	timeout?: number;
-	ip?: string;
+	id?: string;
 }
 
 interface SendOptions extends RequestOptions {
@@ -85,7 +85,7 @@ export class Request {
 		return {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${this.config.apiKey}`,
-			'lb-meta-external-user-id': this.config.ip || '',
+			'lb-meta-external-user-id': this.config.id || '',
 			'lb-demo-id': this.demo,
 			...headers,
 		};

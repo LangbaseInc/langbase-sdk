@@ -98,7 +98,7 @@ export interface StreamChunk {
 export interface PipeOptions {
 	apiKey: string;
 	baseUrl?: string;
-	ip?: string;
+	id?: string;
 }
 
 export class Pipe {
@@ -107,9 +107,9 @@ export class Pipe {
 	constructor(options: PipeOptions) {
 		const baseUrl = 'https://api.langbase.com';
 		this.request = new Request({
-			apiKey: options.apiKey,
 			baseUrl,
-			ip: options.ip,
+			id: options.id,
+			apiKey: options.apiKey,
 		});
 	}
 
