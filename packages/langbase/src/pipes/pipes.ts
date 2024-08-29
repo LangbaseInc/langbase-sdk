@@ -1,6 +1,5 @@
 import {Request} from '../common/request';
 import {Stream} from '../common/stream';
-import 'dotenv/config';
 
 export type Role = 'user' | 'assistant' | 'system' | 'tool';
 

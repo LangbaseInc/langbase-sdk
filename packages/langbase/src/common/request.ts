@@ -1,6 +1,7 @@
 import {Headers} from './../../types'; // Ensure this import is correct
 import {APIConnectionError, APIError} from './errors';
 import {Stream} from './stream';
+import 'dotenv/config';
 
 interface RequestOptions {
 	endpoint: string;
