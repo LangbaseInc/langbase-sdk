@@ -1,6 +1,7 @@
 import {Headers} from './../../types'; // Ensure this import is correct
 import {APIConnectionError, APIError} from './errors';
 import {Stream} from './stream';
+import 'dotenv/config';
 
 interface RequestOptions {
 	endpoint: string;
@@ -14,6 +15,7 @@ interface RequestConfig {
 	apiKey: string;
 	baseUrl: string;
 	timeout?: number;
+	id?: string;
 }
 
 interface SendOptions extends RequestOptions {
@@ -34,9 +36,11 @@ interface HandleGenerateResponseParams {
 
 export class Request {
 	private config: RequestConfig;
+	private demo: string = '';
 
 	constructor(config: RequestConfig) {
 		this.config = config;
+		this.demo = process.env.LB_DEMO || '';
 	}
 
 	// Main send function
@@ -82,6 +86,8 @@ export class Request {
 		return {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${this.config.apiKey}`,
+			'lb-meta-external-user-id': this.config.id || '',
+			'lb-demo-id': this.demo,
 			...headers,
 		};
 	}
