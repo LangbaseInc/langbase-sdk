@@ -38,7 +38,7 @@
 		"@edge-runtime/vm": "^4.0.1",
 		"@langbase/eslint-config": "workspace:*",
 		"@langbase/tsconfig": "workspace:*",
-		"@playwright/test": "^1.44.1",
+		"@playwright/test": "^1.47.2",
 		"@types/node": "^20.11.24",
 		"@vitejs/plugin-react": "^4.3.1",
 		"eslint": "^8.57.0",
