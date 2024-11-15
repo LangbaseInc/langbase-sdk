@@ -24,7 +24,8 @@
 		"ci:release": "turbo clean && turbo build && changeset publish",
 		"clean-examples": "node .github/scripts/cleanup-examples-changesets.mjs",
 		"ci:version": "changeset version && node .github/scripts/cleanup-examples-changesets.mjs && pnpm install --no-frozen-lockfile",
-		"snapshot": "node .github/scripts/release-snapshot.js"
+		"snapshot": "node .github/scripts/release-snapshot.js",
+		"update-examples": "npx tsx .github/scripts/update-examples.ts"
 	},
 	"devDependencies": {
 		"@langbase/eslint-config": "workspace:*",
