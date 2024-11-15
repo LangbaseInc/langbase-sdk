@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.1
+
+### Patch Changes
+
+-   📦 NEW: run endpoint support
+
 ## 1.1.0
 
 ### Minor Changes
