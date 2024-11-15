@@ -66,7 +66,7 @@ bumpVersion('./packages/langbase/package.json');
 run(`pnpm changeset version --snapshot ${SHORT_SHA}`);
 
 // Build and publish the snapshot release
-run('pnpm build');
+run('pnpm build:pkgs');
 run('pnpm changeset publish --no-git-tag --tag snapshot');
 
 // Reset Git changes

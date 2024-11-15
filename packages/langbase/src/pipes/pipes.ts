@@ -120,6 +120,9 @@ export class Pipe {
 			apiKey: options.apiKey, // Langbase API key
 			name: options.name?.trim() || '', // Pipe name
 			prod: true,
+			// default values
+			model: 'openai:gpt-4o-mini',
+			tools: [],
 		} as any);
 	}
 

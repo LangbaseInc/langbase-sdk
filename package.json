@@ -7,7 +7,7 @@
 		"prepare": "husky",
 		"lint": "turbo lint",
 		"test": "turbo test",
-		"build": "turbo build",
+		"build:pkgs": "turbo run build --filter=./packages/*",
 		"changeset": "changeset",
 		"publint": "turbo publint",
 		"type-check": "turbo type-check",
