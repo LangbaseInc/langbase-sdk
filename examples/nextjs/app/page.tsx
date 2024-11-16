@@ -1,4 +1,6 @@
 import GenerateTextExample from '@/components/langbase/generate-text';
+import RunNonStreamExample from '@/components/langbase/run';
+import RunStreamExample from '@/components/langbase/run-stream';
 import StreamTextExample from '@/components/langbase/stream-text';
 
 export default function Home() {
@@ -13,6 +15,8 @@ export default function Home() {
 						An AI agent that responds to your prompts.
 					</p>
 				</div>
+				<RunStreamExample />
+				<RunNonStreamExample />
 				<GenerateTextExample />
 				<StreamTextExample />
 			</div>

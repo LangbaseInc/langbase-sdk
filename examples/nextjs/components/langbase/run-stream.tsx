@@ -1,11 +1,11 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { fromReadableStream } from 'langbase';
-import { useState } from 'react';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {getRunner} from 'langbase';
+import {useState} from 'react';
 
-export default function StreamTextExample() {
+export default function RunStreamExample() {
 	const [prompt, setPrompt] = useState('');
 	const [completion, setCompletion] = useState('');
 	const [loading, setLoading] = useState(false);
@@ -18,14 +18,14 @@ export default function StreamTextExample() {
 		setCompletion('');
 
 		try {
-			const response = await fetch('/langbase/pipe/stream-text', {
+			const response = await fetch('/langbase/pipe/run-stream', {
 				method: 'POST',
-				body: JSON.stringify({ prompt }),
-				headers: { 'Content-Type': 'text/plain' },
+				body: JSON.stringify({prompt}),
+				headers: {'Content-Type': 'text/plain'},
 			});
 
 			if (response.body) {
-				const stream = fromReadableStream(response.body);
+				const stream = getRunner(response.body);
 
 				// Method #1 to get all of the chunk.
 				for await (const chunk of stream) {
@@ -50,12 +50,12 @@ export default function StreamTextExample() {
 		<div className="bg-neutral-200 rounded-md p-2 flex flex-col gap-2 w-full">
 			<div className="flex flex-col gap-2 w-full">
 				<p className="text-lg font-semibold">
-					4. Stream Text{' '}
+					1. Stream Text{' '}
 					<a
 						className="text-indigo-500"
 						href="https://langbase.com/docs/langbase-sdk/stream-text"
 					>
-						`streamText()`
+						`pipe.run()`
 					</a>{' '}
 					with Route Handler
 				</p>
