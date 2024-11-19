@@ -24,7 +24,7 @@ export interface ToolCall {
 export interface Message {
 	role: Role;
 	content: string | null;
-	name?: string;
+	name?: 'json' | 'safety' | 'opening' | 'rag';
 	tool_call_id?: string;
 	tool_calls?: ToolCall[];
 }
@@ -107,6 +107,47 @@ export interface PipeOptions {
 	name?: string;
 }
 
+interface ToolChoice {
+	type: 'function';
+	function: {name: string};
+}
+
+export interface BaseOptions {
+	name: string;
+	description?: string;
+	status?: 'public' | 'private';
+	upsert?: boolean;
+	model?: string;
+	stream?: boolean;
+	json?: boolean;
+	store?: boolean;
+	moderate?: boolean;
+	top_p?: number;
+	max_tokens?: number;
+	temperature?: number;
+	presence_penalty?: number;
+	frequency_penalty?: number;
+	stop?: string[];
+	tools?: {
+		type: 'function';
+		function: {
+			name: string;
+			description?: string;
+			parameters?: Record<string, any>;
+		};
+	}[];
+	tool_choice?: 'auto' | 'required' | ToolChoice;
+	parallel_tool_calls?: boolean;
+	messages?: Message[];
+	variables?: Variable[];
+	memory?: {
+		name: string;
+	}[];
+}
+
+export interface CreateOptions extends BaseOptions {}
+export interface UpdateOptions extends BaseOptions {}
+
 export class Pipe {
 	private request: Request;
 	private pipe: PipeBaseAI;
@@ -150,6 +191,20 @@ export class Pipe {
 		return this.request.post<StreamResponse>({
 			endpoint: options.chat ? '/beta/chat' : '/beta/generate',
 			body: {...options, stream: true},
+		});
+	}
+
+	async create(options: CreateOptions) {
+		return this.request.post({
+			endpoint: '/v1/pipes',
+			body: options,
+		});
+	}
+
+	async update(options: UpdateOptions) {
+		return this.request.post({
+			endpoint: `/v1/pipes/${options.name}`,
+			body: options,
 		});
 	}
 }
