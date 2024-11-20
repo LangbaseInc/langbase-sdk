@@ -4,6 +4,7 @@
 	"license": "Apache-2.0",
 	"scripts": {
 		"dev": "turbo dev",
+		"dev:pkgs": "turbo run dev --filter=./packages/*",
 		"prepare": "husky",
 		"lint": "turbo lint",
 		"test": "turbo test",

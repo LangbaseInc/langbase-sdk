@@ -7,6 +7,8 @@
 	"main": "index.js",
 	"scripts": {
 		"generate-text": "npx tsx ./examples/pipes/generate-text.ts",
+		"pipe.create": "npx tsx ./examples/pipes/pipe.create.ts",
+		"pipe.update": "npx tsx ./examples/pipes/pipe.update.ts",
 		"pipe.run": "npx tsx ./examples/pipes/pipe.run.ts",
 		"pipe.run.stream": "npx tsx ./examples/pipes/pipe.run.stream.ts",
 		"generate-text-generate-pipe": "npx tsx ./examples/pipes/generate-text-generate-pipe.ts",
