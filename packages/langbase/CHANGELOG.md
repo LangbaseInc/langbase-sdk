@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.3
+
+### Patch Changes
+
+-   📦 NEW: Memory create/list and Pipe list support
+
 ## 1.1.2
 
 ### Patch Changes
