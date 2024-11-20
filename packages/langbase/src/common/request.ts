@@ -57,6 +57,14 @@ export class Request {
 			await this.handleErrorResponse({response});
 		}
 
+		if(!options.body) {
+			return this.handleGenerateResponse({
+				response,
+				isChat: false,
+				threadId: null,
+			})
+		}
+
 		const threadId = response.headers.get('lb-thread-id');
 
 		if (options.body.stream) {
