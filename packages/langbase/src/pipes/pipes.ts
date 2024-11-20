@@ -112,7 +112,7 @@ interface ToolChoice {
 	function: {name: string};
 }
 
-interface BaseOptions {
+interface PipeBaseOptions {
 	name: string;
 	description?: string;
 	status?: 'public' | 'private';
@@ -145,7 +145,43 @@ interface BaseOptions {
 	}[];
 }
 
-interface BaseResponse {
+export interface PipeListResponse {
+	name: string;
+	description: string;
+	status: 'public' | 'private';
+	owner_login: string;
+	url: string;
+	model: string;
+	stream: boolean;
+	json: boolean;
+	store: boolean;
+	moderate: boolean;
+	top_p: number;
+	max_tokens: number;
+	temperature: number;
+	presence_penalty: number;
+	frequency_penalty: number;
+	stop: string[];
+	tool_choice: 'auto' | 'required' | ToolChoice;
+	parallel_tool_calls: boolean;
+	messages: Message[];
+	variables: Variable[] | [];
+	tools:
+		| {
+				type: 'function';
+				function: {
+					name: string;
+					description?: string;
+					parameters?: Record<string, any>;
+				};
+		}[]
+		| [];
+	memory: {
+		name: string;
+	}[] | [];
+}
+
+interface PipeBaseResponse {
 	name: string;
 	description: string;
 	status: 'public' | 'private';
@@ -155,10 +191,10 @@ interface BaseResponse {
 	api_key: string;
 }
 
-export interface CreateOptions extends BaseOptions {}
-export interface UpdateOptions extends BaseOptions {}
-export interface CreateResponse extends BaseResponse {}
-export interface UpdateResponse extends BaseResponse {}
+export interface PipeCreateOptions extends PipeBaseOptions {}
+export interface PipeUpdateOptions extends PipeBaseOptions {}
+export interface PipeCreateResponse extends PipeBaseResponse {}
+export interface PipeUpdateResponse extends PipeBaseResponse {}
 
 export class Pipe {
 	private request: Request;
@@ -207,21 +243,21 @@ export class Pipe {
 		});
 	}
 
-	async create(options: CreateOptions): Promise<CreateResponse> {
+	async create(options: PipeCreateOptions): Promise<PipeCreateResponse> {
 		return this.request.post({
 			endpoint: '/v1/pipes',
 			body: options,
 		});
 	}
 
-	async update(options: UpdateOptions): Promise<UpdateResponse> {
+	async update(options: PipeUpdateOptions): Promise<PipeUpdateResponse> {
 		return this.request.post({
 			endpoint: `/v1/pipes/${options.name}`,
 			body: options,
 		});
 	}
 
-	async list() {
+	async list(): Promise<PipeListResponse[]> {
 		return this.request.get({
 			endpoint: '/v1/pipes',
 		});

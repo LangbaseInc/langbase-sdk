@@ -8,7 +8,10 @@
   "scripts": {
     "generate-text": "npx tsx ./examples/pipes/generate-text.ts",
     "pipe.create": "npx tsx ./examples/pipes/pipe.create.ts",
+    "memory.create": "npx tsx ./examples/pipes/memory.create.ts",
+    "memory.list": "npx tsx ./examples/pipes/memory.list.ts",
     "pipe.update": "npx tsx ./examples/pipes/pipe.update.ts",
+    "pipe.list": "npx tsx ./examples/pipes/pipe.list.ts",
     "pipe.run": "npx tsx ./examples/pipes/pipe.run.ts",
     "pipe.run.stream": "npx tsx ./examples/pipes/pipe.run.stream.ts",
     "generate-text-generate-pipe": "npx tsx ./examples/pipes/generate-text-generate-pipe.ts",
