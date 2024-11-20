@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.2
+
+### Patch Changes
+
+-   📦 NEW: Support for Pipe create and update
+
 ## 1.1.1
 
 ### Patch Changes

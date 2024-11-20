@@ -1,27 +1,27 @@
 {
-	"private": true,
-	"name": "everything",
-	"version": "0.0.0",
-	"description": "Everything example",
-	"type": "module",
-	"main": "index.js",
-	"scripts": {
-		"generate-text": "npx tsx ./examples/pipes/generate-text.ts",
-		"pipe.create": "npx tsx ./examples/pipes/pipe.create.ts",
-		"pipe.update": "npx tsx ./examples/pipes/pipe.update.ts",
-		"pipe.run": "npx tsx ./examples/pipes/pipe.run.ts",
-		"pipe.run.stream": "npx tsx ./examples/pipes/pipe.run.stream.ts",
-		"generate-text-generate-pipe": "npx tsx ./examples/pipes/generate-text-generate-pipe.ts",
-		"generate-text-chat-pipe": "npx tsx ./examples/pipes/generate-text-chat-pipe.ts",
-		"stream-text": "npx tsx ./examples/pipes/stream-text.ts",
-		"stream-text-generate-pipe": "npx tsx ./examples/pipes/stream-text-generate-pipe.ts",
-		"stream-text-chat-pipe": "npx tsx ./examples/pipes/stream-text-chat-pipe.ts"
-	},
-	"keywords": [],
-	"author": "Ahmad Awais <me@AhmadAwais.com> (https://twitter.com/MrAhmadAwais)",
-	"license": "UNLICENSED",
-	"dependencies": {
-		"dotenv": "^16.4.5",
-		"langbase": "^1.1.1"
-	}
+  "private": true,
+  "name": "everything",
+  "version": "0.0.0",
+  "description": "Everything example",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "generate-text": "npx tsx ./examples/pipes/generate-text.ts",
+    "pipe.create": "npx tsx ./examples/pipes/pipe.create.ts",
+    "pipe.update": "npx tsx ./examples/pipes/pipe.update.ts",
+    "pipe.run": "npx tsx ./examples/pipes/pipe.run.ts",
+    "pipe.run.stream": "npx tsx ./examples/pipes/pipe.run.stream.ts",
+    "generate-text-generate-pipe": "npx tsx ./examples/pipes/generate-text-generate-pipe.ts",
+    "generate-text-chat-pipe": "npx tsx ./examples/pipes/generate-text-chat-pipe.ts",
+    "stream-text": "npx tsx ./examples/pipes/stream-text.ts",
+    "stream-text-generate-pipe": "npx tsx ./examples/pipes/stream-text-generate-pipe.ts",
+    "stream-text-chat-pipe": "npx tsx ./examples/pipes/stream-text-chat-pipe.ts"
+  },
+  "keywords": [],
+  "author": "Ahmad Awais <me@AhmadAwais.com> (https://twitter.com/MrAhmadAwais)",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "langbase": "^1.1.1"
+  }
 }
