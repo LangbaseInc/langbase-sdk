@@ -112,7 +112,7 @@ interface ToolChoice {
 	function: {name: string};
 }
 
-export interface BaseOptions {
+interface BaseOptions {
 	name: string;
 	description?: string;
 	status?: 'public' | 'private';
@@ -145,8 +145,18 @@ export interface BaseOptions {
 	}[];
 }
 
+interface BaseResponse {
+	name: string;
+	description: string;
+	status: 'public' | 'private';
+	owner_login: string;
+	url: string;
+}
+
 export interface CreateOptions extends BaseOptions {}
 export interface UpdateOptions extends BaseOptions {}
+export interface CreateResponse extends BaseResponse {}
+export interface UpdateResponse extends BaseResponse {}
 
 export class Pipe {
 	private request: Request;
@@ -194,14 +204,14 @@ export class Pipe {
 		});
 	}
 
-	async create(options: CreateOptions) {
+	async create(options: CreateOptions): Promise<CreateResponse> {
 		return this.request.post({
 			endpoint: '/v1/pipes',
 			body: options,
 		});
 	}
 
-	async update(options: UpdateOptions) {
+	async update(options: UpdateOptions): Promise<UpdateResponse> {
 		return this.request.post({
 			endpoint: `/v1/pipes/${options.name}`,
 			body: options,
