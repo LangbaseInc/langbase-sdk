@@ -151,6 +151,8 @@ interface BaseResponse {
 	status: 'public' | 'private';
 	owner_login: string;
 	url: string;
+	type: 'chat' | 'generate' | 'run';
+	api_key: string;
 }
 
 export interface CreateOptions extends BaseOptions {}
@@ -167,6 +169,7 @@ export class Pipe {
 		const baseUrl = 'https://api.langbase.com';
 		this.request = new Request({apiKey: options.apiKey, baseUrl});
 		this.pipeOptions = options;
+
 		this.pipe = new PipeBaseAI({
 			apiKey: options.apiKey, // Langbase API key
 			name: options.name?.trim() || '', // Pipe name
@@ -215,6 +218,12 @@ export class Pipe {
 		return this.request.post({
 			endpoint: `/v1/pipes/${options.name}`,
 			body: options,
+		});
+	}
+
+	async list() {
+		return this.request.get({
+			endpoint: '/v1/pipes',
 		});
 	}
 }
