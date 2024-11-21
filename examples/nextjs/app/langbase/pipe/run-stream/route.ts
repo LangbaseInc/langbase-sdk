@@ -7,13 +7,13 @@ export async function POST(req: NextRequest) {
 	// 1. Initiate the Pipe.
 	const myPipe = new Pipe({
 		apiKey: process.env.LANGBASE_API_KEY!,
-		name: 'summary',
 	});
 
 	// 2. Generate a stream by asking a question
 	const {stream, threadId} = await myPipe.run({
 		messages: [{role: 'user', content: prompt}],
 		stream: true,
+		name: 'summary',
 	});
 
 	// 3. Done, return the stream in a readable stream format.
