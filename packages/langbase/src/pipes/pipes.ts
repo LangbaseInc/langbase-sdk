@@ -12,10 +12,12 @@ export type Role = 'user' | 'assistant' | 'system' | 'tool';
 
 export interface RunOptions extends RunOptionsT {
 	name: string;
+	messages: Message[];
 }
 
 export interface RunOptionsStream extends RunOptionsStreamT {
 	name: string;
+	messages: Message[];
 }
 
 export interface Function {
