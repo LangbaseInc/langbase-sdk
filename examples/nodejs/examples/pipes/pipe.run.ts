@@ -16,7 +16,6 @@ async function main() {
 				content: userMsg,
 			},
 		],
-		stream: false,
 	});
 	console.log('response: ', response);
 }
