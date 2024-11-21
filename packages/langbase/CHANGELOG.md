@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.6
+
+### Patch Changes
+
+-   👌 IMPROVE: Message required in pipe.run()
+
 ## 1.1.5
 
 ### Patch Changes
