@@ -118,8 +118,8 @@ importers:
   packages/langbase:
     dependencies:
       '@baseai/core':
-        specifier: 0.9.30
-        version: 0.9.30(react@18.3.1)(zod@3.23.8)
+        specifier: 0.9.33
+        version: 0.9.33(react@18.3.1)(zod@3.23.8)
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
@@ -338,6 +338,18 @@ packages:
 
   '@baseai/core@0.9.30':
     resolution: {integrity: sha512-RzFjUdb0xDMF0oNL8HaEUMUBgMTNIZFDX6jGfiQ78uk1yaIz7PfzJ3D3AXUsfY5PPYLvjcVfWYmR0tSn15XXQg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      react: ^18 || ^19
+      zod: ^3.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      zod:
+        optional: true
+
+  '@baseai/core@0.9.33':
+    resolution: {integrity: sha512-AupqofK69YY0drWpXxGOQNWQ0/JV7OrOd6J9Kytkr0dznn9E0e+s7KuqfYklCWhLkBy8NsjYRTQGk3hbplGUbg==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19
@@ -4313,6 +4325,15 @@ snapshots:
       to-fast-properties: 2.0.0
 
   '@baseai/core@0.9.30(react@18.3.1)(zod@3.23.8)':
+    dependencies:
+      openai: 4.72.0(zod@3.23.8)
+    optionalDependencies:
+      react: 18.3.1
+      zod: 3.23.8
+    transitivePeerDependencies:
+      - encoding
+
+  '@baseai/core@0.9.33(react@18.3.1)(zod@3.23.8)':
     dependencies:
       openai: 4.72.0(zod@3.23.8)
     optionalDependencies:

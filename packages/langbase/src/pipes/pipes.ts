@@ -2,13 +2,21 @@ import {Request} from '../common/request';
 import {Stream} from '../common/stream';
 import {
 	Pipe as PipeBaseAI,
-	RunOptions,
-	RunOptionsStream,
+	RunOptions as RunOptionsT,
+	RunOptionsStream as RunOptionsStreamT,
 	RunResponse,
 	RunResponseStream,
 } from '@baseai/core';
 
 export type Role = 'user' | 'assistant' | 'system' | 'tool';
+
+export interface RunOptions extends RunOptionsT {
+	name: string;
+}
+
+export interface RunOptionsStream extends RunOptionsStreamT {
+	name: string;
+}
 
 export interface Function {
 	name: string;
@@ -174,11 +182,13 @@ export interface PipeListResponse {
 					description?: string;
 					parameters?: Record<string, any>;
 				};
-		}[]
+		  }[]
 		| [];
-	memory: {
-		name: string;
-	}[] | [];
+	memory:
+		| {
+				name: string;
+		  }[]
+		| [];
 }
 
 interface PipeBaseResponse {
@@ -221,11 +231,6 @@ export class Pipe {
 	public async run(
 		options: RunOptions | RunOptionsStream,
 	): Promise<RunResponse | RunResponseStream> {
-		if (!this.pipeOptions.name) {
-			throw new Error(
-				'Pipe name is required with run. Please provide pipe name when creating Pipe instance.',
-			);
-		}
 		return await this.pipe.run({...options, runTools: false});
 	}
 

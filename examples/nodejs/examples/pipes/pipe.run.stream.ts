@@ -3,7 +3,6 @@ import {getRunner, Pipe} from 'langbase';
 
 const pipe = new Pipe({
 	apiKey: process.env.LANGBASE_API_KEY!,
-	name: 'summary',
 });
 
 async function main() {
@@ -14,6 +13,7 @@ async function main() {
 		messages: [{role: 'user', content: userMsg}],
 		stream: true,
 		rawResponse: true,
+		name: 'summary',
 	});
 
 	// Convert the stream to a stream runner.

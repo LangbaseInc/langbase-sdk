@@ -3,7 +3,6 @@ import {Pipe} from 'langbase';
 
 const pipe = new Pipe({
 	apiKey: process.env.LANGBASE_API_KEY!,
-	name: 'summary',
 });
 
 async function main() {
@@ -16,6 +15,8 @@ async function main() {
 				content: userMsg,
 			},
 		],
+		stream: false,
+		name: 'summary'
 	});
 	console.log('response: ', response);
 }
