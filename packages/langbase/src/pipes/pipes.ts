@@ -243,6 +243,12 @@ export class Pipe {
 		});
 	}
 
+	/**
+	 * Creates a new pipe on Langbase.
+	 *
+	 * @param {PipeCreateOptions} options - The options for creating the pipe.
+	 * @returns {Promise<PipeCreateResponse>} A promise that resolves to the response of the pipe creation.
+	 */
 	async create(options: PipeCreateOptions): Promise<PipeCreateResponse> {
 		return this.request.post({
 			endpoint: '/v1/pipes',
@@ -250,6 +256,12 @@ export class Pipe {
 		});
 	}
 
+	/**
+	 * Updates a pipe on Langbase.
+	 *
+	 * @param {PipeUpdateOptions} options - The options for updating the pipe.
+	 * @returns {Promise<PipeUpdateResponse>} A promise that resolves to the response of the update operation.
+	 */
 	async update(options: PipeUpdateOptions): Promise<PipeUpdateResponse> {
 		return this.request.post({
 			endpoint: `/v1/pipes/${options.name}`,
@@ -257,6 +269,11 @@ export class Pipe {
 		});
 	}
 
+	/**
+	 * Retrieves a list of pipes.
+	 *
+	 * @returns {Promise<PipeListResponse[]>} A promise that resolves to an array of PipeListResponse objects.
+	 */
 	async list(): Promise<PipeListResponse[]> {
 		return this.request.get({
 			endpoint: '/v1/pipes',
