@@ -76,7 +76,13 @@ export interface MemoryListDocResponse {
 	status_message: string | null;
 	metadata: {
 		size: number;
-		type: 'application/pdf' | 'text/plain' | 'text/markdown' | 'text/csv';
+		type:
+			| 'application/pdf'
+			| 'text/plain'
+			| 'text/markdown'
+			| 'text/csv'
+			| 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+			| 'application/vnd.ms-excel';
 	};
 	enabled: boolean;
 	chunk_size: number;
@@ -194,9 +200,7 @@ export class Memory {
 	 * @returns {Promise<Response>} The response from the upload request.
 	 * @throws Will throw an error if the upload fails.
 	 */
-	async uploadDoc(
-		options: MemoryUploadDocOptions,
-	): Promise<Response> {
+	async uploadDoc(options: MemoryUploadDocOptions): Promise<Response> {
 		try {
 			const response = (await this.request.post({
 				endpoint: `/v1/memory/documents`,
@@ -212,7 +216,7 @@ export class Memory {
 			return await fetch(uploadUrl, {
 				method: 'PUT',
 				headers: {
-					'Authorization': `Bearer ${this.apiKey}`,
+					Authorization: `Bearer ${this.apiKey}`,
 					'Content-Type': options.contentType,
 				},
 				body: options.file,
