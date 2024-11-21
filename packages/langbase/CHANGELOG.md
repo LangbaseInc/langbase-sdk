@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.4
+
+### Patch Changes
+
+-   📦 NEW: All memory and docs endpoints support
+
 ## 1.1.3
 
 ### Patch Changes
