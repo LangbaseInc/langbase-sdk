@@ -8,8 +8,14 @@
   "scripts": {
     "generate-text": "npx tsx ./examples/pipes/generate-text.ts",
     "pipe.create": "npx tsx ./examples/pipes/pipe.create.ts",
-    "memory.create": "npx tsx ./examples/pipes/memory.create.ts",
-    "memory.list": "npx tsx ./examples/pipes/memory.list.ts",
+    "memory.create": "npx tsx ./examples/memory/memory.create.ts",
+    "memory.list": "npx tsx ./examples/memory/memory.list.ts",
+    "memory.delete": "npx tsx ./examples/memory/memory.delete.ts",
+    "memory.retrieve": "npx tsx ./examples/memory/memory.retrieve.ts",
+    "memory.list.docs": "npx tsx ./examples/memory/memory.list.docs.ts",
+    "memory.delete.docs": "npx tsx ./examples/memory/memory.delete.docs.ts",
+    "memory.upload.doc": "npx tsx ./examples/memory/memory.upload.doc.ts",
+    "memory.retry.doc.embed": "npx tsx ./examples/memory/memory.retry.doc.embed.ts",
     "pipe.update": "npx tsx ./examples/pipes/pipe.update.ts",
     "pipe.list": "npx tsx ./examples/pipes/pipe.list.ts",
     "pipe.run": "npx tsx ./examples/pipes/pipe.run.ts",
@@ -25,6 +31,6 @@
   "license": "UNLICENSED",
   "dependencies": {
     "dotenv": "^16.4.5",
-    "langbase": "^1.1.3"
+    "langbase": "workspace:*"
   }
 }
