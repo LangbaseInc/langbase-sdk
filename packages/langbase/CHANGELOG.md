@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.7
+
+### Patch Changes
+
+-   📦 NEW: Support embedding model selection when creating memory
+
 ## 1.1.6
 
 ### Patch Changes
