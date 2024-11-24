@@ -16,7 +16,7 @@
 		"clean": "turbo clean",
 		"clean-all": "turbo clean && rm -rf node_modules",
 		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
-		"release": "turbo clean && pnpm install && turbo build && changeset publish",
+		"release": "turbo clean && pnpm install && turbo run build --filter=./packages/* && changeset publish",
 		"releaseDocs": "turbo build --filter=docs^... && changeset publish",
 		"releasex": "turbo build && changeset publish",
 		"prettier-check": "prettier --check \"**/*.{js,ts,tsx,md,mdx}\"",

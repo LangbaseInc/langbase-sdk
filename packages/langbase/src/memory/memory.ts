@@ -14,6 +14,10 @@ interface MemoryBaseResponse {
 export interface MemoryCreateOptions {
 	name: string;
 	description?: string;
+	embedding_model?:
+		| 'openai:text-embedding-3-large'
+		| 'cohere:embed-multilingual-v3.0'
+		| 'cohere:embed-multilingual-light-v3.0';
 }
 
 export interface MemoryDeleteOptions {
@@ -54,7 +58,12 @@ export interface MemoryRetryDocEmbedOptions {
 	documentName: string;
 }
 
-export interface MemoryCreateResponse extends MemoryBaseResponse {}
+export interface MemoryCreateResponse extends MemoryBaseResponse {
+	embedding_model:
+		| 'openai:text-embedding-3-large'
+		| 'cohere:embed-multilingual-v3.0'
+		| 'cohere:embed-multilingual-light-v3.0';
+}
 export interface MemoryListResponse extends MemoryBaseResponse {}
 export interface BaseDeleteResponse {
 	success: boolean;
