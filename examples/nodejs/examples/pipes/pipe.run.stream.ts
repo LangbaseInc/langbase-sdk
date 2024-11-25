@@ -1,7 +1,7 @@
 import 'dotenv/config';
-import {getRunner, Pipe} from 'langbase';
+import {getRunner, Langbase} from 'langbase';
 
-const pipe = new Pipe({
+const langbase = new Langbase({
 	apiKey: process.env.LANGBASE_API_KEY!,
 });
 
@@ -9,7 +9,7 @@ async function main() {
 	const userMsg = 'Who is an AI Engineer?';
 
 	// Get readable stream
-	const {stream, threadId, rawResponse} = await pipe.run({
+	const {stream, threadId, rawResponse} = await langbase.pipe.run({
 		messages: [{role: 'user', content: userMsg}],
 		stream: true,
 		rawResponse: true,

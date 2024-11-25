@@ -1,8 +1,139 @@
 import {Request} from '../common/request';
+import {
+	Pipe as PipeBaseAI,
+	RunOptions as RunOptionsT,
+	RunOptionsStream as RunOptionsStreamT,
+	RunResponse,
+	RunResponseStream,
+} from '@baseai/core';
 
-export interface MemoryOptions {
-	apiKey: string;
+export type Role = 'user' | 'assistant' | 'system' | 'tool';
+
+export interface RunOptions extends RunOptionsT {
+	name: string;
+	messages: Message[];
 }
+
+export interface RunOptionsStream extends RunOptionsStreamT {
+	name: string;
+	messages: Message[];
+}
+
+export interface Function {
+	name: string;
+	arguments: string;
+}
+
+export interface ToolCall {
+	id: string;
+	type: 'function';
+	function: Function;
+}
+
+export interface Message {
+	role: Role;
+	content: string | null;
+	name?: 'json' | 'safety' | 'opening' | 'rag';
+	tool_call_id?: string;
+	tool_calls?: ToolCall[];
+}
+
+export interface Variable {
+	name: string;
+	value: string;
+}
+
+
+interface ToolChoice {
+	type: 'function';
+	function: {name: string};
+}
+
+interface PipeBaseOptions {
+	name: string;
+	description?: string;
+	status?: 'public' | 'private';
+	upsert?: boolean;
+	model?: string;
+	stream?: boolean;
+	json?: boolean;
+	store?: boolean;
+	moderate?: boolean;
+	top_p?: number;
+	max_tokens?: number;
+	temperature?: number;
+	presence_penalty?: number;
+	frequency_penalty?: number;
+	stop?: string[];
+	tools?: {
+		type: 'function';
+		function: {
+			name: string;
+			description?: string;
+			parameters?: Record<string, any>;
+		};
+	}[];
+	tool_choice?: 'auto' | 'required' | ToolChoice;
+	parallel_tool_calls?: boolean;
+	messages?: Message[];
+	variables?: Variable[];
+	memory?: {
+		name: string;
+	}[];
+}
+
+export interface PipeListResponse {
+	name: string;
+	description: string;
+	status: 'public' | 'private';
+	owner_login: string;
+	url: string;
+	model: string;
+	stream: boolean;
+	json: boolean;
+	store: boolean;
+	moderate: boolean;
+	top_p: number;
+	max_tokens: number;
+	temperature: number;
+	presence_penalty: number;
+	frequency_penalty: number;
+	stop: string[];
+	tool_choice: 'auto' | 'required' | ToolChoice;
+	parallel_tool_calls: boolean;
+	messages: Message[];
+	variables: Variable[] | [];
+	tools:
+		| {
+				type: 'function';
+				function: {
+					name: string;
+					description?: string;
+					parameters?: Record<string, any>;
+				};
+		  }[]
+		| [];
+	memory:
+		| {
+				name: string;
+		  }[]
+		| [];
+}
+
+interface PipeBaseResponse {
+	name: string;
+	description: string;
+	status: 'public' | 'private';
+	owner_login: string;
+	url: string;
+	type: 'chat' | 'generate' | 'run';
+	api_key: string;
+}
+
+export interface PipeCreateOptions extends PipeBaseOptions {}
+export interface PipeUpdateOptions extends PipeBaseOptions {}
+export interface PipeCreateResponse extends PipeBaseResponse {}
+export interface PipeUpdateResponse extends PipeBaseResponse {}
 
 interface MemoryBaseResponse {
 	name: string;
@@ -50,7 +181,9 @@ export interface MemoryUploadDocOptions {
 		| 'application/pdf'
 		| 'text/plain'
 		| 'text/markdown'
-		| 'text/csv';
+		| 'text/csv'
+		| 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+		| 'application/vnd.ms-excel';
 }
 
 export interface MemoryRetryDocEmbedOptions {
@@ -64,7 +197,12 @@ export interface MemoryCreateResponse extends MemoryBaseResponse {
 		| 'cohere:embed-multilingual-v3.0'
 		| 'cohere:embed-multilingual-light-v3.0';
 }
-export interface MemoryListResponse extends MemoryBaseResponse {}
+export interface MemoryListResponse extends MemoryBaseResponse {
+	embedding_model:
+		| 'openai:text-embedding-3-large'
+		| 'cohere:embed-multilingual-v3.0'
+		| 'cohere:embed-multilingual-light-v3.0';
+}
 export interface BaseDeleteResponse {
 	success: boolean;
 }
@@ -99,14 +237,133 @@ export interface MemoryListDocResponse {
 	owner_login: string;
 }
 
-export class Memory {
+export interface LangbaseOptions {
+	apiKey: string;
+}
+
+export class Langbase {
 	private request: Request;
 	private apiKey: string;
+	public pipe: {
+		list: () => Promise<PipeListResponse[]>;
+		create: (options: PipeCreateOptions) => Promise<PipeCreateResponse>;
+		update: (options: PipeUpdateOptions) => Promise<PipeUpdateResponse>;
+		run: {
+			(options: RunOptionsStream): Promise<RunResponseStream>;
+			(options: RunOptions): Promise<RunResponse>;
+		};
+	};
+	public memory: {
+		create: (options: MemoryCreateOptions) => Promise<MemoryCreateResponse>;
+		delete: (options: MemoryDeleteOptions) => Promise<MemoryDeleteResponse>;
+		retrieve: (
+			options: MemoryRetrieveOptions,
+		) => Promise<MemoryRetrieveResponse[]>;
+		list: () => Promise<MemoryListResponse[]>;
+		documents: {
+			list: (
+				options: MemoryListDocOptions,
+			) => Promise<MemoryListDocResponse[]>;
+			delete: (
+				options: MemoryDeleteDocOptions,
+			) => Promise<MemoryDeleteDocResponse>;
+			upload: (options: MemoryUploadDocOptions) => Promise<Response>;
+			embedding: {
+				retry: (
+					options: MemoryRetryDocEmbedOptions,
+				) => Promise<MemoryRetryDocEmbedResponse>;
+			};
+		};
+	};
 
-	constructor(options: MemoryOptions) {
+	constructor(options: LangbaseOptions) {
 		const baseUrl = 'https://api.langbase.com';
 		this.apiKey = options.apiKey;
 		this.request = new Request({apiKey: options.apiKey, baseUrl});
+
+		// Initialize pipe property with method bindings
+		this.pipe = {
+			list: this.listPipe.bind(this),
+			create: this.createPipe.bind(this),
+			update: this.updatePipe.bind(this),
+			run: this.runPipe.bind(this),
+		};
+
+		// Initialize memory property with method bindings
+		this.memory = {
+			create: this.createMemory.bind(this),
+			delete: this.deleteMemory.bind(this),
+			retrieve: this.retrieveMemory.bind(this),
+			list: this.listMemory.bind(this),
+			documents: {
+				list: this.listDocs.bind(this),
+				delete: this.deleteDoc.bind(this),
+				upload: this.uploadDocs.bind(this),
+				embedding: {
+					retry: this.retryDocEmbed.bind(this),
+				},
+			},
+		};
+	}
+
+	private async runPipe(
+		options: RunOptionsStream,
+	): Promise<RunResponseStream>;
+	private async runPipe(options: RunOptions): Promise<RunResponse>;
+	private async runPipe(
+		options: RunOptions | RunOptionsStream,
+	): Promise<RunResponse | RunResponseStream> {
+		const pipe = new PipeBaseAI({
+			apiKey: this.apiKey,
+			name: options.name?.trim() || '', // Pipe name
+			prod: true,
+			// default values
+			model: 'openai:gpt-4o-mini',
+			tools: [],
+		} as any);
+
+		return await pipe.run({...options, runTools: false});
+	}
+
+	/**
+	 * Creates a new pipe on Langbase.
+	 *
+	 * @param {PipeCreateOptions} options - The options for creating the pipe.
+	 * @returns {Promise<PipeCreateResponse>} A promise that resolves to the response of the pipe creation.
+	 */
+	private async createPipe(
+		options: PipeCreateOptions,
+	): Promise<PipeCreateResponse> {
+		return this.request.post({
+			endpoint: '/v1/pipes',
+			body: options,
+		});
+	}
+
+	/**
+	 * Updates a pipe on Langbase.
+	 *
+	 * @param {PipeUpdateOptions} options - The options for updating the pipe.
+	 * @returns {Promise<PipeUpdateResponse>} A promise that resolves to the response of the update operation.
+	 */
+	private async updatePipe(
+		options: PipeUpdateOptions,
+	): Promise<PipeUpdateResponse> {
+		return this.request.post({
+			endpoint: `/v1/pipes/${options.name}`,
+			body: options,
+		});
+	}
+
+	/**
+	 * Retrieves a list of pipes.
+	 *
+	 * @returns {Promise<PipeListResponse[]>} A promise that resolves to an array of PipeListResponse objects.
+	 */
+	private async listPipe(): Promise<PipeListResponse[]> {
+		return this.request.get({
+			endpoint: '/v1/pipes',
+		});
 	}
 
 	/**
@@ -117,7 +374,7 @@ export class Memory {
 	 * @param {string} options.description - The description of the memory.
 	 * @returns {Promise<MemoryCreateResponse>} A promise that resolves to the response of the memory creation.
 	 */
-	async create(options: MemoryCreateOptions): Promise<MemoryCreateResponse> {
+	private async createMemory(options: MemoryCreateOptions): Promise<MemoryCreateResponse> {
 		return this.request.post({
 			endpoint: '/v1/memory',
 			body: options,
@@ -129,7 +386,7 @@ export class Memory {
 	 *
 	 * @returns {Promise<MemoryListResponse[]>} A promise that resolves to an array of memory list responses.
 	 */
-	async list(): Promise<MemoryListResponse[]> {
+	private async listMemory(): Promise<MemoryListResponse[]> {
 		return this.request.get({
 			endpoint: '/v1/memory',
 		});
@@ -142,7 +399,7 @@ export class Memory {
 	 * @param {string} options.name - The name of the memory to delete.
 	 * @returns {Promise<MemoryDeleteResponse>} A promise that resolves to the response of the delete operation.
 	 */
-	async delete(options: MemoryDeleteOptions): Promise<MemoryDeleteResponse> {
+	private async deleteMemory(options: MemoryDeleteOptions): Promise<MemoryDeleteResponse> {
 		return this.request.delete({
 			endpoint: `/v1/memory/${options.name}`,
 		});
@@ -157,7 +414,7 @@ export class Memory {
 	 * @param {number} [options.topK] - The number of similar texts to retrieve.
 	 * @returns A promise that resolves to an array of `MemoryRetrieveResponse` objects.
 	 */
-	async retrieve(
+	private async retrieveMemory(
 		options: MemoryRetrieveOptions,
 	): Promise<MemoryRetrieveResponse[]> {
 		return this.request.post({
@@ -173,7 +430,7 @@ export class Memory {
 	 * @param {string} options.memoryName - The name of the memory to list documents from.
 	 * @returns A promise that resolves to an array of `MemoryListDocResponse` objects.
 	 */
-	async listDocs(
+	private async listDocs(
 		options: MemoryListDocOptions,
 	): Promise<MemoryListDocResponse[]> {
 		return this.request.get({
@@ -189,7 +446,7 @@ export class Memory {
 	 * @param {string} options.documentName - The name of the document to delete.
 	 * @returns A promise that resolves to a `MemoryDeleteDocResponse` indicating the result of the delete operation.
 	 */
-	async deleteDoc(
+	private async deleteDoc(
 		options: MemoryDeleteDocOptions,
 	): Promise<MemoryDeleteDocResponse> {
 		return this.request.delete({
@@ -209,7 +466,7 @@ export class Memory {
 	 * @returns {Promise<Response>} The response from the upload request.
 	 * @throws Will throw an error if the upload fails.
 	 */
-	async uploadDoc(options: MemoryUploadDocOptions): Promise<Response> {
+	private async uploadDocs(options: MemoryUploadDocOptions): Promise<Response> {
 		try {
 			const response = (await this.request.post({
 				endpoint: `/v1/memory/documents`,
@@ -243,7 +500,7 @@ export class Memory {
 	 * @param options.documentName - The name of the document to retry embedding for.
 	 * @returns A promise that resolves to the response of the retry operation.
 	 */
-	async retryDocEmbed(
+	private async retryDocEmbed(
 		options: MemoryRetryDocEmbedOptions,
 	): Promise<MemoryRetryDocEmbedResponse> {
 		return this.request.get({

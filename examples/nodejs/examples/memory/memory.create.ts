@@ -1,13 +1,13 @@
 import 'dotenv/config';
-import {Memory} from 'langbase';
+import {Langbase} from 'langbase';
 
-const memory = new Memory({
+const langbase = new Langbase({
 	apiKey: process.env.LANGBASE_API_KEY!,
 });
 
 async function main() {
-	const response = await memory.create({
-		name: 'sdk-memory-2',
+	const response = await langbase.memory.create({
+		name: 'sdk-memory',
 		embedding_model: 'cohere:embed-multilingual-v3.0'
 	});
 
