@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.9
+
+### Patch Changes
+
+-   👌 IMPROVE: Change filename to documentName
+
 ## 1.1.8
 
 ### Patch Changes
