@@ -1,12 +1,12 @@
 import 'dotenv/config';
-import {Memory} from 'langbase';
+import {Langbase} from 'langbase';
 
-const memory = new Memory({
+const langbase = new Langbase({
 	apiKey: process.env.LANGBASE_API_KEY!,
 });
 
 async function main() {
-	const response = await memory.delete({
+	const response = await langbase.memory.delete({
 		name: 'memory-sdk',
 	});
 

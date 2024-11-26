@@ -1,9 +1,9 @@
 import 'dotenv/config';
-import {Memory} from 'langbase';
+import {Langbase} from 'langbase';
 import fs from 'fs';
 import path from 'path';
 
-const memory = new Memory({
+const langbase = new Langbase({
 	apiKey: process.env.LANGBASE_API_KEY!,
 });
 
@@ -16,7 +16,7 @@ async function main() {
 	);
 	const file = fs.readFileSync(src);
 
-	const response = await memory.uploadDoc({
+	const response = await langbase.memory.documents.upload({
 		file,
 		memoryName: 'memory-sdk',
 		fileName: 'memory.upload.doc.ts',

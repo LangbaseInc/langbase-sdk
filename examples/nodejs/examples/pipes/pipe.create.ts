@@ -1,13 +1,13 @@
 import 'dotenv/config';
-import {Pipe} from 'langbase';
+import {Langbase} from 'langbase';
 
-const pipe = new Pipe({
+const langbase = new Langbase({
 	apiKey: process.env.LANGBASE_API_KEY!,
 });
 
 async function main() {
-	const response = await pipe.create({
-		name: 'summary-pipe',
+	const response = await langbase.pipe.create({
+		name: 'summary-pipe2',
 		status: 'private',
 	});
 
