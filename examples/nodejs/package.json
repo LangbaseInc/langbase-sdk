@@ -8,6 +8,8 @@
   "scripts": {
     "generate-text": "npx tsx ./examples/pipes/generate-text.ts",
     "pipe.create": "npx tsx ./examples/pipes/pipe.create.ts",
+    "pipe.run.chat": "npx tsx ./examples/pipes/pipe.run.chat.ts",
+    "pipe.run.stream.chat": "npx tsx ./examples/pipes/pipe.run.stream.chat.ts",
     "memory.create": "npx tsx ./examples/memory/memory.create.ts",
     "memory.list": "npx tsx ./examples/memory/memory.list.ts",
     "memory.delete": "npx tsx ./examples/memory/memory.delete.ts",
