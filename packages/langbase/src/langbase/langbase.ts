@@ -43,7 +43,6 @@ export interface Variable {
 	value: string;
 }
 
-
 interface ToolChoice {
 	type: 'function';
 	function: {name: string};
@@ -174,9 +173,9 @@ export interface MemoryDeleteDocOptions {
 
 export interface MemoryUploadDocOptions {
 	memoryName: string;
-	fileName: string;
+	documentName: string;
 	meta?: Record<string, string>;
-	file: Buffer | File | FormData | ReadableStream;
+	document: Buffer | File | FormData | ReadableStream;
 	contentType:
 		| 'application/pdf'
 		| 'text/plain'
@@ -374,7 +373,9 @@ export class Langbase {
 	 * @param {string} options.description - The description of the memory.
 	 * @returns {Promise<MemoryCreateResponse>} A promise that resolves to the response of the memory creation.
 	 */
-	private async createMemory(options: MemoryCreateOptions): Promise<MemoryCreateResponse> {
+	private async createMemory(
+		options: MemoryCreateOptions,
+	): Promise<MemoryCreateResponse> {
 		return this.request.post({
 			endpoint: '/v1/memory',
 			body: options,
@@ -399,7 +400,9 @@ export class Langbase {
 	 * @param {string} options.name - The name of the memory to delete.
 	 * @returns {Promise<MemoryDeleteResponse>} A promise that resolves to the response of the delete operation.
 	 */
-	private async deleteMemory(options: MemoryDeleteOptions): Promise<MemoryDeleteResponse> {
+	private async deleteMemory(
+		options: MemoryDeleteOptions,
+	): Promise<MemoryDeleteResponse> {
 		return this.request.delete({
 			endpoint: `/v1/memory/${options.name}`,
 		});
@@ -466,13 +469,15 @@ export class Langbase {
 	 * @returns {Promise<Response>} The response from the upload request.
 	 * @throws Will throw an error if the upload fails.
 	 */
-	private async uploadDocs(options: MemoryUploadDocOptions): Promise<Response> {
+	private async uploadDocs(
+		options: MemoryUploadDocOptions,
+	): Promise<Response> {
 		try {
 			const response = (await this.request.post({
 				endpoint: `/v1/memory/documents`,
 				body: {
 					memoryName: options.memoryName,
-					fileName: options.fileName,
+					fileName: options.documentName,
 					meta: options.meta,
 				},
 			})) as unknown as {signedUrl: string};
@@ -485,7 +490,7 @@ export class Langbase {
 					Authorization: `Bearer ${this.apiKey}`,
 					'Content-Type': options.contentType,
 				},
-				body: options.file,
+				body: options.document,
 			});
 		} catch (error) {
 			throw error;
