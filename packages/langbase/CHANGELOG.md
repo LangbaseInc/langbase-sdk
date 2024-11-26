@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.8
+
+### Patch Changes
+
+-   📦 NEW: Support all pipes and memory methods from Langbase class
+
 ## 1.1.7
 
 ### Patch Changes
