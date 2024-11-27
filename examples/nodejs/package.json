@@ -33,6 +33,6 @@
   "license": "UNLICENSED",
   "dependencies": {
     "dotenv": "^16.4.5",
-    "langbase": "^1.1.9"
+    "langbase": "^1.1.10"
   }
 }
