@@ -12,11 +12,13 @@ export type Role = 'user' | 'assistant' | 'system' | 'tool';
 export interface RunOptions extends RunOptionsT {
 	name: string;
 	messages: Message[];
+	apiKey?: string;
 }
 
 export interface RunOptionsStream extends RunOptionsStreamT {
 	name: string;
 	messages: Message[];
+	apiKey?: string;
 }
 
 export interface Function {
@@ -313,7 +315,7 @@ export class Langbase {
 		options: RunOptions | RunOptionsStream,
 	): Promise<RunResponse | RunResponseStream> {
 		const pipe = new PipeBaseAI({
-			apiKey: this.apiKey,
+			apiKey: options.apiKey ?? this.apiKey,
 			name: options.name?.trim() || '', // Pipe name
 			prod: true,
 			// default values
