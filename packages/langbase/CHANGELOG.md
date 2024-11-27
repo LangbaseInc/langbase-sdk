@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.10
+
+### Patch Changes
+
+-   📦 NEW: Pipe API key support in pipe.run()
+
 ## 1.1.9
 
 ### Patch Changes
