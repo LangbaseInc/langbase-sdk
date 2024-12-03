@@ -51,8 +51,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       langbase:
-        specifier: ^1.1.10
-        version: 1.1.10(react@18.3.1)
+        specifier: ^1.1.11
+        version: 1.1.11(react@18.3.1)
       lucide-react:
         specifier: ^0.416.0
         version: 0.416.0(react@18.3.1)
@@ -112,8 +112,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.5
       langbase:
-        specifier: ^1.1.10
-        version: 1.1.10(react@18.3.1)
+        specifier: ^1.1.11
+        version: 1.1.11(react@18.3.1)
 
   packages/langbase:
     dependencies:
@@ -335,18 +335,6 @@ packages:
   '@babel/types@7.24.7':
     resolution: {integrity: sha512-XEFXSlxiG5td2EJRe8vOmRbaXVgfcBlszKujvVmWIK/UpywWljQCfzAv3RQCGujWQ1RD4YYWEAqDXfuJiy8f5Q==}
     engines: {node: '>=6.9.0'}
-
-  '@baseai/core@0.9.33':
-    resolution: {integrity: sha512-AupqofK69YY0drWpXxGOQNWQ0/JV7OrOd6J9Kytkr0dznn9E0e+s7KuqfYklCWhLkBy8NsjYRTQGk3hbplGUbg==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      react: ^18 || ^19
-      zod: ^3.0.0
-    peerDependenciesMeta:
-      react:
-        optional: true
-      zod:
-        optional: true
 
   '@baseai/core@0.9.39':
     resolution: {integrity: sha512-RWo0s1ryxXt4Cx3EA5en52/p4Xpn0g201uHAvP1IA9sXRB0F/qTn/rfxG+LbNVyniAAr1OeARJT2YdtnRGNXbg==}
@@ -2647,8 +2635,8 @@ packages:
     resolution: {integrity: sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==}
     engines: {node: '>=6'}
 
-  langbase@1.1.10:
-    resolution: {integrity: sha512-qFaNAkD7elOGafiTd3xc+u7Ds6CvEP8txTXQTQd1pmPrQXVVwqxmIeSG/qMTWvr2VfyZ05cYY2wSMMd+a8m1Xw==}
+  langbase@1.1.11:
+    resolution: {integrity: sha512-9gQM28sKA1Ihbx4CPYwZrlflJc4OXjrimQ3bknRNZ31YNKeiDyXHzXwLVHT5mRmzIM0PRe+yJWvJeZIWiiT6PA==}
     engines: {node: '>=18'}
 
   language-subtag-registry@0.3.22:
@@ -4323,15 +4311,6 @@ snapshots:
       '@babel/helper-string-parser': 7.24.7
       '@babel/helper-validator-identifier': 7.24.7
       to-fast-properties: 2.0.0
-
-  '@baseai/core@0.9.33(react@18.3.1)(zod@3.23.8)':
-    dependencies:
-      openai: 4.72.0(zod@3.23.8)
-    optionalDependencies:
-      react: 18.3.1
-      zod: 3.23.8
-    transitivePeerDependencies:
-      - encoding
 
   '@baseai/core@0.9.39(react@18.3.1)(zod@3.23.8)':
     dependencies:
@@ -6013,7 +5992,7 @@ snapshots:
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.0(eslint@8.57.0))(eslint@8.57.0)
-      eslint-plugin-import: 2.29.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.3.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.0(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
+      eslint-plugin-import: 2.29.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.3.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       eslint-plugin-jsx-a11y: 6.8.0(eslint@8.57.0)
       eslint-plugin-react: 7.34.1(eslint@8.57.0)
       eslint-plugin-react-hooks: 4.6.0(eslint@8.57.0)
@@ -6067,7 +6046,7 @@ snapshots:
       enhanced-resolve: 5.12.0
       eslint: 8.57.0
       eslint-module-utils: 2.8.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.0(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
-      eslint-plugin-import: 2.29.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.3.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.0(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
+      eslint-plugin-import: 2.29.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.3.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.2
       is-core-module: 2.13.1
@@ -6106,7 +6085,7 @@ snapshots:
       eslint: 8.57.0
       ignore: 5.3.1
 
-  eslint-plugin-import@2.29.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.3.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.0(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0):
+  eslint-plugin-import@2.29.0(@typescript-eslint/parser@7.1.0(eslint@8.57.0)(typescript@5.3.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0):
     dependencies:
       array-includes: 3.1.7
       array.prototype.findlastindex: 1.2.3
@@ -6931,9 +6910,9 @@ snapshots:
 
   kleur@4.1.5: {}
 
-  langbase@1.1.10(react@18.3.1):
+  langbase@1.1.11(react@18.3.1):
     dependencies:
-      '@baseai/core': 0.9.33(react@18.3.1)(zod@3.23.8)
+      '@baseai/core': 0.9.39(react@18.3.1)(zod@3.23.8)
       dotenv: 16.4.5
       openai: 4.72.0(zod@3.23.8)
       zod: 3.23.8
