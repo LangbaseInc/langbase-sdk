@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.11
+
+### Patch Changes
+
+-   📦 NEW: tools support in pipe.run()
+
 ## 1.1.10
 
 ### Patch Changes
