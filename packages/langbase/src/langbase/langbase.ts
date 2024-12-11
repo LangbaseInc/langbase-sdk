@@ -35,7 +35,7 @@ export interface ToolCall {
 export interface Message {
 	role: Role;
 	content: string | null;
-	name?: 'json' | 'safety' | 'opening' | 'rag';
+	name?: string;
 	tool_call_id?: string;
 	tool_calls?: ToolCall[];
 }
