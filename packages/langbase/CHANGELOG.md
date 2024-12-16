@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.14
+
+### Patch Changes
+
+-   📦 NEW: Google embedding model support
+
 ## 1.1.13
 
 ### Patch Changes
