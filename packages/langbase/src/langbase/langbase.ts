@@ -9,17 +9,24 @@ import {
 
 export type Role = 'user' | 'assistant' | 'system' | 'tool';
 
-export interface RunOptions extends RunOptionsT {
-	name: string;
+// Base types without name and apiKey
+type BaseRunOptions = Omit<RunOptionsT, 'name' | 'apiKey'> & {
 	messages: Message[];
-	apiKey?: string;
-}
+};
 
-export interface RunOptionsStream extends RunOptionsStreamT {
-	name: string;
+// Union type for RunOptions
+export type RunOptions =
+	| (BaseRunOptions & {name: string; apiKey?: never})
+	| (BaseRunOptions & {name?: never; apiKey: string});
+
+// Similar structure for RunOptionsStream
+type BaseRunOptionsStream = Omit<RunOptionsStreamT, 'name' | 'apiKey'> & {
 	messages: Message[];
-	apiKey?: string;
-}
+};
+
+export type RunOptionsStream =
+	| (BaseRunOptionsStream & {name: string; apiKey?: never})
+	| (BaseRunOptionsStream & {name?: never; apiKey: string});
 
 export interface Function {
 	name: string;
@@ -314,6 +321,12 @@ export class Langbase {
 	private async runPipe(
 		options: RunOptions | RunOptionsStream,
 	): Promise<RunResponse | RunResponseStream> {
+		if (!options.name?.trim() && !options.apiKey) {
+			throw new Error(
+				'Pipe name or Pipe API key is required to run the pipe.',
+			);
+		}
+
 		const pipe = new PipeBaseAI({
 			apiKey: options.apiKey ?? this.apiKey,
 			name: options.name?.trim() || '', // Pipe name
