@@ -150,13 +150,16 @@ interface MemoryBaseResponse {
 	url: string;
 }
 
+export type EmbeddingModels =
+	| 'openai:text-embedding-3-large'
+	| 'cohere:embed-multilingual-v3.0'
+	| 'cohere:embed-multilingual-light-v3.0'
+	| 'google:text-embedding-004';
+
 export interface MemoryCreateOptions {
 	name: string;
 	description?: string;
-	embedding_model?:
-		| 'openai:text-embedding-3-large'
-		| 'cohere:embed-multilingual-v3.0'
-		| 'cohere:embed-multilingual-light-v3.0';
+	embedding_model?: EmbeddingModels;
 }
 
 export interface MemoryDeleteOptions {
@@ -200,16 +203,10 @@ export interface MemoryRetryDocEmbedOptions {
 }
 
 export interface MemoryCreateResponse extends MemoryBaseResponse {
-	embedding_model:
-		| 'openai:text-embedding-3-large'
-		| 'cohere:embed-multilingual-v3.0'
-		| 'cohere:embed-multilingual-light-v3.0';
+	embedding_model: EmbeddingModels;
 }
 export interface MemoryListResponse extends MemoryBaseResponse {
-	embedding_model:
-		| 'openai:text-embedding-3-large'
-		| 'cohere:embed-multilingual-v3.0'
-		| 'cohere:embed-multilingual-light-v3.0';
+	embedding_model: EmbeddingModels;
 }
 export interface BaseDeleteResponse {
 	success: boolean;
