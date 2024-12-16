@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.13
+
+### Patch Changes
+
+-   👌 IMPROVE: Run types
+
 ## 1.1.12
 
 ### Patch Changes
