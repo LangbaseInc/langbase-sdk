@@ -51,8 +51,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       langbase:
-        specifier: ^1.1.14
-        version: 1.1.14(react@18.3.1)
+        specifier: ^1.1.15
+        version: 1.1.15(react@18.3.1)
       lucide-react:
         specifier: ^0.416.0
         version: 0.416.0(react@18.3.1)
@@ -112,8 +112,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.5
       langbase:
-        specifier: ^1.1.14
-        version: 1.1.14(react@18.3.1)
+        specifier: ^1.1.15
+        version: 1.1.15(react@18.3.1)
 
   packages/langbase:
     dependencies:
@@ -2635,8 +2635,8 @@ packages:
     resolution: {integrity: sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==}
     engines: {node: '>=6'}
 
-  langbase@1.1.14:
-    resolution: {integrity: sha512-XnIVw07E3TNeUPPHWYoFMYk2eoQ9CPCxHkPDC/DWY7gFhDNiS1K/AP8rYRtsnSpNj+YI9sMO3Z6elF2CsGdz9g==}
+  langbase@1.1.15:
+    resolution: {integrity: sha512-V630hQWGLWyzFBmnLuGyGnVv3jumYMS4rlewky5fj45O334aa9NxtzMVlmf+T++t+XJgfHgi9OEIMFRwjhfoEA==}
     engines: {node: '>=18'}
 
   language-subtag-registry@0.3.22:
@@ -6910,7 +6910,7 @@ snapshots:
 
   kleur@4.1.5: {}
 
-  langbase@1.1.14(react@18.3.1):
+  langbase@1.1.15(react@18.3.1):
     dependencies:
       '@baseai/core': 0.9.39(react@18.3.1)(zod@3.23.8)
       dotenv: 16.4.5
