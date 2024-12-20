@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.15
+
+### Patch Changes
+
+-   📦 NEW: Optional langbase key
+
 ## 1.1.14
 
 ### Patch Changes
