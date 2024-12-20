@@ -281,10 +281,10 @@ export class Langbase {
 		};
 	};
 
-	constructor(options: LangbaseOptions) {
+	constructor(options?: LangbaseOptions) {
 		const baseUrl = 'https://api.langbase.com';
-		this.apiKey = options.apiKey;
-		this.request = new Request({apiKey: options.apiKey, baseUrl});
+		this.apiKey = options?.apiKey ?? '';
+		this.request = new Request({apiKey: this.apiKey, baseUrl});
 
 		// Initialize pipe property with method bindings
 		this.pipe = {
