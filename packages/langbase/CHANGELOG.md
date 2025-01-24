@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.16
+
+### Patch Changes
+
+-   📦 NEW: LB-LLM-Key header support
+
 ## 1.1.15
 
 ### Patch Changes
