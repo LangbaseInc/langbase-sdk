@@ -12,6 +12,7 @@ export type Role = 'user' | 'assistant' | 'system' | 'tool';
 // Base types without name and apiKey
 type BaseRunOptions = Omit<RunOptionsT, 'name' | 'apiKey'> & {
 	messages: Message[];
+	llmKey?: string;
 };
 
 // Union type for RunOptions
@@ -22,6 +23,7 @@ export type RunOptions =
 // Similar structure for RunOptionsStream
 type BaseRunOptionsStream = Omit<RunOptionsStreamT, 'name' | 'apiKey'> & {
 	messages: Message[];
+	llmKey?: string;
 };
 
 export type RunOptionsStream =

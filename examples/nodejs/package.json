@@ -22,6 +22,7 @@
     "pipe.list": "npx tsx ./examples/pipes/pipe.list.ts",
     "pipe.run": "npx tsx ./examples/pipes/pipe.run.ts",
     "pipe.run.stream": "npx tsx ./examples/pipes/pipe.run.stream.ts",
+    "pipe.run.stream.llmkey": "npx tsx ./examples/pipes/pipe.run.stream.llmkey.ts",
     "generate-text-generate-pipe": "npx tsx ./examples/pipes/generate-text-generate-pipe.ts",
     "generate-text-chat-pipe": "npx tsx ./examples/pipes/generate-text-chat-pipe.ts",
     "stream-text": "npx tsx ./examples/pipes/stream-text.ts",
