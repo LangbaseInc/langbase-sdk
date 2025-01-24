@@ -166,10 +166,16 @@ export interface MemoryDeleteOptions {
 	name: string;
 }
 
+type FilterOperator = 'Eq' | 'NotEq' | 'In' | 'NotIn' | 'And' | 'Or';
+type FilterConnective = 'And' | 'Or';
+type FilterValue = string | string[];
+type MemoryFilters = [FilterOperator | FilterConnective, FilterValue | MemoryFilters][];
+
 export interface MemoryRetrieveOptions {
 	query: string;
 	memory: {
 		name: string;
+		filters?: MemoryFilters;
 	}[];
 	topK?: number;
 }
