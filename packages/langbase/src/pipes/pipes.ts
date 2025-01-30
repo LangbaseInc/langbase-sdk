@@ -1,7 +1,6 @@
-import { Message, Role, ToolCall, Variable } from '@/langbase/langbase';
+import {Message, Role, ToolCall, Variable} from '@/langbase/langbase';
 import {Request} from '../common/request';
 import {Stream} from '../common/stream';
-
 
 export interface GenerateOptions {
 	messages?: Message[];
@@ -84,6 +83,12 @@ export class Pipe {
 		this.request = new Request({apiKey: options.apiKey, baseUrl});
 	}
 
+	/**
+	 * @deprecated This method is deprecated and will be removed in a future version.
+	 *
+	 * Please use `langbase.pipe.run()` instead
+	 * @see https://langbase.com/docs/sdk/pipe/run
+	 */
 	async generateText(options: GenerateOptions): Promise<GenerateResponse> {
 		return this.request.post<GenerateResponse>({
 			endpoint: options.chat ? '/beta/chat' : '/beta/generate',
@@ -91,6 +96,12 @@ export class Pipe {
 		});
 	}
 
+	/**
+	 * @deprecated This method is deprecated and will be removed in a future version.
+	 *
+	 * Please use `langbase.pipe.run()` instead
+	 * @see https://langbase.com/docs/sdk/pipe/run
+	 */
 	async streamText(options: StreamOptions): Promise<StreamResponse> {
 		return this.request.post<StreamResponse>({
 			endpoint: options.chat ? '/beta/chat' : '/beta/generate',
