@@ -267,11 +267,8 @@ export interface ToolCrawlOptions {
 }
 
 export interface ToolCrawlResponse {
-	success: boolean;
-	data: {
-		url: string;
-		content: string;
-	}[];
+	url: string;
+	content: string;
 }
 
 export class Langbase {
