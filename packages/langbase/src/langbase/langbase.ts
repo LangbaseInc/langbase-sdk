@@ -549,6 +549,13 @@ export class Langbase {
 		});
 	}
 
+	/**
+	 * Performs a web search using the Langbase API.
+	 *
+	 * @param options - Web search configuration options
+	 * @param options.apiKey - Optional API key for web search authentication
+	 * @returns Promise that resolves to an array of web search results
+	 */
 	private async webSearch(
 		options: ToolWebSearchOptions,
 	): Promise<ToolWebSearchResponse[]> {
