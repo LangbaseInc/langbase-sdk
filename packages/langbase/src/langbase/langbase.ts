@@ -252,10 +252,21 @@ export interface ToolWebSearchOptions {
 	query: string;
 	total_results?: number;
 	domains?: string[];
-	apiKey?: string;
+	api_key?: string;
 }
 
 export interface ToolWebSearchResponse {
+	url: string;
+	content: string;
+}
+
+export interface ToolCrawlOptions {
+	url: string[];
+	max_pages?: number;
+	api_key?: string;
+}
+
+export interface ToolCrawlResponse {
 	url: string;
 	content: string;
 }
@@ -296,6 +307,7 @@ export class Langbase {
 	};
 
 	public tool: {
+		crawl: (options: ToolCrawlOptions) => Promise<ToolCrawlResponse[]>;
 		webSearch: (
 			options: ToolWebSearchOptions,
 		) => Promise<ToolWebSearchResponse[]>;
@@ -331,6 +343,7 @@ export class Langbase {
 		};
 
 		this.tool = {
+			crawl: this.webCrawl.bind(this),
 			webSearch: this.webSearch.bind(this),
 		};
 	}
@@ -559,12 +572,36 @@ export class Langbase {
 	private async webSearch(
 		options: ToolWebSearchOptions,
 	): Promise<ToolWebSearchResponse[]> {
+		const apiKey = options.api_key ? options.api_key : null;
+		apiKey && delete options.api_key;
 		return this.request.post({
 			endpoint: '/v1/tools/web-search',
 			body: options,
 			headers: {
-				...(options.apiKey && {
-					'LB-WEB-SEARCH-KEY': options.apiKey,
+				...(apiKey && {
+					'LB-WEB-SEARCH-KEY': apiKey,
+				}),
+			},
+		});
+	}
+
+	/**
+	 * Performs a web crawls on target websites using the Langbase API.
+	 *
+	 * @param options - Crawl configuration options
+	 * @returns An array of responses containing data from the crawl operation.
+	 */
+	private async webCrawl(
+		options: ToolCrawlOptions,
+	): Promise<ToolCrawlResponse[]> {
+		const apiKey = options.api_key ? options.api_key : null;
+		apiKey && delete options.api_key;
+		return this.request.post({
+			endpoint: '/v1/tools/crawl',
+			body: options,
+			headers: {
+				...(apiKey && {
+					'LB-CRAWL-KEY': apiKey,
 				}),
 			},
 		});
