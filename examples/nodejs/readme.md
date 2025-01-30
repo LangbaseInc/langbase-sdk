@@ -7,6 +7,7 @@ Langbase Node.js examples for the Pipe API.
 cp .env.example .env
 
 # Then test any of the files or a script which runs these files.
+
 # pipes
 npm run pipe.run
 npm run pipe.run.stream
@@ -22,7 +23,6 @@ npm run memory.list
 npm run memory.create
 npm run memory.delete
 npm run memory.retrieve
-
 
 # docs
 npm run memory.docs.list
