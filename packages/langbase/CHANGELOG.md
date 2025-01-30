@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.17
+
+### Patch Changes
+
+-   📦 NEW: Web search tool support
+
 ## 1.1.16
 
 ### Patch Changes
