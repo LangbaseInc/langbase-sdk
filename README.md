@@ -55,7 +55,7 @@ Check the following examples:
 ### Add a `.env` file with your LANGBASE API key
 
 ```bash
-# Add your Pipe API key here.
+# Add your Langbase API key here: https://langbase.com/docs/api-reference/api-keys
 LANGBASE_API_KEY="your-api-key"
 ```
 
@@ -115,7 +115,7 @@ async function main() {
     const userMsg = 'Who is an AI Engineer?';
 
     // 2. Run the pipe with a question.
-    const {stream} = await langbase.pipe.run({
+    const {****stre**am**} = await langbase.pipe.run({
         stream: true,
         name: 'summary', // pipe name to run
         messages: [{role: 'user', content: userMsg}],
