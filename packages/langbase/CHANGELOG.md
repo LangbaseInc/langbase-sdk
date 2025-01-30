@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.18
+
+### Patch Changes
+
+-   📦 NEW: Crawl support
+
 ## 1.1.17
 
 ### Patch Changes
