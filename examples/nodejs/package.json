@@ -28,7 +28,8 @@
     "stream-text": "npx tsx ./examples/pipes/stream-text.ts",
     "stream-text-generate-pipe": "npx tsx ./examples/pipes/stream-text-generate-pipe.ts",
     "stream-text-chat-pipe": "npx tsx ./examples/pipes/stream-text-chat-pipe.ts",
-    "tools.web-search": "npx tsx ./examples/tools/web-search.ts"
+    "tools.web-search": "npx tsx ./examples/tools/web-search.ts",
+    "tools.crawl": "npx tsx ./examples/tools/crawl.ts"
   },
   "keywords": [],
   "author": "Ahmad Awais <me@AhmadAwais.com> (https://twitter.com/MrAhmadAwais)",
