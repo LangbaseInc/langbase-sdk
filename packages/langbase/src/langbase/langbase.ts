@@ -248,6 +248,18 @@ export interface LangbaseOptions {
 	apiKey: string;
 }
 
+export interface ToolWebSearchOptions {
+	query: string;
+	total_results?: number;
+	domains?: string[];
+	apiKey?: string;
+}
+
+export interface ToolWebSearchResponse {
+	url: string;
+	content: string;
+}
+
 export class Langbase {
 	private request: Request;
 	private apiKey: string;
@@ -283,6 +295,12 @@ export class Langbase {
 		};
 	};
 
+	public tool: {
+		webSearch: (
+			options: ToolWebSearchOptions,
+		) => Promise<ToolWebSearchResponse[]>;
+	};
+
 	constructor(options?: LangbaseOptions) {
 		const baseUrl = 'https://api.langbase.com';
 		this.apiKey = options?.apiKey ?? '';
@@ -310,6 +328,10 @@ export class Langbase {
 					retry: this.retryDocEmbed.bind(this),
 				},
 			},
+		};
+
+		this.tool = {
+			webSearch: this.webSearch.bind(this),
 		};
 	}
 
@@ -524,6 +546,27 @@ export class Langbase {
 	): Promise<MemoryRetryDocEmbedResponse> {
 		return this.request.get({
 			endpoint: `/v1/memory/${options.memoryName}/documents/${options.documentName}/embeddings/retry`,
+		});
+	}
+
+	/**
+	 * Performs a web search using the Langbase API.
+	 *
+	 * @param options - Web search configuration options
+	 * @param options.apiKey - Optional API key for web search authentication
+	 * @returns Promise that resolves to an array of web search results
+	 */
+	private async webSearch(
+		options: ToolWebSearchOptions,
+	): Promise<ToolWebSearchResponse[]> {
+		return this.request.post({
+			endpoint: '/v1/tools/web-search',
+			body: options,
+			headers: {
+				...(options.apiKey && {
+					'LB-WEB-SEARCH-KEY': options.apiKey,
+				}),
+			},
 		});
 	}
 }

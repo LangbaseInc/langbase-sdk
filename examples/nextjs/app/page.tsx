@@ -1,7 +1,5 @@
-import GenerateTextExample from '@/components/langbase/generate-text';
 import RunNonStreamExample from '@/components/langbase/run';
 import RunStreamExample from '@/components/langbase/run-stream';
-import StreamTextExample from '@/components/langbase/stream-text';
 
 export default function Home() {
 	return (
@@ -17,8 +15,6 @@ export default function Home() {
 				</div>
 				<RunStreamExample />
 				<RunNonStreamExample />
-				<GenerateTextExample />
-				<StreamTextExample />
 			</div>
 		</div>
 	);
