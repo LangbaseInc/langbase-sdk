@@ -6,7 +6,7 @@ const langbase = new Langbase({
 });
 
 /**
- * Crawls specified URLs using spider.cloud API.
+ * Crawls specified URLs using spider.cloud service.
  *
  * Get your API key from the following link and set it in .env file.
  *
