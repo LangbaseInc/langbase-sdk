@@ -7,10 +7,29 @@ Langbase Node.js examples for the Pipe API.
 cp .env.example .env
 
 # Then test any of the files or a script which runs these files.
-npm run generate-text
-npm run generate-text-generate-pipe
-npm run generate-text-chat-pipe
-npm run stream-text
-npm run stream-text-generate-pipe
-npm run stream-text-chat-pipe
+# pipes
+npm run pipe.run
+npm run pipe.run.stream
+npm run pipe.run.chat
+npm run pipe.run.stream.chat
+npm run pipe.run.stream.llmkey
+npm run pipe.list
+npm run pipe.create
+npm run pipe.update
+
+# memory
+npm run memory.list
+npm run memory.create
+npm run memory.delete
+npm run memory.retrieve
+
+
+# docs
+npm run memory.docs.list
+npm run memory.docs.upload
+npm run memory.docs.delete
+npm run memory.docs.retry-embed
+
+# tools
+npm run tools.web-search
 ```
