@@ -250,9 +250,10 @@ export interface LangbaseOptions {
 
 export interface ToolWebSearchOptions {
 	query: string;
-	total_results?: number;
+	service: 'exa';
+	totalResults?: number;
 	domains?: string[];
-	api_key?: string;
+	apiKey?: string;
 }
 
 export interface ToolWebSearchResponse {
@@ -572,8 +573,8 @@ export class Langbase {
 	private async webSearch(
 		options: ToolWebSearchOptions,
 	): Promise<ToolWebSearchResponse[]> {
-		const apiKey = options.api_key ? options.api_key : null;
-		apiKey && delete options.api_key;
+		const apiKey = options.apiKey ? options.apiKey : null;
+		apiKey && delete options.apiKey;
 		return this.request.post({
 			endpoint: '/v1/tools/web-search',
 			body: options,
