@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.19
+
+### Patch Changes
+
+-   👌 IMPROVE: Web search tool
+
 ## 1.1.18
 
 ### Patch Changes
