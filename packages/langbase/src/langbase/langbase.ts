@@ -296,8 +296,8 @@ export interface ToolWebSearchResponse {
 
 export interface ToolCrawlOptions {
 	url: string[];
-	max_pages?: number;
-	api_key?: string;
+	maxPages?: number;
+	apiKey?: string;
 }
 
 export interface ToolCrawlResponse {
@@ -643,8 +643,8 @@ export class Langbase {
 	private async webCrawl(
 		options: ToolCrawlOptions,
 	): Promise<ToolCrawlResponse[]> {
-		const apiKey = options.api_key ? options.api_key : null;
-		apiKey && delete options.api_key;
+		const apiKey = options.apiKey ? options.apiKey : null;
+		apiKey && delete options.apiKey;
 		return this.request.post({
 			endpoint: '/v1/tools/crawl',
 			body: options,
