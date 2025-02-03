@@ -272,6 +272,13 @@ export interface ToolCrawlResponse {
 	content: string;
 }
 
+export interface EmbedOptions {
+	chunks: string[];
+	embeddingModel?: EmbeddingModels;
+}
+
+export type EmbedResponse = number[][];
+
 export class Langbase {
 	private request: Request;
 	private apiKey: string;
@@ -314,6 +321,8 @@ export class Langbase {
 		) => Promise<ToolWebSearchResponse[]>;
 	};
 
+	public embed: (options: EmbedOptions) => Promise<EmbedResponse>;
+
 	constructor(options?: LangbaseOptions) {
 		const baseUrl = 'https://api.langbase.com';
 		this.apiKey = options?.apiKey ?? '';
@@ -347,6 +356,8 @@ export class Langbase {
 			crawl: this.webCrawl.bind(this),
 			webSearch: this.webSearch.bind(this),
 		};
+
+		this.embed = this.generateEmbeddings.bind(this);
 	}
 
 	private async runPipe(
@@ -605,6 +616,21 @@ export class Langbase {
 					'LB-CRAWL-KEY': apiKey,
 				}),
 			},
+		});
+	}
+
+	/**
+	 * Generates embeddings for the given input using the LangBase API.
+	 *
+	 * @param options - Embed options
+	 * @returns Promise that resolves to the embedding response containing vector representations
+	 */
+	private async generateEmbeddings(
+		options: EmbedOptions,
+	): Promise<EmbedResponse> {
+		return this.request.post({
+			endpoint: '/v1/embed',
+			body: options,
 		});
 	}
 }
