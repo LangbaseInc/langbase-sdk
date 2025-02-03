@@ -1,4 +1,4 @@
-import {Message, Role, ToolCall, Variable} from '@/langbase/langbase';
+import {Message, Role, ToolCall, Usage, Variable} from '@/langbase/langbase';
 import {Request} from '../common/request';
 import {Stream} from '../common/stream';
 
@@ -34,12 +34,6 @@ interface Delta {
 	role?: Role;
 	content?: string;
 	tool_calls?: ToolCall[];
-}
-
-export interface Usage {
-	prompt_tokens: number;
-	completion_tokens: number;
-	total_tokens: number;
 }
 
 export interface GenerateResponse {

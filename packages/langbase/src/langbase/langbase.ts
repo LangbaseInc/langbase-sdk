@@ -1,34 +1,74 @@
 import {Request} from '../common/request';
-import {
-	Pipe as PipeBaseAI,
-	RunOptions as RunOptionsT,
-	RunOptionsStream as RunOptionsStreamT,
-	RunResponse,
-	RunResponseStream,
-} from '@baseai/core';
 
 export type Role = 'user' | 'assistant' | 'system' | 'tool';
 
-// Base types without name and apiKey
-type BaseRunOptions = Omit<RunOptionsT, 'name' | 'apiKey'> & {
+export interface RunOptionsBase {
+	messages?: Message[];
+	variables?: Variable[];
+	threadId?: string;
+	rawResponse?: boolean;
+	runTools?: boolean;
+	tools?: Tools[];
+	name?: string; // Pipe name for SDK,
+	apiKey?: string; // pipe level key for SDK
+	llmKey?: string; // LLM API key
+}
+
+export interface RunOptionsT extends RunOptionsBase {
+	stream?: false;
+}
+
+export interface RunOptionsStreamT extends RunOptionsBase {
+	stream: true;
+}
+
+interface ChoiceGenerate {
+	index: number;
+	message: Message;
+	logprobs: boolean | null;
+	finish_reason: string;
+}
+
+export interface Usage {
+	prompt_tokens: number;
+	completion_tokens: number;
+	total_tokens: number;
+}
+
+export interface RunResponse {
+	completion: string;
+	threadId?: string;
+	id: string;
+	object: string;
+	created: number;
+	model: string;
+	choices: ChoiceGenerate[];
+	usage: Usage;
+	system_fingerprint: string | null;
+	rawResponse?: {
+		headers: Record<string, string>;
+	};
 	messages: Message[];
 	llmKey?: string;
-};
+	name?: string;
+}
+
+export interface RunResponseStream {
+	stream: ReadableStream<any>;
+	threadId: string | null;
+	rawResponse?: {
+		headers: Record<string, string>;
+	};
+}
 
 // Union type for RunOptions
 export type RunOptions =
-	| (BaseRunOptions & {name: string; apiKey?: never})
-	| (BaseRunOptions & {name?: never; apiKey: string});
-
-// Similar structure for RunOptionsStream
-type BaseRunOptionsStream = Omit<RunOptionsStreamT, 'name' | 'apiKey'> & {
-	messages: Message[];
-	llmKey?: string;
-};
+	| (RunOptionsT & {name: string; apiKey?: never})
+	| (RunOptionsT & {name?: never; apiKey: string});
 
 export type RunOptionsStream =
-	| (BaseRunOptionsStream & {name: string; apiKey?: never})
-	| (BaseRunOptionsStream & {name?: never; apiKey: string});
+	| (RunOptionsStreamT & {name: string; apiKey?: never})
+	| (RunOptionsStreamT & {name?: never; apiKey: string});
 
 export interface Function {
 	name: string;
@@ -59,6 +99,15 @@ interface ToolChoice {
 	function: {name: string};
 }
 
+interface Tools {
+	type: 'function';
+	function: {
+		name: string;
+		description?: string;
+		parameters?: Record<string, any>;
+	};
+}
+
 interface PipeBaseOptions {
 	name: string;
 	description?: string;
@@ -75,14 +124,7 @@ interface PipeBaseOptions {
 	presence_penalty?: number;
 	frequency_penalty?: number;
 	stop?: string[];
-	tools?: {
-		type: 'function';
-		function: {
-			name: string;
-			description?: string;
-			parameters?: Record<string, any>;
-		};
-	}[];
+	tools?: Tools[];
 	tool_choice?: 'auto' | 'required' | ToolChoice;
 	parallel_tool_calls?: boolean;
 	messages?: Message[];
@@ -113,16 +155,7 @@ export interface PipeListResponse {
 	parallel_tool_calls: boolean;
 	messages: Message[];
 	variables: Variable[] | [];
-	tools:
-		| {
-				type: 'function';
-				function: {
-					name: string;
-					description?: string;
-					parameters?: Record<string, any>;
-				};
-		  }[]
-		| [];
+	tools: Tools[] | [];
 	memory:
 		| {
 				name: string;
@@ -373,16 +406,20 @@ export class Langbase {
 			);
 		}
 
-		const pipe = new PipeBaseAI({
-			apiKey: options.apiKey ?? this.apiKey,
-			name: options.name?.trim() || '', // Pipe name
-			prod: true,
-			// default values
-			model: 'openai:gpt-4o-mini',
-			tools: [],
-		} as any);
+		// Remove stream property if it's not set to true
+		if (typeof options.stream === 'undefined') {
+			delete options.stream;
+		}
 
-		return await pipe.run({...options, runTools: false});
+		return this.request.post({
+			endpoint: '/v1/pipes/run',
+			body: options,
+			headers: {
+				...(options.llmKey && {
+					'LB-LLM-KEY': options.llmKey,
+				}),
+			},
+		});
 	}
 
 	/**
