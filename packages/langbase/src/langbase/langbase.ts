@@ -313,6 +313,23 @@ export interface EmbedOptions {
 
 export type EmbedResponse = number[][];
 
+export interface ChunkOptions {
+	document: Buffer | File | FormData | ReadableStream;
+	documentName: string;
+	contentType:
+		| 'application/pdf'
+		| 'text/plain'
+		| 'text/markdown'
+		| 'text/csv'
+		| 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+		| 'application/vnd.ms-excel';
+	chunkMaxLength?: string;
+	chunkOverlap?: string;
+	separator?: string;
+}
+
+export type ChunkResponse = string[];
+
 export class Langbase {
 	private request: Request;
 	private apiKey: string;
@@ -357,6 +374,7 @@ export class Langbase {
 	};
 
 	public embed: (options: EmbedOptions) => Promise<EmbedResponse>;
+	public chunk: (options: ChunkOptions) => Promise<ChunkResponse>;
 
 	constructor(options?: LangbaseOptions) {
 		this.baseUrl = options?.baseUrl ?? 'https://api.langbase.com';
@@ -396,6 +414,7 @@ export class Langbase {
 		};
 
 		this.embed = this.generateEmbeddings.bind(this);
+		this.chunk = this.chunkDocument.bind(this);
 	}
 
 	private async runPipe(
@@ -682,5 +701,59 @@ export class Langbase {
 			endpoint: '/v1/embed',
 			body: options,
 		});
+	}
+
+	/**
+	 * Splits a given document into multiple chunks using the Langbase API.
+	 *
+	 * @param options - The chunking options.
+	 * @param options.document - The document to be chunked.
+	 * @param options.chunk_max_length - An optional maximum length for each chunk.
+	 * @param options.chunk_overlap - An optional number of overlapping characters between chunks.
+	 * @param options.separator - An optional separator used to split the document.
+	 * @returns A promise that resolves to the chunked document response.
+	 */
+	private async chunkDocument(options: ChunkOptions): Promise<ChunkResponse> {
+		let formData = new FormData();
+
+		if (options.document instanceof Buffer) {
+			const documentBlob = new Blob([options.document], {
+				type: options.contentType,
+			});
+			formData.append('document', documentBlob, options.documentName);
+		} else if (options.document instanceof File) {
+			formData.append('document', options.document, options.documentName);
+		} else if (options.document instanceof FormData) {
+			formData = options.document;
+		} else if (options.document instanceof ReadableStream) {
+			const chunks: Uint8Array[] = [];
+			const reader = options.document.getReader();
+
+			while (true) {
+				const {done, value} = await reader.read();
+				if (done) break;
+				chunks.push(value);
+			}
+
+			const documentBlob = new Blob(chunks, {type: options.contentType});
+			formData.append('document', documentBlob, options.documentName);
+		}
+
+		formData.append('documentName', options.documentName);
+		if (options.chunkMaxLength)
+			formData.append('chunkMaxLength', options.chunkMaxLength);
+		if (options.chunkOverlap)
+			formData.append('chunkOverlap', options.chunkOverlap);
+		if (options.separator) formData.append('separator', options.separator);
+
+		const response = await fetch(`${this.baseUrl}/v1/chunk`, {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${this.apiKey}`,
+			},
+			body: formData,
+		});
+
+		return response.json();
 	}
 }
