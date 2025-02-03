@@ -279,6 +279,7 @@ export interface MemoryListDocResponse {
 
 export interface LangbaseOptions {
 	apiKey: string;
+	baseUrl?: string;
 }
 
 export interface ToolWebSearchOptions {
@@ -315,6 +316,7 @@ export type EmbedResponse = number[][];
 export class Langbase {
 	private request: Request;
 	private apiKey: string;
+	private baseUrl: string;
 	public pipe: {
 		list: () => Promise<PipeListResponse[]>;
 		create: (options: PipeCreateOptions) => Promise<PipeCreateResponse>;
@@ -357,9 +359,12 @@ export class Langbase {
 	public embed: (options: EmbedOptions) => Promise<EmbedResponse>;
 
 	constructor(options?: LangbaseOptions) {
-		const baseUrl = 'https://api.langbase.com';
+		this.baseUrl = options?.baseUrl ?? 'https://api.langbase.com';
 		this.apiKey = options?.apiKey ?? '';
-		this.request = new Request({apiKey: this.apiKey, baseUrl});
+		this.request = new Request({
+			apiKey: this.apiKey,
+			baseUrl: this.baseUrl,
+		});
 
 		// Initialize pipe property with method bindings
 		this.pipe = {
@@ -409,6 +414,14 @@ export class Langbase {
 		// Remove stream property if it's not set to true
 		if (typeof options.stream === 'undefined') {
 			delete options.stream;
+		}
+
+		// if apikey is provided, create a new request instance
+		if (options.apiKey) {
+			this.request = new Request({
+				apiKey: options.apiKey,
+				baseUrl: this.baseUrl,
+			});
 		}
 
 		return this.request.post({

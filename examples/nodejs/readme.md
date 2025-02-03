@@ -14,6 +14,7 @@ npm run pipe.run.stream
 npm run pipe.run.chat
 npm run pipe.run.stream.chat
 npm run pipe.run.stream.llmkey
+npm run pipe.run.pipe.key
 npm run pipe.list
 npm run pipe.create
 npm run pipe.update
