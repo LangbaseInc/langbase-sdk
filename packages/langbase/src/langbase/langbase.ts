@@ -274,7 +274,7 @@ export interface ToolCrawlResponse {
 
 export interface EmbedOptions {
 	chunks: string[];
-	embeddingModel: EmbeddingModels;
+	embeddingModel?: EmbeddingModels;
 }
 
 export type EmbedResponse = number[][];
