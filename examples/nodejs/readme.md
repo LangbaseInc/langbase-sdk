@@ -34,4 +34,10 @@ npm run memory.docs.retry-embed
 # tools
 npm run tools.web-search
 npm run tools.crawl
+
+# chunk
+npm run chunk
+
+# embed
+npm run embed
 ```
