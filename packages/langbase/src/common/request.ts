@@ -102,8 +102,8 @@ export class Request {
 		return fetch(url, {
 			method: options.method,
 			headers,
-			body: JSON.stringify(options.body),
-			signal: AbortSignal.timeout(this.config.timeout || 30000),
+			body: JSON.stringify(options.body)
+			// signal: AbortSignal.timeout(this.config.timeout || 30000),
 		});
 	}
 
