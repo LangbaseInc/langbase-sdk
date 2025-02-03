@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
 	const result = await langbase.pipe.run({
 		messages: [{role: 'user', content: prompt}],
 		name: 'summary',
+		stream: false
 	});
 
 	// 3. Done, return the stream in a readable stream format.

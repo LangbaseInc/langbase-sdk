@@ -57,15 +57,22 @@ export class Request {
 			await this.handleErrorResponse({response});
 		}
 
-		if(!options.body) {
+		if (!options.body) {
 			return this.handleGenerateResponse({
 				response,
 				isChat: false,
 				threadId: null,
-			})
+			});
 		}
 
 		const threadId = response.headers.get('lb-thread-id');
+
+		if (options.body?.stream && url.includes('run')) {
+			return this.handleRunResponseStream({
+				response,
+				rawResponse: options.body.rawResponse,
+			}) as T;
+		}
 
 		if (options.body.stream) {
 			return this.handleStreamResponse({response}) as T;
@@ -133,6 +140,41 @@ export class Request {
 		const controller = new AbortController();
 		const stream = Stream.fromSSEResponse(response, controller);
 		return {stream, threadId: response.headers.get('lb-thread-id')};
+	}
+
+	private handleRunResponseStream({
+		response,
+		rawResponse,
+	}: {
+		response: Response;
+		rawResponse?: boolean;
+	}): {
+		stream: any;
+		threadId: string | null;
+		rawResponse?: {
+			headers: Record<string, string>;
+		};
+	} {
+		const controller = new AbortController();
+		const streamSSE = Stream.fromSSEResponse(response, controller);
+		const stream = streamSSE.toReadableStream();
+
+		const result: {
+			stream: ReadableStream<any>;
+			threadId: string | null;
+			rawResponse?: {
+				headers: Record<string, string>;
+			};
+		} = {
+			stream,
+			threadId: response.headers.get('lb-thread-id'),
+		};
+		if (rawResponse) {
+			result.rawResponse = {
+				headers: Object.fromEntries(response.headers.entries()),
+			};
+		}
+		return result;
 	}
 
 	private async handleGenerateResponse({
