@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.20
+
+### Patch Changes
+
+-   📦 NEW: Embed support
+
 ## 1.1.19
 
 ### Patch Changes
