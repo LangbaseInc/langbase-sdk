@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.21
+
+### Patch Changes
+
+-   👌 IMPROVE: pipe.run() native SDK support
+
 ## 1.1.20
 
 ### Patch Changes
