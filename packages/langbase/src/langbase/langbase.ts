@@ -1,3 +1,4 @@
+import {convertDocToFormData} from '@/lib/utils/doc-to-formdata';
 import {Request} from '../common/request';
 
 export type Role = 'user' | 'assistant' | 'system' | 'tool';
@@ -191,6 +192,14 @@ export type EmbeddingModels =
 	| 'cohere:embed-multilingual-light-v3.0'
 	| 'google:text-embedding-004';
 
+export type ContentType =
+	| 'application/pdf'
+	| 'text/plain'
+	| 'text/markdown'
+	| 'text/csv'
+	| 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+	| 'application/vnd.ms-excel';
+
 export interface MemoryCreateOptions {
 	name: string;
 	description?: string;
@@ -223,13 +232,7 @@ export interface MemoryUploadDocOptions {
 	documentName: string;
 	meta?: Record<string, string>;
 	document: Buffer | File | FormData | ReadableStream;
-	contentType:
-		| 'application/pdf'
-		| 'text/plain'
-		| 'text/markdown'
-		| 'text/csv'
-		| 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-		| 'application/vnd.ms-excel';
+	contentType: ContentType;
 }
 
 export interface MemoryRetryDocEmbedOptions {
@@ -263,13 +266,7 @@ export interface MemoryListDocResponse {
 	status_message: string | null;
 	metadata: {
 		size: number;
-		type:
-			| 'application/pdf'
-			| 'text/plain'
-			| 'text/markdown'
-			| 'text/csv'
-			| 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-			| 'application/vnd.ms-excel';
+		type: ContentType;
 	};
 	enabled: boolean;
 	chunk_size: number;
@@ -316,19 +313,24 @@ export type EmbedResponse = number[][];
 export interface ChunkOptions {
 	document: Buffer | File | FormData | ReadableStream;
 	documentName: string;
-	contentType:
-		| 'application/pdf'
-		| 'text/plain'
-		| 'text/markdown'
-		| 'text/csv'
-		| 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-		| 'application/vnd.ms-excel';
+	contentType: ContentType;
 	chunkMaxLength?: string;
 	chunkOverlap?: string;
 	separator?: string;
 }
 
 export type ChunkResponse = string[];
+
+export type ParseOptions = {
+	document: Buffer | File | FormData | ReadableStream;
+	documentName: string;
+	contentType: ContentType;
+};
+
+export type ParseResponse = {
+	documentName: string;
+	content: string;
+};
 
 export class Langbase {
 	private request: Request;
@@ -375,6 +377,7 @@ export class Langbase {
 
 	public embed: (options: EmbedOptions) => Promise<EmbedResponse>;
 	public chunk: (options: ChunkOptions) => Promise<ChunkResponse>;
+	public parse: (options: ParseOptions) => Promise<ParseResponse>;
 
 	constructor(options?: LangbaseOptions) {
 		this.baseUrl = options?.baseUrl ?? 'https://api.langbase.com';
@@ -415,6 +418,7 @@ export class Langbase {
 
 		this.embed = this.generateEmbeddings.bind(this);
 		this.chunk = this.chunkDocument.bind(this);
+		this.parse = this.parseDocument.bind(this);
 	}
 
 	private async runPipe(
@@ -714,32 +718,12 @@ export class Langbase {
 	 * @returns A promise that resolves to the chunked document response.
 	 */
 	private async chunkDocument(options: ChunkOptions): Promise<ChunkResponse> {
-		let formData = new FormData();
+		const formData = await convertDocToFormData({
+			document: options.document,
+			documentName: options.documentName,
+			contentType: options.contentType,
+		});
 
-		if (options.document instanceof Buffer) {
-			const documentBlob = new Blob([options.document], {
-				type: options.contentType,
-			});
-			formData.append('document', documentBlob, options.documentName);
-		} else if (options.document instanceof File) {
-			formData.append('document', options.document, options.documentName);
-		} else if (options.document instanceof FormData) {
-			formData = options.document;
-		} else if (options.document instanceof ReadableStream) {
-			const chunks: Uint8Array[] = [];
-			const reader = options.document.getReader();
-
-			while (true) {
-				const {done, value} = await reader.read();
-				if (done) break;
-				chunks.push(value);
-			}
-
-			const documentBlob = new Blob(chunks, {type: options.contentType});
-			formData.append('document', documentBlob, options.documentName);
-		}
-
-		formData.append('documentName', options.documentName);
 		if (options.chunkMaxLength)
 			formData.append('chunkMaxLength', options.chunkMaxLength);
 		if (options.chunkOverlap)
@@ -747,6 +731,36 @@ export class Langbase {
 		if (options.separator) formData.append('separator', options.separator);
 
 		const response = await fetch(`${this.baseUrl}/v1/chunk`, {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${this.apiKey}`,
+			},
+			body: formData,
+		});
+
+		return response.json();
+	}
+
+	/**
+	 * Parses a document using the Langbase API.
+	 *
+	 * @param options - The options for parsing the document
+	 * @param options.document - The document to be parsed
+	 * @param options.documentName - The name of the document
+	 * @param options.contentType - The content type of the document
+	 *
+	 * @returns A promise that resolves to the parse response from the API
+	 *
+	 * @throws {Error} If the API request fails
+	 */
+	private async parseDocument(options: ParseOptions): Promise<ParseResponse> {
+		const formData = await convertDocToFormData({
+			document: options.document,
+			documentName: options.documentName,
+			contentType: options.contentType,
+		});
+
+		const response = await fetch(`${this.baseUrl}/v1/parse`, {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${this.apiKey}`,

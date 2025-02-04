@@ -40,4 +40,7 @@ npm run chunk
 
 # embed
 npm run embed
+
+# parse
+npm run parse
 ```
