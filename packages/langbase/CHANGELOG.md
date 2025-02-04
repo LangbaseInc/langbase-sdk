@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.25
+
+### Patch Changes
+
+-   📦 NEW: Parse primitive support
+
 ## 1.1.24
 
 ### Patch Changes
