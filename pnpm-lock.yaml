@@ -117,15 +117,12 @@ importers:
 
   packages/langbase:
     dependencies:
-      '@baseai/core':
-        specifier: 0.9.42
-        version: 0.9.42(react@18.3.1)(zod@3.23.8)
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
       openai:
-        specifier: ^4.53.0
-        version: 4.53.0
+        specifier: ^4.82.0
+        version: 4.82.0(ws@8.18.0)(zod@3.23.8)
       zod:
         specifier: ^3.23.8
         version: 3.23.8
@@ -2973,6 +2970,18 @@ packages:
     peerDependencies:
       zod: ^3.23.8
     peerDependenciesMeta:
+      zod:
+        optional: true
+
+  openai@4.82.0:
+    resolution: {integrity: sha512-1bTxOVGZuVGsKKUWbh3BEwX1QxIXUftJv+9COhhGGVDTFwiaOd4gWsMynF2ewj1mg6by3/O+U8+EEHpWRdPaJg==}
+    hasBin: true
+    peerDependencies:
+      ws: ^8.18.0
+      zod: ^3.23.8
+    peerDependenciesMeta:
+      ws:
+        optional: true
       zod:
         optional: true
 
@@ -7283,6 +7292,21 @@ snapshots:
       formdata-node: 4.4.1
       node-fetch: 2.7.0
     optionalDependencies:
+      zod: 3.23.8
+    transitivePeerDependencies:
+      - encoding
+
+  openai@4.82.0(ws@8.18.0)(zod@3.23.8):
+    dependencies:
+      '@types/node': 18.19.42
+      '@types/node-fetch': 2.6.11
+      abort-controller: 3.0.0
+      agentkeepalive: 4.5.0
+      form-data-encoder: 1.7.2
+      formdata-node: 4.4.1
+      node-fetch: 2.7.0
+    optionalDependencies:
+      ws: 8.18.0
       zod: 3.23.8
     transitivePeerDependencies:
       - encoding

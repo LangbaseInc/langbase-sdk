@@ -29,7 +29,6 @@
 		"test:ui:react:watch": "vitest --config vitest.ui.react.config.js"
 	},
 	"dependencies": {
-		"@baseai/core": "0.9.42",
 		"dotenv": "^16.4.5",
 		"openai": "^4.82.0",
 		"zod": "^3.23.8",
