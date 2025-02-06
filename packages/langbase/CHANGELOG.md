@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.26
+
+### Patch Changes
+
+-   Add filters in memory
+
 ## 1.1.25
 
 ### Patch Changes
