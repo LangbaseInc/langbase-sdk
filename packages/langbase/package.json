@@ -11,8 +11,8 @@
 		"react/dist/**"
 	],
 	"scripts": {
-		"build": "tsup src/index.ts --format esm,cjs --dts --external react",
-		"dev": "tsup src/index.ts --format esm,cjs --watch --dts --external react",
+		"build": "tsup --config tsup.config.ts --format esm,cjs --dts --external react",
+		"dev": "tsup --config tsup.config.ts --format esm,cjs --watch --dts --external react",
 		"xdev": "tsup --watch",
 		"lint": "eslint \"src/**/*.ts*\"",
 		"clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",

@@ -2,7 +2,7 @@ import {Langbase} from 'langbase';
 import {NextRequest} from 'next/server';
 
 export async function POST(req: NextRequest) {
-	const {prompt} = await req.json();
+	const options = await req.json();
 
 	// 1. Initiate the Pipe.
 	const langbase = new Langbase({
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
 	// 2. Generate a stream by asking a question
 	const {stream, threadId} = await langbase.pipe.run({
-		messages: [{role: 'user', content: prompt}],
+		messages: options.messages,
 		stream: true,
 		name: 'summary',
 	});

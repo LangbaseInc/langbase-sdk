@@ -20,7 +20,9 @@ export default defineConfig([
 		},
 		format: ['cjs', 'esm'],
 		external: ['react', 'svelte', 'vue', 'solid-js'],
-		dts: true,
+		dts: {
+			entry: 'src/react/index.ts',
+		},
 		clean: true,
 		sourcemap: true,
 	},
