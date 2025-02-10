@@ -51,8 +51,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       langbase:
-        specifier: ^1.1.26
-        version: 1.1.26(ws@8.18.0)
+        specifier: ^1.1.27
+        version: 1.1.27(react@18.3.1)(ws@8.18.0)
       lucide-react:
         specifier: ^0.416.0
         version: 0.416.0(react@18.3.1)
@@ -112,8 +112,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.7
       langbase:
-        specifier: ^1.1.26
-        version: 1.1.26(ws@8.18.0)
+        specifier: ^1.1.27
+        version: 1.1.27(react@18.3.1)(ws@8.18.0)
 
   packages/langbase:
     dependencies:
@@ -2628,9 +2628,14 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  langbase@1.1.26:
-    resolution: {integrity: sha512-lQNT5a98j3a5gDBGCWhinMI6UbdD5VjEOha7h8ixWo9px/+OyThhHLSrMfnSwBa9PyfGmEvqztRyJ0ffUApweQ==}
+  langbase@1.1.27:
+    resolution: {integrity: sha512-mfKodkOCdjtwnqP8crF4yjvTHmH2aCsXsz8PTZwSfRxxe1MdnBExjSulMG9Of8uPd9A+BU0yJPMwqcWdZNDVLw==}
     engines: {node: '>=18'}
+    peerDependencies:
+      react: ^18 || ^19
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   language-subtag-registry@0.3.23:
     resolution: {integrity: sha512-0K65Lea881pHotoGEa5gDlMxt3pctLi2RplBb7Ezh4rRdLEOtgi7n4EwK9lamnUCkKBqaeKRVebTq6BAxSkpXQ==}
@@ -5861,7 +5866,7 @@ snapshots:
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.7.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint@8.57.1)
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.1)
       eslint-plugin-react: 7.37.4(eslint@8.57.1)
       eslint-plugin-react-hooks: 5.0.0-canary-7118f5dd7-20230705(eslint@8.57.1)
@@ -5906,7 +5911,7 @@ snapshots:
       is-glob: 4.0.3
       stable-hash: 0.0.4
     optionalDependencies:
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -5982,7 +5987,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1):
+  eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.8
@@ -6782,12 +6787,14 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  langbase@1.1.26(ws@8.18.0):
+  langbase@1.1.27(react@18.3.1)(ws@8.18.0):
     dependencies:
       dotenv: 16.4.7
       openai: 4.83.0(ws@8.18.0)(zod@3.24.1)
       zod: 3.24.1
       zod-validation-error: 3.4.0(zod@3.24.1)
+    optionalDependencies:
+      react: 18.3.1
     transitivePeerDependencies:
       - encoding
       - ws
