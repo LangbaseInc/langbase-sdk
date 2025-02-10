@@ -20,7 +20,7 @@ export default function RunStreamExample() {
 		try {
 			const response = await fetch('/langbase/pipe/run-stream', {
 				method: 'POST',
-				body: JSON.stringify({prompt}),
+				body: JSON.stringify([{role: 'user', content: prompt}]),
 				headers: {'Content-Type': 'text/plain'},
 			});
 
