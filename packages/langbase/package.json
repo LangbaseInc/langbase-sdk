@@ -7,7 +7,8 @@
 	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.ts",
 	"files": [
-		"dist/**"
+		"dist/**",
+		"react/dist/**"
 	],
 	"scripts": {
 		"build": "tsup src/index.ts --format esm,cjs --dts --external react",
@@ -39,11 +40,14 @@
 		"@langbase/eslint-config": "workspace:*",
 		"@langbase/tsconfig": "workspace:*",
 		"@playwright/test": "^1.44.1",
+		"@testing-library/react": "^16.0.1",
 		"@types/node": "^20.11.24",
+		"@types/react": "^18.3.9",
 		"@vitejs/plugin-react": "^4.3.1",
 		"eslint": "^8.57.0",
 		"jsdom": "^24.1.0",
-		"tsup": "^8.0.2",
+		"react": "^18",
+		"tsup": "^8.3.6",
 		"typescript": "^5.3.3",
 		"vitest": "1.6.0"
 	},
@@ -56,6 +60,11 @@
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.mjs",
 			"require": "./dist/index.js"
+		},
+		"./react": {
+			"types": "./react/dist/index.d.ts",
+			"require": "./react/dist/index.js",
+			"import": "./react/dist/index.mjs"
 		}
 	},
 	"engines": {
@@ -79,5 +88,13 @@
 		"langbase",
 		"langbase.com",
 		"generative AI"
-	]
+	],
+	"peerDependencies": {
+		"react": "^18 || ^19"
+	},
+	"peerDependenciesMeta": {
+		"react": {
+			"optional": true
+		}
+	}
 }
