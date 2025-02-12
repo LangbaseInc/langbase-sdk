@@ -51,8 +51,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       langbase:
-        specifier: ^1.1.27
-        version: 1.1.27(react@18.3.1)(ws@8.18.0)
+        specifier: ^1.1.28
+        version: 1.1.28(react@18.3.1)(ws@8.18.0)
       lucide-react:
         specifier: ^0.416.0
         version: 0.416.0(react@18.3.1)
@@ -112,8 +112,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.7
       langbase:
-        specifier: ^1.1.27
-        version: 1.1.27(react@18.3.1)(ws@8.18.0)
+        specifier: ^1.1.28
+        version: 1.1.28(react@18.3.1)(ws@8.18.0)
 
   packages/langbase:
     dependencies:
@@ -2628,8 +2628,8 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  langbase@1.1.27:
-    resolution: {integrity: sha512-mfKodkOCdjtwnqP8crF4yjvTHmH2aCsXsz8PTZwSfRxxe1MdnBExjSulMG9Of8uPd9A+BU0yJPMwqcWdZNDVLw==}
+  langbase@1.1.28:
+    resolution: {integrity: sha512-KVqRrI72Rft+XzSNsBn8DPuW1OlAHJ1K1F+Sp1je70pXIN2K0rGGZZn4cPxwMCNavfQgWfFvUJyrPfL7VaC22g==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19
@@ -6787,7 +6787,7 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  langbase@1.1.27(react@18.3.1)(ws@8.18.0):
+  langbase@1.1.28(react@18.3.1)(ws@8.18.0):
     dependencies:
       dotenv: 16.4.7
       openai: 4.83.0(ws@8.18.0)(zod@3.24.1)
