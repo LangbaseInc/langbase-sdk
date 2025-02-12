@@ -5,7 +5,7 @@ The AI SDK for building declarative and composable AI-powered LLM products.
 ## Documentation
 
 > [!NOTE]
-> Check the [Langbase SDK documentation](https://langbase.com/docs/langbase-sdk/overview) for more details.
+> Check the [Langbase SDK documentation](https://langbase.com/docs/sdk) for more details.
 
 The following examples are for reference only. Prefer docs for the latest information.
 
@@ -33,7 +33,7 @@ yarn add langbase
 
 ## Documentation
 
-Please read the [SDK documentation](https://langbase.com/docs/langbase-sdk/overview) →
+Please read the [SDK documentation](https://langbase.com/docs/sdk) →
 
 ## Examples
 
