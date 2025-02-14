@@ -40,15 +40,14 @@ Check our [SDK documentation](https://langbase.com/docs/sdk) for more details.
 
 Check the following examples:
 
-- [Node: Generate Text](https://github.com/LangbaseInc/langbase-sdk/blob/main/examples/nodejs/examples/pipes/pipe.run.ts)
-- [Node: Stream Text](https://github.com/LangbaseInc/langbase-sdk/blob/main/examples/nodejs/examples/pipes/pipe.run.stream.ts)
-- [Next.js Example](https://github.com/LangbaseInc/langbase-sdk/tree/main/examples/nextjs)
-  - TypeScript code
-  - [React component](https://github.com/LangbaseInc/langbase-sdk/tree/main/examples/nextjs/components/langbase) to display the response
-  - [API Route handlers](https://github.com/LangbaseInc/langbase-sdk/tree/main/examples/nextjs/app/api/langbase/pipe) to send requests to ⌘ Langbase
+-   [Node: Generate Text](https://github.com/LangbaseInc/langbase-sdk/blob/main/examples/nodejs/examples/pipes/pipe.run.ts)
+-   [Node: Stream Text](https://github.com/LangbaseInc/langbase-sdk/blob/main/examples/nodejs/examples/pipes/pipe.run.stream.ts)
+-   [Next.js Example](https://github.com/LangbaseInc/langbase-sdk/tree/main/examples/nextjs)
+    -   TypeScript code
+    -   [React component](https://github.com/LangbaseInc/langbase-sdk/tree/main/examples/nextjs/components/langbase) to display the response
+    -   [API Route handlers](https://github.com/LangbaseInc/langbase-sdk/tree/main/examples/nextjs/app/langbase/pipe/run) to send requests to ⌘ Langbase
 
 ### Node.js Example Code
-
 
 ## Node.js Examples
 
