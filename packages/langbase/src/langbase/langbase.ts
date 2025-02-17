@@ -13,6 +13,7 @@ export interface RunOptionsBase {
 	name?: string; // Pipe name for SDK,
 	apiKey?: string; // pipe level key for SDK
 	llmKey?: string; // LLM API key
+	json?: boolean
 }
 
 export interface RunOptionsT extends RunOptionsBase {
