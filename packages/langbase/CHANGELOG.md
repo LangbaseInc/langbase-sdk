@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.30
+
+### Patch Changes
+
+- 📦 NEW: Helper functions for getting tools from stream and non-stream response
+
 ## 1.1.29
 
 ### Patch Changes
