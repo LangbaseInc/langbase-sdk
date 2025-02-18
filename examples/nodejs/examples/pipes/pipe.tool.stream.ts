@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import {Langbase, getToolsFromRun, getToolsFromRunStream} from 'langbase';
+import {Langbase, getToolsFromRunStream} from 'langbase';
 
 const langbase = new Langbase({
 	apiKey: process.env.LANGBASE_API_KEY!,
@@ -43,14 +43,15 @@ async function main() {
 		],
 	});
 
-	const tools = await getToolsFromRunStream(response);
+	const [streamForResponse, streamForToolCall] = response.stream.tee();
+
+	const tools = await getToolsFromRunStream(streamForToolCall);
 
 	if (tools.length) {
 		// handle the tool calls
 		console.log('Tools:', tools);
 	} else {
-		// handle the response
-		console.log('Response:', response);
+		// handle the response stream
 	}
 }
 

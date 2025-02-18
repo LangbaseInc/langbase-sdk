@@ -129,8 +129,8 @@ export async function getToolsFromStream(
  * @param stream - The readable stream to extract tools from
  * @returns A promise that resolves with the tools extracted from the stream
  */
-export async function getToolsFromRunStream(response: RunResponseStream) {
-	return getToolsFromStream(response.stream);
+export async function getToolsFromRunStream(stream: ReadableStream<any>) {
+	return getToolsFromStream(stream);
 }
 
 /**
