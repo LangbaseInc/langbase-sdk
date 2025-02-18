@@ -18,6 +18,8 @@ npm run pipe.run.pipe.key
 npm run pipe.list
 npm run pipe.create
 npm run pipe.update
+npm run pipe.tool
+npm run pipe.tool.stream
 
 # memory
 npm run memory.list
