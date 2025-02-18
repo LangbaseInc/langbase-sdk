@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.31
+
+### Patch Changes
+
+- 👌 IMPROVE: Tool stream code
+
 ## 1.1.30
 
 ### Patch Changes
