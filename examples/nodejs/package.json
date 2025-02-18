@@ -21,6 +21,8 @@
     "pipe.update": "npx tsx ./examples/pipes/pipe.update.ts",
     "pipe.list": "npx tsx ./examples/pipes/pipe.list.ts",
     "pipe.run": "npx tsx ./examples/pipes/pipe.run.ts",
+    "pipe.tool": "npx tsx ./examples/pipes/pipe.tool.ts",
+    "pipe.tool.stream": "npx tsx ./examples/pipes/pipe.tool.stream.ts",
     "pipe.run.stream": "npx tsx ./examples/pipes/pipe.run.stream.ts",
     "pipe.run.stream.llmkey": "npx tsx ./examples/pipes/pipe.run.stream.llmkey.ts",
     "generate-text-generate-pipe": "npx tsx ./examples/pipes/generate-text-generate-pipe.ts",
