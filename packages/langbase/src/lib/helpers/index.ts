@@ -1,6 +1,7 @@
 import {ChatCompletionStream} from 'openai/lib/ChatCompletionStream';
 import {Stream} from 'openai/streaming';
 import {ChatCompletionMessageToolCall} from 'openai/resources/chat/completions';
+import {RunResponse, RunResponseStream} from '@/langbase/langbase';
 
 export interface Runner extends ChatCompletionStream {}
 
@@ -119,5 +120,27 @@ export async function getToolsFromStream(
 	let run = getRunner(stream);
 	const {choices} = await run.finalChatCompletion();
 	const tools = choices[0].message.tool_calls;
+	return tools ?? [];
+}
+
+/**
+ * Retrieves tools from a readable stream asynchronously.
+ *
+ * @param stream - The readable stream to extract tools from
+ * @returns A promise that resolves with the tools extracted from the stream
+ */
+export async function getToolsFromRunStream(response: RunResponseStream) {
+	return getToolsFromStream(response.stream);
+}
+
+/**
+ * Extracts tool calls from non-stream response.
+ * @param response - The run response object
+ * @returns A promise that resolves to an array of tool calls. Returns empty array if no tools are present.
+ */
+export async function getToolsFromRun(
+	response: RunResponse,
+): Promise<ChatCompletionMessageToolCall[]> {
+	const tools = response.choices[0].message.tool_calls;
 	return tools ?? [];
 }
