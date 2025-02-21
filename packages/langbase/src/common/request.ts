@@ -30,6 +30,7 @@ interface HandleGenerateResponseParams {
 	response: Response;
 	isChat: boolean;
 	threadId: string | null;
+	rawResponse: boolean;
 }
 
 export class Request {
@@ -58,10 +59,11 @@ export class Request {
 		}
 
 		if (!options.body) {
-			return this.handleGenerateResponse({
+			return this.handleRunResponse({
 				response,
 				isChat: false,
 				threadId: null,
+				rawResponse: options.body?.rawResponse ?? false,
 			});
 		}
 
@@ -78,10 +80,11 @@ export class Request {
 			return this.handleStreamResponse({response}) as T;
 		}
 
-		return this.handleGenerateResponse({
+		return this.handleRunResponse({
 			response,
-			isChat: options.body.chat,
+			isChat: options.body?.chat,
 			threadId,
+			rawResponse: options.body?.rawResponse ?? false,
 		});
 	}
 
@@ -109,7 +112,7 @@ export class Request {
 		return fetch(url, {
 			method: options.method,
 			headers,
-			body: JSON.stringify(options.body)
+			body: JSON.stringify(options.body),
 			// signal: AbortSignal.timeout(this.config.timeout || 30000),
 		});
 	}
@@ -177,10 +180,11 @@ export class Request {
 		return result;
 	}
 
-	private async handleGenerateResponse({
+	private async handleRunResponse({
 		response,
 		isChat,
 		threadId,
+		rawResponse,
 	}: HandleGenerateResponseParams): Promise<any> {
 		const generateResponse = await response.json();
 		const buildResponse = generateResponse.raw
@@ -190,16 +194,19 @@ export class Request {
 				}
 			: generateResponse;
 
-		// Chat.
-		if (isChat && threadId) {
-			return {
-				threadId,
-				...buildResponse,
+		const result: any = {
+			...buildResponse,
+		};
+
+		result.threadId = threadId;
+
+		if (rawResponse) {
+			result.rawResponse = {
+				headers: Object.fromEntries(response.headers.entries()),
 			};
 		}
 
-		// Generate.
-		return buildResponse;
+		return result;
 	}
 
 	async post<T>(options: Omit<RequestOptions, 'method'>): Promise<T> {
