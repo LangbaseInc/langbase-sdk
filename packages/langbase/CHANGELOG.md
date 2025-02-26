@@ -1,5 +1,12 @@
 # `langbase` SDK
 
+## 1.1.33
+
+### Patch Changes
+
+- 4f0d103: 📦 NEW: Thread id in onFinish
+- 📦 NEW: Thread id in onFinish()
+
 ## 1.1.32
 
 ### Patch Changes
