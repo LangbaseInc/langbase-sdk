@@ -12,13 +12,13 @@ async function main() {
 		process.cwd(),
 		'examples',
 		'memory',
-		'memory.upload.doc.ts',
+		'memory.docs.upload.ts',
 	);
 
 	const response = await langbase.memory.documents.upload({
 		document: fs.readFileSync(src),
 		memoryName: 'memory-sdk',
-		documentName: 'memory.upload.doc.ts',
+		documentName: 'memory.docs.upload.ts',
 		contentType: 'text/plain',
 		meta: {
 			extension: 'ts',
