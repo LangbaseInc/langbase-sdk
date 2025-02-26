@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.34
+
+### Patch Changes
+
+- 🐛 FIX: Thread id null in response
+
 ## 1.1.33
 
 ### Patch Changes
