@@ -28,7 +28,6 @@ interface MakeRequestParams {
 
 interface HandleGenerateResponseParams {
 	response: Response;
-	isChat: boolean;
 	threadId: string | null;
 	rawResponse: boolean;
 }
@@ -61,7 +60,6 @@ export class Request {
 		if (!options.body) {
 			return this.handleRunResponse({
 				response,
-				isChat: false,
 				threadId: null,
 				rawResponse: options.body?.rawResponse ?? false,
 			});
@@ -82,7 +80,6 @@ export class Request {
 
 		return this.handleRunResponse({
 			response,
-			isChat: options.body?.chat,
 			threadId,
 			rawResponse: options.body?.rawResponse ?? false,
 		});
@@ -182,7 +179,6 @@ export class Request {
 
 	private async handleRunResponse({
 		response,
-		isChat,
 		threadId,
 		rawResponse,
 	}: HandleGenerateResponseParams): Promise<any> {
@@ -198,7 +194,9 @@ export class Request {
 			...buildResponse,
 		};
 
-		result.threadId = threadId;
+		if (threadId) {
+			result.threadId = threadId;
+		}
 
 		if (rawResponse) {
 			result.rawResponse = {
