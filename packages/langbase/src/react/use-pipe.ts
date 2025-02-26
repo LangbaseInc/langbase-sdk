@@ -13,7 +13,7 @@ interface PipeRequestOptions {
 interface UsePipeOptions {
 	apiRoute?: string;
 	onResponse?: (message: Message) => void;
-	onFinish?: (messages: Message[]) => void;
+	onFinish?: (messages: Message[], threadId: string) => void;
 	onConnect?: () => void;
 	onError?: (error: Error) => void;
 	threadId?: string;
@@ -69,7 +69,7 @@ export function usePipe({
 				onResponse?.({...assistantMessage});
 			}
 
-			onFinish?.(messagesRef.current);
+			onFinish?.(messagesRef.current, threadIdRef.current || '');
 		},
 		[updateMessages, onResponse, onFinish],
 	);
@@ -83,7 +83,7 @@ export function usePipe({
 			const newMessages = [...messagesRef.current, assistantMessage];
 			updateMessages(newMessages);
 			onResponse?.(assistantMessage);
-			onFinish?.(newMessages);
+			onFinish?.(newMessages, threadIdRef.current || '');
 		},
 		[updateMessages, onResponse, onFinish],
 	);
