@@ -8,6 +8,7 @@
 	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.ts",
 	"bin": {
+		"langbase": "dist/index.js",
 		"lb": "dist/index.js"
 	},
 	"author": {
