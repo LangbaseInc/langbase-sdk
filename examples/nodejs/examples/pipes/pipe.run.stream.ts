@@ -16,6 +16,10 @@ async function main() {
 		name: 'summary',
 	});
 
+
+	console.log('Thread ID:', threadId);
+	console.log('');
+
 	// Convert the stream to a stream runner.
 	const runner = getRunner(stream);
 
