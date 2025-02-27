@@ -13,7 +13,7 @@ export interface RunOptionsBase {
 	name?: string; // Pipe name for SDK,
 	apiKey?: string; // pipe level key for SDK
 	llmKey?: string; // LLM API key
-	json?: boolean
+	json?: boolean;
 }
 
 export interface RunOptionsT extends RunOptionsBase {
@@ -214,7 +214,10 @@ export interface MemoryDeleteOptions {
 type FilterOperator = 'Eq' | 'NotEq' | 'In' | 'NotIn' | 'And' | 'Or';
 type FilterConnective = 'And' | 'Or';
 type FilterValue = string | string[];
-type MemoryFilters = [FilterOperator | FilterConnective, FilterValue | MemoryFilters][];
+type MemoryFilters = [
+	FilterOperator | FilterConnective,
+	FilterValue | MemoryFilters,
+][];
 
 export interface MemoryRetrieveOptions {
 	query: string;
@@ -339,6 +342,19 @@ export type ParseResponse = {
 	content: string;
 };
 
+export interface AddMessageOptions {
+	threadId: string;
+	messages: Message[];
+}
+
+export interface ListMessagesOptions {
+	threadId: string;
+}
+
+export interface DeleteThreadOptions {
+	threadId: string;
+}
+
 export class Langbase {
 	private request: Request;
 	private apiKey: string;
@@ -373,6 +389,14 @@ export class Langbase {
 				) => Promise<MemoryRetryDocEmbedResponse>;
 			};
 		};
+	};
+
+	public thread: {
+		messages: {
+			add: (options: AddMessageOptions) => Promise<Message[]>;
+			list: (options: ListMessagesOptions) => Promise<Message[]>;
+		};
+		delete: (options: DeleteThreadOptions) => Promise<boolean>;
 	};
 
 	public tool: {
@@ -426,6 +450,13 @@ export class Langbase {
 		this.embed = this.generateEmbeddings.bind(this);
 		this.chunk = this.chunkDocument.bind(this);
 		this.parse = this.parseDocument.bind(this);
+		this.thread = {
+			messages: {
+				add: this.addMessages.bind(this),
+				list: this.listMessages.bind(this),
+			},
+			delete: this.deleteThread.bind(this),
+		};
 	}
 
 	private async runPipe(
@@ -776,5 +807,50 @@ export class Langbase {
 		});
 
 		return response.json();
+	}
+
+	/**
+	 * Adds multiple messages to a specified thread.
+	 *
+	 * @param options - The options for adding messages
+	 * @param options.threadId - The ID of the thread to add messages to
+	 * @param options.messages - The array of messages to be added
+	 * @returns A Promise that resolves to an array of Message objects
+	 * @throws May throw an error if the request fails
+	 */
+	private async addMessages(options: AddMessageOptions): Promise<Message[]> {
+		return this.request.post({
+			endpoint: `/v1/threads/${options.threadId}/messages`,
+			body: options.messages,
+		});
+	}
+
+	/**
+	 * Retrieves all messages from a specified thread.
+	 *
+	 * @param options - The options for listing messages
+	 * @param options.threadId - The unique identifier of the thread to list messages from
+	 * @returns Promise that resolves to an array of Message objects
+	 * @throws {Error} If the request fails or the thread ID is invalid
+	 */
+	private async listMessages(
+		options: ListMessagesOptions,
+	): Promise<Message[]> {
+		return this.request.get({
+			endpoint: `/v1/threads/${options.threadId}/messages`,
+		});
+	}
+
+	/**
+	 * Deletes a thread using the provided thread ID.
+	 * @param options - The options for deleting a thread
+	 * @param options.threadId - The unique identifier of the thread to delete
+	 * @returns A promise that resolves to true if the thread was successfully deleted
+	 * @throws Will throw an error if the deletion fails or if the thread ID is invalid
+	 */
+	private async deleteThread(options: DeleteThreadOptions): Promise<boolean> {
+		return this.request.delete({
+			endpoint: `/v1/threads/${options.threadId}`,
+		});
 	}
 }

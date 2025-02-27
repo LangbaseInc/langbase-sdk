@@ -1,3 +1,4 @@
+import {GENERATION_ENDPOINTS} from '@/data/constants';
 import {Headers} from './../../types'; // Ensure this import is correct
 import {APIConnectionError, APIError} from './errors';
 import {Stream} from './stream';
@@ -57,32 +58,40 @@ export class Request {
 			await this.handleErrorResponse({response});
 		}
 
-		if (!options.body) {
+		const isLllmGenerationEndpoint =
+			GENERATION_ENDPOINTS.includes(endpoint);
+
+		if (isLllmGenerationEndpoint) {
+			const threadId = response.headers.get('lb-thread-id');
+
+			if (!options.body) {
+				return this.handleRunResponse({
+					response,
+					threadId: null,
+					rawResponse: options.body?.rawResponse ?? false,
+				});
+			}
+
+			if (options.body?.stream && url.includes('run')) {
+				return this.handleRunResponseStream({
+					response,
+					rawResponse: options.body.rawResponse,
+				}) as T;
+			}
+
+			if (options.body.stream) {
+				return this.handleStreamResponse({response}) as T;
+			}
+
 			return this.handleRunResponse({
 				response,
-				threadId: null,
+				threadId,
 				rawResponse: options.body?.rawResponse ?? false,
 			});
+		} else {
+			const res = response.json();
+			return res as T;
 		}
-
-		const threadId = response.headers.get('lb-thread-id');
-
-		if (options.body?.stream && url.includes('run')) {
-			return this.handleRunResponseStream({
-				response,
-				rawResponse: options.body.rawResponse,
-			}) as T;
-		}
-
-		if (options.body.stream) {
-			return this.handleStreamResponse({response}) as T;
-		}
-
-		return this.handleRunResponse({
-			response,
-			threadId,
-			rawResponse: options.body?.rawResponse ?? false,
-		});
 	}
 
 	private buildUrl({endpoint}: {endpoint: string}): string {
@@ -183,6 +192,7 @@ export class Request {
 		rawResponse,
 	}: HandleGenerateResponseParams): Promise<any> {
 		const generateResponse = await response.json();
+
 		const buildResponse = generateResponse.raw
 			? {
 					completion: generateResponse.completion,

@@ -34,13 +34,17 @@
     "tools.crawl": "npx tsx ./examples/tools/crawl.ts",
     "embed": "npx tsx ./examples/embed/index.ts",
     "chunk": "npx tsx ./examples/chunk/index.ts",
-    "parse": "npx tsx ./examples/parse/index.ts"
+    "parse": "npx tsx ./examples/parse/index.ts",
+    "thread.messages.add": "npx tsx ./examples/threads/thread.messages.add.ts",
+    "thread.messages.list": "npx tsx ./examples/threads/thread.messages.list.ts",
+    "thread.delete": "npx tsx ./examples/threads/thread.delete.ts"
   },
   "keywords": [],
   "author": "Ahmad Awais <me@AhmadAwais.com> (https://twitter.com/MrAhmadAwais)",
   "license": "UNLICENSED",
   "dependencies": {
     "dotenv": "^16.4.5",
-    "langbase": "^1.1.34"
+    "langbase": "^1.1.34",
+    "uuid": "^11.1.0"
   }
 }
