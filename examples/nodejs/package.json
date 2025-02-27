@@ -44,7 +44,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "dotenv": "^16.4.5",
-    "langbase": "^1.1.34",
+    "langbase": "^1.1.35",
     "uuid": "^11.1.0"
   }
 }
