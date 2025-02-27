@@ -1,5 +1,11 @@
 # @langbase/cli
 
+## 0.1.2
+
+### Patch Changes
+
+- 👌 IMPROVE: make pkg public
+
 ## 0.1.1
 
 ### Patch Changes
