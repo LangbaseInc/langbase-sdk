@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.35
+
+### Patch Changes
+
+- 📦 NEW: Threads support
+
 ## 1.1.34
 
 ### Patch Changes
