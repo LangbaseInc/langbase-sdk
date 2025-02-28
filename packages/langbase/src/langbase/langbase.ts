@@ -286,7 +286,7 @@ export interface MemoryListDocResponse {
 
 export interface LangbaseOptions {
 	apiKey: string;
-	baseUrl?: string;
+	baseUrl?: 'https://api.langbase.com' | 'https://eu-api.langbase.com';
 }
 
 export interface ToolWebSearchOptions {
