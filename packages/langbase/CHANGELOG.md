@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.36
+
+### Patch Changes
+
+- 👌 IMPROVE: SDK syntax
+
 ## 1.1.35
 
 ### Patch Changes
