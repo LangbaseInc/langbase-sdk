@@ -115,8 +115,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.7
       langbase:
-        specifier: workspace:*
-        version: link:../../packages/langbase
+        specifier: 1.1.35
+        version: 1.1.35(react@18.3.1)(ws@8.18.0)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
