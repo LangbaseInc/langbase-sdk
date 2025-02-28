@@ -43,9 +43,9 @@
   "author": "Ahmad Awais <me@AhmadAwais.com> (https://twitter.com/MrAhmadAwais)",
   "license": "UNLICENSED",
   "dependencies": {
+    "@langbase/cli": "workspace:*",
     "dotenv": "^16.4.5",
-    "langbase": "1.1.35",
-    "uuid": "^11.1.0",
-    "@langbase/cli": "workspace:*"
+    "langbase": "1.1.36",
+    "uuid": "^11.1.0"
   }
 }
