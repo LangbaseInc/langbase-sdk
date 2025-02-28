@@ -7,7 +7,7 @@ const langbase = new Langbase({
 });
 
 async function main() {
-	const results = await langbase.tool.webSearch({
+	const results = await langbase.tools.webSearch({
 		service: 'exa',
 		totalResults: 2,
 		query: 'What is Langbase?',

@@ -15,7 +15,7 @@ async function main() {
 		'memory.docs.upload.ts',
 	);
 
-	const response = await langbase.memory.documents.upload({
+	const response = await langbase.memories.documents.upload({
 		document: fs.readFileSync(src),
 		memoryName: 'memory-sdk',
 		documentName: 'memory.docs.upload.ts',

@@ -8,7 +8,7 @@ const langbase = new Langbase({
 async function main() {
 	const userMsg = 'Who is an AI Engineer?';
 
-	const response = await langbase.pipe.run({
+	const response = await langbase.pipes.run({
 		messages: [
 			{
 				role: 'user',

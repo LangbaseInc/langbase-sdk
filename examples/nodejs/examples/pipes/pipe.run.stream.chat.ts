@@ -6,7 +6,7 @@ const langbase = new Langbase({
 });
 
 // Message 1: Tell something to the LLM.
-const response1 = await langbase.pipe.run({
+const response1 = await langbase.pipes.run({
 	name: 'summary',
 	stream: true,
 	messages: [{role: 'user', content: 'My company is called Langbase'}],
@@ -21,7 +21,7 @@ runner1.on('content', content => {
 // Message 2: Ask something about the first message.
 // Continue the conversation in the same thread by sending
 // `threadId` from the second message onwards.
-const response2 = await langbase.pipe.run({
+const response2 = await langbase.pipes.run({
 	name: 'summary',
 	stream: true,
 	threadId: response1.threadId!,

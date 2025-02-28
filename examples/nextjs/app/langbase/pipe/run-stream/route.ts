@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 	});
 
 	// 2. Generate a stream by asking a question
-	const {stream, threadId} = await langbase.pipe.run({
+	const {stream, threadId} = await langbase.pipes.run({
 		messages: options.messages,
 		stream: true,
 		name: 'summary',

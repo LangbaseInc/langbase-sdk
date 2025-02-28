@@ -6,7 +6,7 @@ const langbase = new Langbase({
 });
 
 async function main() {
-	const response = await langbase.memory.documents.embedding.retry({
+	const response = await langbase.memories.documents.embeddings.retry({
 		memoryName: 'memory-sdk',
 		documentName: 'memory.upload.doc.ts',
 	});

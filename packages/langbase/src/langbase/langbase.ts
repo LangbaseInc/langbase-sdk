@@ -359,6 +359,21 @@ export class Langbase {
 	private request: Request;
 	private apiKey: string;
 	private baseUrl: string;
+	public pipes: {
+		list: () => Promise<PipeListResponse[]>;
+		create: (options: PipeCreateOptions) => Promise<PipeCreateResponse>;
+		update: (options: PipeUpdateOptions) => Promise<PipeUpdateResponse>;
+		run: {
+			(options: RunOptionsStream): Promise<RunResponseStream>;
+			(options: RunOptions): Promise<RunResponse>;
+		};
+	};
+
+	/**
+	 * @deprecated This method is deprecated and will be removed in a future version.
+	 *
+	 * Please use `langbase.pipes`
+	 */
 	public pipe: {
 		list: () => Promise<PipeListResponse[]>;
 		create: (options: PipeCreateOptions) => Promise<PipeCreateResponse>;
@@ -368,6 +383,35 @@ export class Langbase {
 			(options: RunOptions): Promise<RunResponse>;
 		};
 	};
+
+	public memories: {
+		create: (options: MemoryCreateOptions) => Promise<MemoryCreateResponse>;
+		delete: (options: MemoryDeleteOptions) => Promise<MemoryDeleteResponse>;
+		retrieve: (
+			options: MemoryRetrieveOptions,
+		) => Promise<MemoryRetrieveResponse[]>;
+		list: () => Promise<MemoryListResponse[]>;
+		documents: {
+			list: (
+				options: MemoryListDocOptions,
+			) => Promise<MemoryListDocResponse[]>;
+			delete: (
+				options: MemoryDeleteDocOptions,
+			) => Promise<MemoryDeleteDocResponse>;
+			upload: (options: MemoryUploadDocOptions) => Promise<Response>;
+			embeddings: {
+				retry: (
+					options: MemoryRetryDocEmbedOptions,
+				) => Promise<MemoryRetryDocEmbedResponse>;
+			};
+		};
+	};
+
+	/**
+	 * @deprecated This method is deprecated and will be removed in a future version.
+	 *
+	 * Please use `langbase.memories`
+	 */
 	public memory: {
 		create: (options: MemoryCreateOptions) => Promise<MemoryCreateResponse>;
 		delete: (options: MemoryDeleteOptions) => Promise<MemoryDeleteResponse>;
@@ -391,15 +435,27 @@ export class Langbase {
 		};
 	};
 
-	public thread: {
-		messages: {
-			add: (options: AddMessageOptions) => Promise<Message[]>;
-			list: (options: ListMessagesOptions) => Promise<Message[]>;
-		};
-		delete: (options: DeleteThreadOptions) => Promise<boolean>;
+	// public thread: {
+	// 	messages: {
+	// 		add: (options: AddMessageOptions) => Promise<Message[]>;
+	// 		list: (options: ListMessagesOptions) => Promise<Message[]>;
+	// 	};
+	// 	delete: (options: DeleteThreadOptions) => Promise<boolean>;
+	// };
+
+	/**
+	 * @deprecated This method is deprecated and will be removed in a future version.
+	 *
+	 * Please use `langbase.tools`
+	 */
+	public tool: {
+		crawl: (options: ToolCrawlOptions) => Promise<ToolCrawlResponse[]>;
+		webSearch: (
+			options: ToolWebSearchOptions,
+		) => Promise<ToolWebSearchResponse[]>;
 	};
 
-	public tool: {
+	public tools: {
 		crawl: (options: ToolCrawlOptions) => Promise<ToolCrawlResponse[]>;
 		webSearch: (
 			options: ToolWebSearchOptions,
@@ -426,6 +482,13 @@ export class Langbase {
 			run: this.runPipe.bind(this),
 		};
 
+		this.pipes = {
+			list: this.listPipe.bind(this),
+			create: this.createPipe.bind(this),
+			update: this.updatePipe.bind(this),
+			run: this.runPipe.bind(this),
+		};
+
 		// Initialize memory property with method bindings
 		this.memory = {
 			create: this.createMemory.bind(this),
@@ -442,6 +505,27 @@ export class Langbase {
 			},
 		};
 
+		// Initialize memory property with method bindings
+		this.memories = {
+			create: this.createMemory.bind(this),
+			delete: this.deleteMemory.bind(this),
+			retrieve: this.retrieveMemory.bind(this),
+			list: this.listMemory.bind(this),
+			documents: {
+				list: this.listDocs.bind(this),
+				delete: this.deleteDoc.bind(this),
+				upload: this.uploadDocs.bind(this),
+				embeddings: {
+					retry: this.retryDocEmbed.bind(this),
+				},
+			},
+		};
+
+		this.tools = {
+			crawl: this.webCrawl.bind(this),
+			webSearch: this.webSearch.bind(this),
+		};
+
 		this.tool = {
 			crawl: this.webCrawl.bind(this),
 			webSearch: this.webSearch.bind(this),
@@ -450,13 +534,13 @@ export class Langbase {
 		this.embed = this.generateEmbeddings.bind(this);
 		this.chunk = this.chunkDocument.bind(this);
 		this.parse = this.parseDocument.bind(this);
-		this.thread = {
-			messages: {
-				add: this.addMessages.bind(this),
-				list: this.listMessages.bind(this),
-			},
-			delete: this.deleteThread.bind(this),
-		};
+		// this.thread = {
+		// 	messages: {
+		// 		add: this.addMessages.bind(this),
+		// 		list: this.listMessages.bind(this),
+		// 	},
+		// 	delete: this.deleteThread.bind(this),
+		// };
 	}
 
 	private async runPipe(

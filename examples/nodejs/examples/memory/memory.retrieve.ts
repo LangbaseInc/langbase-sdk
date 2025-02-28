@@ -6,7 +6,7 @@ const langbase = new Langbase({
 });
 
 async function main() {
-	const response = await langbase.memory.retrieve({
+	const response = await langbase.memories.retrieve({
 		memory: [
 			{
 				name: 'langbase-docs',
