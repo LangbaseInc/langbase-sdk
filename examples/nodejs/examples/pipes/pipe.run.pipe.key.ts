@@ -9,7 +9,7 @@ async function main() {
 	const userMsg = 'Who is an AI Engineer?';
 
 	// Get readable stream
-	const {stream, threadId, rawResponse} = await langbase.pipe.run({
+	const {stream, threadId, rawResponse} = await langbase.pipes.run({
 		messages: [{role: 'user', content: userMsg}],
 		stream: true,
 		rawResponse: true,

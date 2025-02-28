@@ -6,7 +6,7 @@ const langbase = new Langbase({
 });
 
 async function main() {
-	const response = await langbase.pipe.list();
+	const response = await langbase.pipes.list();
 	console.log(response);
 }
 

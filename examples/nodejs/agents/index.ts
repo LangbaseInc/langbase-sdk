@@ -6,7 +6,7 @@ export default async function Route(request, env) {
 		apiKey: 'API_KEY',
 	});
 
-	const pipes = await langbase.pipe.list();
+	const pipes = await langbase.pipes.list();
 
 	// User code will be injected here
 	return new Response(JSON.stringify(pipes), {status: 200});

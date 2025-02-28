@@ -6,7 +6,7 @@ const langbase = new Langbase({
 });
 
 async function main() {
-	const response = await langbase.memory.documents.list({
+	const response = await langbase.memories.documents.list({
 		memoryName: 'memory-sdk',
 	});
 

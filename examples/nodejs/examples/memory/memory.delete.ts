@@ -6,7 +6,7 @@ const langbase = new Langbase({
 });
 
 async function main() {
-	const response = await langbase.memory.delete({
+	const response = await langbase.memories.delete({
 		name: 'memory-sdk',
 	});
 

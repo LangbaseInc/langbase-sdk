@@ -32,7 +32,7 @@ yarn add langbase
 
 ### Usage
 
-You can [`langbase.pipe.run()`](https://langbase.com/docs/sdk/pipe/run) to generate or stream from a Pipe.
+You can [`langbase.pipes.run()`](https://langbase.com/docs/sdk/pipe/run) to generate or stream from a Pipe.
 
 Check our [SDK documentation](https://langbase.com/docs/sdk) for more details.
 
@@ -60,9 +60,9 @@ LANGBASE_API_KEY="your-api-key"
 
 ---
 
-### Generate text [`langbase.pipe.run()`](https://langbase.com/docs/sdk/pipe/run)
+### Generate text [`langbase.pipes.run()`](https://langbase.com/docs/sdk/pipe/run)
 
-Set the `stream` to `false`. For more, check the API reference of [`langbase.pipe.run()`](https://langbase.com/docs/langbase-sdk/generate-text)
+Set the `stream` to `false`. For more, check the API reference of [`langbase.pipes.run()`](https://langbase.com/docs/langbase-sdk/generate-text)
 
 ```ts
 import 'dotenv/config';
@@ -76,7 +76,7 @@ const langbase = new Langbase({
 
 async function main() {
     // 2. Run the pipe with a question.
-    const response = await langbase.pipe.run({
+    const response = await langbase.pipes.run({
         stream: false,
         name: 'summary' // pipe name to run
         messages: [
@@ -96,9 +96,9 @@ main();
 
 ---
 
-### Stream text [`langbase.pipe.run()`](https://langbase.com/docs/sdk/pipe/run)
+### Stream text [`langbase.pipes.run()`](https://langbase.com/docs/sdk/pipe/run)
 
-Set the `stream` to `true`. For more, check the API reference of [`langbase.pipe.run()`](https://langbase.com/docs/langbase-sdk/generate-text)
+Set the `stream` to `true`. For more, check the API reference of [`langbase.pipes.run()`](https://langbase.com/docs/langbase-sdk/generate-text)
 
 ```ts
 import 'dotenv/config';
@@ -114,7 +114,7 @@ async function main() {
     const userMsg = 'Who is an AI Engineer?';
 
     // 2. Run the pipe with a question.
-    const {****stre**am**} = await langbase.pipe.run({
+    const {stream} = await langbase.pipes.run({
         stream: true,
         name: 'summary', // pipe name to run
         messages: [{role: 'user', content: userMsg}],

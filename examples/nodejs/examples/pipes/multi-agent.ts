@@ -12,7 +12,7 @@ const langbase = new Langbase({
 async function main() {
   // First agent: Summarize text
   const summarizeAgent = async (text: string) => {
-    const response = await langbase.pipe.run({
+    const response = await langbase.pipes.run({
       stream: false,
       name: "summarize",
       messages: [
@@ -31,7 +31,7 @@ async function main() {
 
   // Second agent: Generate questions
   const questionsAgent = async (summary: string) => {
-    const response = await langbase.pipe.run({
+    const response = await langbase.pipes.run({
       stream: false,
       name: "generate-questions",
       messages: [

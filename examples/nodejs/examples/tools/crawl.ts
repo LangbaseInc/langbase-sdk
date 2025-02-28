@@ -13,10 +13,10 @@ const langbase = new Langbase({
  * @link https://spider.cloud/docs/quickstart
  */
 async function main() {
-	const results = await langbase.tool.crawl({
+	const results = await langbase.tools.crawl({
 		url: ['https://langbase.com', 'https://langbase.com/about'],
-		max_pages: 1,
-		api_key: process.env.CRAWL_KEY,
+		maxPages: 1,
+		apiKey: process.env.CRAWL_KEY,
 	});
 
 	console.log(results);

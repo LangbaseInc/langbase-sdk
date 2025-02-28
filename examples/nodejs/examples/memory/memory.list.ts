@@ -6,7 +6,7 @@ const langbase = new Langbase({
 });
 
 async function main() {
-	const response = await langbase.memory.list();
+	const response = await langbase.memories.list();
 	console.log(response);
 }
 
