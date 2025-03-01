@@ -7,7 +7,7 @@ const langbase = new Langbase({
 
 async function main() {
 	const response = await langbase.pipes.update({
-		name: 'summary-pipe',
+		name: 'summary',
 		description: 'This is a pipe updated with the SDK',
 		model: 'google:gemini-1.5-flash-8b-latest',
 	});

@@ -8,6 +8,7 @@ const langbase = new Langbase({
 async function main() {
 	// Message 1: Tell something to the LLM.
 	const response1 = await langbase.pipes.run({
+		stream: false,
 		name: 'summary',
 		messages: [{role: 'user', content: 'My company is called Langbase'}],
 	});
@@ -19,6 +20,7 @@ async function main() {
 	// `threadId` from the second message onwards.
 	const response2 = await langbase.pipes.run({
 		name: 'summary',
+		stream: false,
 		threadId: response1.threadId!,
 		messages: [{role: 'user', content: 'Tell me the name of my company?'}],
 	});

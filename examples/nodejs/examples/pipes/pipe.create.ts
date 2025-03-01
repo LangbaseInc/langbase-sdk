@@ -7,7 +7,7 @@ const langbase = new Langbase({
 
 async function main() {
 	const response = await langbase.pipes.create({
-		name: 'summary-pipe2',
+		name: 'summary',
 		status: 'private',
 	});
 
