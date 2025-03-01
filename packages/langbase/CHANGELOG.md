@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.37
+
+### Patch Changes
+
+- 📦 NEW: Base url
+
 ## 1.1.36
 
 ### Patch Changes
