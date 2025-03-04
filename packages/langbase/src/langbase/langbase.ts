@@ -91,6 +91,11 @@ export interface Message {
 	tool_calls?: ToolCall[];
 }
 
+export interface ThreadMessage extends Message {
+	attachments?: any[];
+	metadata?: Record<string, string>;
+}
+
 export interface Variable {
 	name: string;
 	value: string;
@@ -342,17 +347,45 @@ export type ParseResponse = {
 	content: string;
 };
 
-export interface AddMessageOptions {
-	threadId: string;
-	messages: Message[];
+export interface ThreadsCreate {
+	threadId?: string;
+	metadata?: Record<string, string>;
+	messages?: ThreadMessage[];
 }
 
-export interface ListMessagesOptions {
+export interface ThreadsUpdate {
+	threadId: string;
+	metadata: Record<string, string>;
+}
+
+export interface ThreadsGet {
 	threadId: string;
 }
 
 export interface DeleteThreadOptions {
 	threadId: string;
+}
+
+export interface ThreadsBaseResponse {
+	id: string;
+	object: 'thread';
+	created_at: number;
+	metadata: Record<string, string>;
+}
+
+export interface ThreadMessagesCreate {
+	threadId: string;
+	messages: ThreadMessage[];
+}
+
+export interface ThreadMessagesList {
+	threadId: string;
+}
+
+export interface ThreadMessagesBaseResponse extends ThreadMessage {
+	id: string;
+	created_at: number;
+	thread_id: string;
 }
 
 export class Langbase {
@@ -435,13 +468,20 @@ export class Langbase {
 		};
 	};
 
-	// public thread: {
-	// 	messages: {
-	// 		add: (options: AddMessageOptions) => Promise<Message[]>;
-	// 		list: (options: ListMessagesOptions) => Promise<Message[]>;
-	// 	};
-	// 	delete: (options: DeleteThreadOptions) => Promise<boolean>;
-	// };
+	public threads: {
+		create: (options: ThreadsCreate) => Promise<ThreadsBaseResponse>;
+		update: (options: ThreadsUpdate) => Promise<ThreadsBaseResponse>;
+		get: (options: ThreadsGet) => Promise<ThreadsBaseResponse>;
+		delete: (options: DeleteThreadOptions) => Promise<{success: boolean}>;
+		append: (
+			options: ThreadMessagesCreate,
+		) => Promise<ThreadMessagesBaseResponse[]>;
+		messages: {
+			list: (
+				options: ThreadMessagesList,
+			) => Promise<ThreadMessagesBaseResponse[]>;
+		};
+	};
 
 	/**
 	 * @deprecated This method is deprecated and will be removed in a future version.
@@ -534,13 +574,16 @@ export class Langbase {
 		this.embed = this.generateEmbeddings.bind(this);
 		this.chunk = this.chunkDocument.bind(this);
 		this.parse = this.parseDocument.bind(this);
-		// this.thread = {
-		// 	messages: {
-		// 		add: this.addMessages.bind(this),
-		// 		list: this.listMessages.bind(this),
-		// 	},
-		// 	delete: this.deleteThread.bind(this),
-		// };
+		this.threads = {
+			create: this.createThread.bind(this),
+			update: this.updateThread.bind(this),
+			get: this.getThread.bind(this),
+			delete: this.deleteThread.bind(this),
+			append: this.appendThreadMessages.bind(this),
+			messages: {
+				list: this.listThreadMessages.bind(this),
+			},
+		};
 	}
 
 	private async runPipe(
@@ -894,47 +937,71 @@ export class Langbase {
 	}
 
 	/**
-	 * Adds multiple messages to a specified thread.
-	 *
-	 * @param options - The options for adding messages
-	 * @param options.threadId - The ID of the thread to add messages to
-	 * @param options.messages - The array of messages to be added
-	 * @returns A Promise that resolves to an array of Message objects
-	 * @throws May throw an error if the request fails
+	 * Creates a new thread with specified options.
+	 * @param {ThreadsCreate} options - The options object containing thread creation parameters.
+	 * @returns {Promise<ThreadsBaseResponse>} A promise that resolves to the created thread response.
+	 * @private
 	 */
-	private async addMessages(options: AddMessageOptions): Promise<Message[]> {
+	private async createThread(
+		options: ThreadsCreate,
+	): Promise<ThreadsBaseResponse> {
+		return this.request.post({
+			endpoint: '/v1/threads',
+			body: options,
+		});
+	}
+
+	/**
+	 * Updates an existing thread with the provided options.
+	 *
+	 * @param options - The options to update the thread with
+	 * @param options.threadId - The ID of the thread to update
+	 * @returns A promise that resolves to the updated thread response
+	 * @throws {Error} If the request fails
+	 */
+	private async updateThread(
+		options: ThreadsUpdate,
+	): Promise<ThreadsBaseResponse> {
+		return this.request.post({
+			endpoint: `/v1/threads/${options.threadId}`,
+			body: options,
+		});
+	}
+
+	/**
+	 * Retrieves a thread by its ID.
+	 * @param {ThreadsGet} options - The options object containing the thread ID.
+	 * @param {string} options.threadId - The unique identifier of the thread to retrieve.
+	 * @returns {Promise<ThreadsBaseResponse>} A promise that resolves to the thread data.
+	 */
+	private async getThread(options: ThreadsGet): Promise<ThreadsBaseResponse> {
+		return this.request.get({
+			endpoint: `/v1/threads/${options.threadId}`,
+		});
+	}
+
+	private async deleteThread(
+		options: DeleteThreadOptions,
+	): Promise<{success: boolean}> {
+		return this.request.delete({
+			endpoint: `/v1/threads/${options.threadId}`,
+		});
+	}
+
+	private async appendThreadMessages(
+		options: ThreadMessagesCreate,
+	): Promise<ThreadMessagesBaseResponse[]> {
 		return this.request.post({
 			endpoint: `/v1/threads/${options.threadId}/messages`,
 			body: options.messages,
 		});
 	}
 
-	/**
-	 * Retrieves all messages from a specified thread.
-	 *
-	 * @param options - The options for listing messages
-	 * @param options.threadId - The unique identifier of the thread to list messages from
-	 * @returns Promise that resolves to an array of Message objects
-	 * @throws {Error} If the request fails or the thread ID is invalid
-	 */
-	private async listMessages(
-		options: ListMessagesOptions,
-	): Promise<Message[]> {
+	private async listThreadMessages(
+		options: ThreadMessagesList,
+	): Promise<ThreadMessagesBaseResponse[]> {
 		return this.request.get({
 			endpoint: `/v1/threads/${options.threadId}/messages`,
-		});
-	}
-
-	/**
-	 * Deletes a thread using the provided thread ID.
-	 * @param options - The options for deleting a thread
-	 * @param options.threadId - The unique identifier of the thread to delete
-	 * @returns A promise that resolves to true if the thread was successfully deleted
-	 * @throws Will throw an error if the deletion fails or if the thread ID is invalid
-	 */
-	private async deleteThread(options: DeleteThreadOptions): Promise<boolean> {
-		return this.request.delete({
-			endpoint: `/v1/threads/${options.threadId}`,
 		});
 	}
 }

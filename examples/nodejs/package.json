@@ -35,9 +35,12 @@
     "embed": "npx tsx ./examples/embed/index.ts",
     "chunk": "npx tsx ./examples/chunk/index.ts",
     "parse": "npx tsx ./examples/parse/index.ts",
-    "thread.messages.add": "npx tsx ./examples/threads/thread.messages.add.ts",
-    "thread.messages.list": "npx tsx ./examples/threads/thread.messages.list.ts",
-    "thread.delete": "npx tsx ./examples/threads/thread.delete.ts"
+    "threads.create": "npx tsx ./examples/threads/threads.create.ts",
+    "threads.update": "npx tsx ./examples/threads/threads.update.ts",
+    "threads.delete": "npx tsx ./examples/threads/threads.delete.ts",
+    "threads.append": "npx tsx ./examples/threads/threads.append.ts",
+    "threads.messages.list": "npx tsx ./examples/threads/threads.messages.list.ts",
+    "threads.get": "npx tsx ./examples/threads/threads.get.ts"
   },
   "keywords": [],
   "author": "Ahmad Awais <me@AhmadAwais.com> (https://twitter.com/MrAhmadAwais)",
