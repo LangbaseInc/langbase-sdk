@@ -210,6 +210,7 @@ export interface MemoryCreateOptions {
 	name: string;
 	description?: string;
 	embedding_model?: EmbeddingModels;
+	top_k?: number;
 }
 
 export interface MemoryDeleteOptions {
