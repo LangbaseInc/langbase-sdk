@@ -24,6 +24,29 @@ export interface RunOptionsStreamT extends RunOptionsBase {
 	stream: true;
 }
 
+export interface LlmOptionsBase {
+	messages: PromptMessage[];
+	model: string;
+	llmKey: string;
+	top_p?: number;
+	max_tokens?: number;
+	temperature?: number;
+	presence_penalty?: number;
+	frequency_penalty?: number;
+	stop?: string[];
+	tool_choice?: any;
+	parallel_tool_calls?: boolean;
+	customModelParams?: Record<string, any>;
+}
+
+export interface LlmOptionsT extends LlmOptionsBase {
+	stream?: false;
+}
+
+export interface LlmOptionsStreamT extends LlmOptionsBase {
+	stream: true;
+}
+
 interface ChoiceGenerate {
 	index: number;
 	message: Message;
@@ -89,6 +112,27 @@ export interface Message {
 	name?: string;
 	tool_call_id?: string;
 	tool_calls?: ToolCall[];
+}
+
+// Message with proper content type for Vision support
+export interface PromptMessage {
+	role: Role;
+	content: string | MessageContentType[] | null;
+	name?: string;
+	tool_call_id?: string;
+	tool_calls?: ToolCall[];
+}
+
+export interface MessageContentType {
+	type: string;
+	text?: string;
+	image_url?: {
+		url: string;
+		detail?: string;
+	};
+	cache_control?: {
+		type: 'ephemeral';
+	};
 }
 
 export interface ThreadMessage extends Message {
@@ -506,6 +550,11 @@ export class Langbase {
 	public chunk: (options: ChunkOptions) => Promise<ChunkResponse>;
 	public parse: (options: ParseOptions) => Promise<ParseResponse>;
 
+	public llm: {
+		(options: LlmOptionsStreamT): Promise<RunResponseStream>;
+		(options: LlmOptionsT): Promise<RunResponse>;
+	};
+
 	constructor(options?: LangbaseOptions) {
 		this.baseUrl = options?.baseUrl ?? 'https://api.langbase.com';
 		this.apiKey = options?.apiKey ?? '';
@@ -584,6 +633,8 @@ export class Langbase {
 				list: this.listThreadMessages.bind(this),
 			},
 		};
+
+		this.llm = this.runLlm.bind(this);
 	}
 
 	private async runPipe(
@@ -1002,6 +1053,34 @@ export class Langbase {
 	): Promise<ThreadMessagesBaseResponse[]> {
 		return this.request.get({
 			endpoint: `/v1/threads/${options.threadId}/messages`,
+		});
+	}
+
+	// Add the private implementation
+	private async runLlm(
+		options: LlmOptionsStreamT,
+	): Promise<RunResponseStream>;
+
+	private async runLlm(options: LlmOptionsT): Promise<RunResponse>;
+
+	private async runLlm(
+		options: LlmOptionsT | LlmOptionsStreamT,
+	): Promise<RunResponse | RunResponseStream> {
+		if (!options.llmKey) {
+			throw new Error('LLM API key is required to run this LLM.');
+		}
+
+		// Remove stream property if it's not set to true
+		if (typeof options.stream === 'undefined') {
+			delete options.stream;
+		}
+
+		return this.request.post({
+			endpoint: '/v1/llm',
+			body: options,
+			headers: {
+				...(options.llmKey && {'LB-LLM-Key': options.llmKey}),
+			},
 		});
 	}
 }
