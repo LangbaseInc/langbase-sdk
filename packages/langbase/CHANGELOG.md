@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.40
+
+### Patch Changes
+
+- 📦 NEW: onCancel function in usePipe
+
 ## 1.1.39
 
 ### Patch Changes
