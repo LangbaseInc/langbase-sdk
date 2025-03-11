@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.39
+
+### Patch Changes
+
+- Runtime LLM
+
 ## 1.1.38
 
 ### Patch Changes
