@@ -34,7 +34,7 @@ export interface LlmOptionsBase {
 	presence_penalty?: number;
 	frequency_penalty?: number;
 	stop?: string[];
-	tool_choice?: any;
+	tool_choice?: 'auto' | 'required' | ToolChoice;
 	parallel_tool_calls?: boolean;
 	customModelParams?: Record<string, any>;
 }
