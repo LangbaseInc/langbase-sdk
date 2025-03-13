@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.41
+
+### Patch Changes
+
+- Improve LLM Primitive
+
 ## 1.1.40
 
 ### Patch Changes
