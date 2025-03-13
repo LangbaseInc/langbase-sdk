@@ -34,16 +34,20 @@ export interface LlmOptionsBase {
 	presence_penalty?: number;
 	frequency_penalty?: number;
 	stop?: string[];
+	tools?: Tools[];
 	tool_choice?: 'auto' | 'required' | ToolChoice;
 	parallel_tool_calls?: boolean;
+	reasoning_effort?: string | null;
+	max_completion_tokens?: number;
+	response_format?: ResponseFormat;
 	customModelParams?: Record<string, any>;
 }
 
-export interface LlmOptionsT extends LlmOptionsBase {
+export interface LlmOptions extends LlmOptionsBase {
 	stream?: false;
 }
 
-export interface LlmOptionsStreamT extends LlmOptionsBase {
+export interface LlmOptionsStream extends LlmOptionsBase {
 	stream: true;
 }
 
@@ -134,6 +138,19 @@ export interface MessageContentType {
 		type: 'ephemeral';
 	};
 }
+
+export type ResponseFormat =
+	| {type: 'text'}
+	| {type: 'json_object'}
+	| {
+			type: 'json_schema';
+			json_schema: {
+				description?: string;
+				name: string;
+				schema?: Record<string, unknown>;
+				strict?: boolean | null;
+			};
+	  };
 
 export interface ThreadMessage extends Message {
 	attachments?: any[];
@@ -551,8 +568,10 @@ export class Langbase {
 	public parse: (options: ParseOptions) => Promise<ParseResponse>;
 
 	public llm: {
-		(options: LlmOptionsStreamT): Promise<RunResponseStream>;
-		(options: LlmOptionsT): Promise<RunResponse>;
+		run: {
+			(options: LlmOptionsStream): Promise<RunResponseStream>;
+			(options: LlmOptions): Promise<RunResponse>;
+		};
 	};
 
 	constructor(options?: LangbaseOptions) {
@@ -634,7 +653,9 @@ export class Langbase {
 			},
 		};
 
-		this.llm = this.runLlm.bind(this);
+		this.llm = {
+			run: this.runLlm.bind(this),
+		};
 	}
 
 	private async runPipe(
@@ -1057,14 +1078,12 @@ export class Langbase {
 	}
 
 	// Add the private implementation
-	private async runLlm(
-		options: LlmOptionsStreamT,
-	): Promise<RunResponseStream>;
+	private async runLlm(options: LlmOptionsStream): Promise<RunResponseStream>;
 
-	private async runLlm(options: LlmOptionsT): Promise<RunResponse>;
+	private async runLlm(options: LlmOptions): Promise<RunResponse>;
 
 	private async runLlm(
-		options: LlmOptionsT | LlmOptionsStreamT,
+		options: LlmOptions | LlmOptionsStream,
 	): Promise<RunResponse | RunResponseStream> {
 		if (!options.llmKey) {
 			throw new Error('LLM API key is required to run this LLM.');
