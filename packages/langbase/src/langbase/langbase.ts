@@ -1095,7 +1095,7 @@ export class Langbase {
 		}
 
 		return this.request.post({
-			endpoint: '/v1/llm',
+			endpoint: '/v1/llm/run',
 			body: options,
 			headers: {
 				...(options.llmKey && {'LB-LLM-Key': options.llmKey}),
