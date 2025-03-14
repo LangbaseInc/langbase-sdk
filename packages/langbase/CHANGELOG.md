@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.42
+
+### Patch Changes
+
+- 📦 NEW: Export tool interface
+
 ## 1.1.41
 
 ### Patch Changes
