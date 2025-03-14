@@ -11,8 +11,9 @@ async function main() {
 	const result = await step({
 		id: 'sumamrize',
 		run: async () => {
-			return langbase.pipes.run({
-				name: 'summarize',
+			return langbase.llm.run({
+				model: 'openai:gpt-4o-mini',
+				llmKey: process.env.OPENAI_API_KEY!,
 				messages: [
 					{
 						role: 'system',
