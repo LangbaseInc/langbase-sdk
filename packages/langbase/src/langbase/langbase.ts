@@ -443,10 +443,17 @@ export interface ThreadMessagesList {
 	threadId: string;
 }
 
-export interface ThreadMessagesBaseResponse extends ThreadMessage {
+export interface ThreadMessagesBaseResponse {
 	id: string;
 	created_at: number;
 	thread_id: string;
+	content: string;
+	role: Role;
+	tool_call_id: string | null;
+	tool_calls: ToolCall[] | [];
+	name: string | null;
+	attachments: any[] | [];
+	metadata: Record<string, string> | {};
 }
 
 export class Langbase {
