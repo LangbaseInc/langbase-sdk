@@ -167,7 +167,7 @@ interface ToolChoice {
 	function: {name: string};
 }
 
-interface Tools {
+export interface Tools {
 	type: 'function';
 	function: {
 		name: string;
