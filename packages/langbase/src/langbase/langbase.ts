@@ -77,9 +77,6 @@ export interface RunResponse {
 	rawResponse?: {
 		headers: Record<string, string>;
 	};
-	messages: Message[];
-	llmKey?: string;
-	name?: string;
 }
 
 export interface RunResponseStream {
