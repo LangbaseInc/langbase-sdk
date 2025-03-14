@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.43
+
+### Patch Changes
+
+- 👌 IMPROVE: Threads message response type
+
 ## 1.1.42
 
 ### Patch Changes
