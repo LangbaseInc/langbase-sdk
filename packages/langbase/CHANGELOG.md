@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.45
+
+### Patch Changes
+
+- configurable top-k in memory
+
 ## 1.1.44
 
 ### Patch Changes
