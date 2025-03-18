@@ -45,11 +45,12 @@ async function main() {
 
 	const [streamForResponse, streamForToolCall] = response.stream.tee();
 
-	const tools = await getToolsFromRunStream(streamForToolCall);
+	const toolCalls = await getToolsFromRunStream(streamForToolCall);
+	const hasToolCalls = toolCalls.length > 0;
 
-	if (tools.length) {
+	if (hasToolCalls) {
 		// handle the tool calls
-		console.log('Tools:', tools);
+		console.log('Tools:', toolCalls);
 	} else {
 		// handle the response stream
 	}

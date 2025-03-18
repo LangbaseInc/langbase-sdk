@@ -43,11 +43,12 @@ async function main() {
 		],
 	});
 
-	const tools = await getToolsFromRun(response);
+	const toolCalls = await getToolsFromRun(response);
+	const hasToolCalls = toolCalls.length > 0;
 
-	if (tools.length) {
+	if (hasToolCalls) {
 		// handle the tool calls
-		console.log('Tools:', tools);
+		console.log('Tools:', toolCalls);
 	} else {
 		// handle the response
 		console.log('Response:', response);
