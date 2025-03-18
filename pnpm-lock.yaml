@@ -51,8 +51,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       langbase:
-        specifier: ^1.1.45
-        version: 1.1.45(react@18.3.1)(ws@8.18.0)
+        specifier: ^1.1.46
+        version: 1.1.46(react@18.3.1)(ws@8.18.0)
       lucide-react:
         specifier: ^0.416.0
         version: 0.416.0(react@18.3.1)
@@ -115,8 +115,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.7
       langbase:
-        specifier: 1.1.45
-        version: 1.1.45(react@18.3.1)(ws@8.18.0)
+        specifier: 1.1.46
+        version: 1.1.46(react@18.3.1)(ws@8.18.0)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -3243,8 +3243,8 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  langbase@1.1.45:
-    resolution: {integrity: sha512-uh2oiYxVPWXRExJemzZtetiKsa9jMACuU1MJDO7oLLtsBskOlrwFYHFT2bc8SttM7lOUZIKjBGEXoSGps99g/A==}
+  langbase@1.1.46:
+    resolution: {integrity: sha512-+InoRWAx2Z18JK+yGX4+tyihxBx0uXmRSPCfRK37IIa3uvxksmEJIbuG/p3M6DsgCXLf2rIj+Eo8UjYQU7S8YA==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19
@@ -6540,7 +6540,7 @@ snapshots:
 
   clear-any-console@1.16.3(react@18.3.1)(ws@8.18.0):
     dependencies:
-      langbase: 1.1.45(react@18.3.1)(ws@8.18.0)
+      langbase: 1.1.46(react@18.3.1)(ws@8.18.0)
     transitivePeerDependencies:
       - encoding
       - react
@@ -6558,7 +6558,7 @@ snapshots:
   cli-handle-error@4.4.1(react@18.3.1)(ws@8.18.0):
     dependencies:
       chalk: 3.0.0
-      langbase: 1.1.45(react@18.3.1)(ws@8.18.0)
+      langbase: 1.1.46(react@18.3.1)(ws@8.18.0)
       log-symbols: 3.0.0
     transitivePeerDependencies:
       - encoding
@@ -6568,7 +6568,7 @@ snapshots:
   cli-handle-unhandled@1.1.2(react@18.3.1)(ws@8.18.0):
     dependencies:
       cli-handle-error: 4.4.1(react@18.3.1)(ws@8.18.0)
-      langbase: 1.1.45(react@18.3.1)(ws@8.18.0)
+      langbase: 1.1.46(react@18.3.1)(ws@8.18.0)
     transitivePeerDependencies:
       - encoding
       - react
@@ -6595,7 +6595,7 @@ snapshots:
     dependencies:
       chalk: 5.4.1
       clear-any-console: 1.16.3(react@18.3.1)(ws@8.18.0)
-      langbase: 1.1.45(react@18.3.1)(ws@8.18.0)
+      langbase: 1.1.46(react@18.3.1)(ws@8.18.0)
     transitivePeerDependencies:
       - encoding
       - react
@@ -8053,7 +8053,7 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  langbase@1.1.45(react@18.3.1)(ws@8.18.0):
+  langbase@1.1.46(react@18.3.1)(ws@8.18.0):
     dependencies:
       dotenv: 16.4.7
       openai: 4.83.0(ws@8.18.0)(zod@3.24.1)
