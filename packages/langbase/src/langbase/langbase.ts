@@ -269,6 +269,8 @@ export interface MemoryCreateOptions {
 	description?: string;
 	embedding_model?: EmbeddingModels;
 	top_k?: number;
+	chunk_size?: number;
+	chunk_overlap?: number;
 }
 
 export interface MemoryDeleteOptions {
