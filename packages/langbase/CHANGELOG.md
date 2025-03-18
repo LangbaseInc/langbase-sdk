@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.46
+
+### Patch Changes
+
+- Add chunk size and chunk overlap option in memory create
+
 ## 1.1.45
 
 ### Patch Changes
