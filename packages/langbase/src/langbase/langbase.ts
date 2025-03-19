@@ -27,7 +27,7 @@ export interface RunOptionsStreamT extends RunOptionsBase {
 export interface LlmOptionsBase {
 	messages: PromptMessage[];
 	model: string;
-	llmKey: string;
+	apiKey: string;
 	top_p?: number;
 	max_tokens?: number;
 	temperature?: number;
@@ -1092,7 +1092,7 @@ export class Langbase {
 	private async runLlm(
 		options: LlmOptions | LlmOptionsStream,
 	): Promise<RunResponse | RunResponseStream> {
-		if (!options.llmKey) {
+		if (!options.apiKey) {
 			throw new Error('LLM API key is required to run this LLM.');
 		}
 
@@ -1105,7 +1105,7 @@ export class Langbase {
 			endpoint: '/v1/llm/run',
 			body: options,
 			headers: {
-				...(options.llmKey && {'LB-LLM-Key': options.llmKey}),
+				...(options.apiKey && {'LB-LLM-Key': options.apiKey}),
 			},
 		});
 	}
