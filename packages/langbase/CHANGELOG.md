@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.47
+
+### Patch Changes
+
+- 👌 IMPROVE: llm.run()
+
 ## 1.1.46
 
 ### Patch Changes
