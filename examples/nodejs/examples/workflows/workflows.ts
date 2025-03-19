@@ -13,7 +13,7 @@ async function main() {
 		run: async () => {
 			return langbase.llm.run({
 				model: 'openai:gpt-4o-mini',
-				llmKey: process.env.OPENAI_API_KEY!,
+				apiKey: process.env.OPENAI_API_KEY!,
 				messages: [
 					{
 						role: 'system',
