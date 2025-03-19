@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.48
+
+### Patch Changes
+
+- 📦 NEW: Create memory response types
+
 ## 1.1.47
 
 ### Patch Changes
