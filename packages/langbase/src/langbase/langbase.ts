@@ -317,6 +317,8 @@ export interface MemoryRetryDocEmbedOptions {
 }
 
 export interface MemoryCreateResponse extends MemoryBaseResponse {
+	chunk_size: number;
+	chunk_overlap: number;
 	embedding_model: EmbeddingModels;
 }
 export interface MemoryListResponse extends MemoryBaseResponse {
