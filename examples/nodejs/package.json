@@ -42,7 +42,7 @@
   "dependencies": {
     "@langbase/cli": "workspace:*",
     "dotenv": "^16.4.5",
-    "langbase": "1.1.48",
+    "langbase": "1.1.49",
     "uuid": "^11.1.0"
   }
 }
