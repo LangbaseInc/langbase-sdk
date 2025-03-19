@@ -35,7 +35,7 @@
     "threads.append": "npx tsx ./examples/threads/threads.append.ts",
     "threads.messages.list": "npx tsx ./examples/threads/threads.messages.list.ts",
     "threads.get": "npx tsx ./examples/threads/threads.get.ts",
-    "workflows": "npx tsx ./examples/workflows/workflows.ts"
+    "workflow": "npx tsx ./examples/workflows/workflows.ts"
   },
   "keywords": [],
   "author": "Ahmad Awais <me@AhmadAwais.com> (https://twitter.com/MrAhmadAwais)",
