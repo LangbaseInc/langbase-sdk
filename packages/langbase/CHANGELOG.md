@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.49
+
+### Patch Changes
+
+- Add workflows
+
 ## 1.1.48
 
 ### Patch Changes
