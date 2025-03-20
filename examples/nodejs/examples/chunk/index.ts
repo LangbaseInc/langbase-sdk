@@ -21,7 +21,6 @@ async function main() {
 		contentType: 'text/plain',
 		chunkMaxLength: '1024',
 		chunkOverlap: '256',
-		separator: '\n',
 	});
 
 	console.log(results);

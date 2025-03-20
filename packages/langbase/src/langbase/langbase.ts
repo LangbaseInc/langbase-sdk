@@ -394,7 +394,6 @@ export interface ChunkOptions {
 	contentType: ContentType;
 	chunkMaxLength?: string;
 	chunkOverlap?: string;
-	separator?: string;
 }
 
 export type ChunkResponse = string[];
@@ -974,7 +973,6 @@ export class Langbase {
 			formData.append('chunkMaxLength', options.chunkMaxLength);
 		if (options.chunkOverlap)
 			formData.append('chunkOverlap', options.chunkOverlap);
-		if (options.separator) formData.append('separator', options.separator);
 
 		const response = await fetch(`${this.baseUrl}/v1/chunk`, {
 			method: 'POST',
