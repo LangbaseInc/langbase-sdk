@@ -51,8 +51,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       langbase:
-        specifier: ^1.1.48
-        version: 1.1.48(react@18.3.1)(ws@8.18.0)
+        specifier: ^1.1.49
+        version: 1.1.49(react@18.3.1)(ws@8.18.0)
       lucide-react:
         specifier: ^0.416.0
         version: 0.416.0(react@18.3.1)
@@ -115,8 +115,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.7
       langbase:
-        specifier: 1.1.49
-        version: 1.1.49(react@18.3.1)(ws@8.18.0)
+        specifier: 1.1.50
+        version: 1.1.50(react@18.3.1)(ws@8.18.0)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -3243,8 +3243,8 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  langbase@1.1.48:
-    resolution: {integrity: sha512-DYMQuiscpIyw1CMYcYrV7q3cXtEXjue4qWFleosjmQPrFWs4nD5Zp911gjxu1sSVPxpRx2uIeSLq1zMceL6RtQ==}
+  langbase@1.1.49:
+    resolution: {integrity: sha512-OBxOrA07qgdtY0Ia+VwU/xT6c8Lb1eVcnOE80fevFdcS1TNEGIiz26SMwB8riktVNR+qCC6mX4wEStv9cFWt1w==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19
@@ -3252,8 +3252,8 @@ packages:
       react:
         optional: true
 
-  langbase@1.1.49:
-    resolution: {integrity: sha512-OBxOrA07qgdtY0Ia+VwU/xT6c8Lb1eVcnOE80fevFdcS1TNEGIiz26SMwB8riktVNR+qCC6mX4wEStv9cFWt1w==}
+  langbase@1.1.50:
+    resolution: {integrity: sha512-Q9RC/AYkI1aCViGncK/AZabi1xfaEkugyNdCyFyC73CfI2CkzQDnfWRMebkfzK4erCHHYanRbuSK/Pf7vv+dhw==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19
@@ -6549,7 +6549,7 @@ snapshots:
 
   clear-any-console@1.16.3(react@18.3.1)(ws@8.18.0):
     dependencies:
-      langbase: 1.1.48(react@18.3.1)(ws@8.18.0)
+      langbase: 1.1.49(react@18.3.1)(ws@8.18.0)
     transitivePeerDependencies:
       - encoding
       - react
@@ -6567,7 +6567,7 @@ snapshots:
   cli-handle-error@4.4.1(react@18.3.1)(ws@8.18.0):
     dependencies:
       chalk: 3.0.0
-      langbase: 1.1.48(react@18.3.1)(ws@8.18.0)
+      langbase: 1.1.49(react@18.3.1)(ws@8.18.0)
       log-symbols: 3.0.0
     transitivePeerDependencies:
       - encoding
@@ -6577,7 +6577,7 @@ snapshots:
   cli-handle-unhandled@1.1.2(react@18.3.1)(ws@8.18.0):
     dependencies:
       cli-handle-error: 4.4.1(react@18.3.1)(ws@8.18.0)
-      langbase: 1.1.48(react@18.3.1)(ws@8.18.0)
+      langbase: 1.1.49(react@18.3.1)(ws@8.18.0)
     transitivePeerDependencies:
       - encoding
       - react
@@ -6604,7 +6604,7 @@ snapshots:
     dependencies:
       chalk: 5.4.1
       clear-any-console: 1.16.3(react@18.3.1)(ws@8.18.0)
-      langbase: 1.1.48(react@18.3.1)(ws@8.18.0)
+      langbase: 1.1.49(react@18.3.1)(ws@8.18.0)
     transitivePeerDependencies:
       - encoding
       - react
@@ -8062,7 +8062,7 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  langbase@1.1.48(react@18.3.1)(ws@8.18.0):
+  langbase@1.1.49(react@18.3.1)(ws@8.18.0):
     dependencies:
       dotenv: 16.4.7
       openai: 4.83.0(ws@8.18.0)(zod@3.24.1)
@@ -8074,7 +8074,7 @@ snapshots:
       - encoding
       - ws
 
-  langbase@1.1.49(react@18.3.1)(ws@8.18.0):
+  langbase@1.1.50(react@18.3.1)(ws@8.18.0):
     dependencies:
       dotenv: 16.4.7
       openai: 4.83.0(ws@8.18.0)(zod@3.24.1)
