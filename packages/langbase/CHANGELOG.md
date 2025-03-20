@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.50
+
+### Patch Changes
+
+- 👌 IMPROVE: Chunk inputs
+
 ## 1.1.49
 
 ### Patch Changes
