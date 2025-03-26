@@ -9,10 +9,10 @@
  * In this example, we retrieve memories with the following filters:
  * - company: Langbase
  * - category: docs or examples
- * - primative: Chunk or Threads
+ * - primitive: Chunk or Threads
  * 
  * We expect to get all chunks of memory from the Langbase Docs memory 
- * that have the company Langbase, the category docs or examples, and the primative can be Chunk or Threads.
+ * that have the company Langbase, the category docs or examples, and the primitive can be Chunk or Threads.
  * 
 */
 
@@ -34,7 +34,7 @@ async function main() {
 						["category", "Eq", "docs"],
 						["category", "Eq", "examples"]
 					]],
-					["primative", "In", ["Chunk", "Threads"]]
+					["primitive", "In", ["Chunk", "Threads"]]
 				]]
 			}
 		],

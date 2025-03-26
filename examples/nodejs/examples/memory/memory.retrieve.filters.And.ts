@@ -24,10 +24,10 @@ async function main() {
 		memory: [
 		{
 			name: "langbase-docs",
-			filters:["And", [
-                ["company", "Eq", "Langbase"],
-                ["category", "Eq", "docs"]
-            ]]
+			filters: ["And", [
+				["company", "Eq", "Langbase"],
+				["category", "Eq", "docs"]
+			]]
 		},
 		],
 		query: "What are pipes in Langbase Docs?",
