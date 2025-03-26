@@ -280,10 +280,8 @@ export interface MemoryDeleteOptions {
 type FilterOperator = 'Eq' | 'NotEq' | 'In' | 'NotIn' | 'And' | 'Or';
 type FilterConnective = 'And' | 'Or';
 type FilterValue = string | string[];
-type MemoryFilters = [
-	FilterOperator | FilterConnective,
-	FilterValue | MemoryFilters,
-][];
+type FilterCondition = [string, FilterOperator, FilterValue];
+type MemoryFilters = [FilterConnective, MemoryFilters[]] | FilterCondition;
 
 export interface MemoryRetrieveOptions {
 	query: string;
