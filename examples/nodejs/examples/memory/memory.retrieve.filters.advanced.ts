@@ -28,14 +28,16 @@ async function main() {
 		memory: [
 			{
 				name: "langbase-docs",
-				filters: ["And", [
-					["company", "Eq", "Langbase"],
-					["Or", [
-						["category", "Eq", "docs"],
-						["category", "Eq", "examples"]
-					]],
-					["primitive", "In", ["Chunk", "Threads"]]
-				]]
+				filters: [
+					"And", [
+						["company", "Eq", "Langbase"],
+						["Or", [
+							["category", "Eq", "docs"],
+							["category", "Eq", "examples"]
+						]],
+						["primitive", "In", ["Chunk", "Threads"]]
+					]
+				]
 			}
 		],
 		query: "What are primitives in Langbase?",
