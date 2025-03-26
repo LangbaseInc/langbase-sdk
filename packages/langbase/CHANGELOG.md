@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.51
+
+### Patch Changes
+
+- Fix filter types
+
 ## 1.1.50
 
 ### Patch Changes
