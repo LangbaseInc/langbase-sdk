@@ -1,3 +1,5 @@
+// Experimental upcoming beta AI primitve.
+// Please refer to the documentation for more information: https://langbase.com/docs for more information.
 import 'dotenv/config';
 import {Langbase} from 'langbase';
 

@@ -1,3 +1,5 @@
+// Experimental upcoming beta AI primitve.
+// Please refer to the documentation for more information: https://langbase.com/docs for more information.
 import 'dotenv/config';
 import {Langbase} from 'langbase';
 
@@ -6,7 +8,7 @@ const langbase = new Langbase({
 });
 
 async function main() {
-	const response = await langbase.threads.messages.list({
+	const response = await langbase.threads.get({
 		threadId: 'REPLACE_WITH_THREAD_ID',
 	});
 
