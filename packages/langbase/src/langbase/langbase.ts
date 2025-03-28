@@ -197,6 +197,7 @@ interface PipeBaseOptions {
 	memory?: {
 		name: string;
 	}[];
+	response_format?: ResponseFormat;
 }
 
 export interface PipeListResponse {
