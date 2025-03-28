@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.52
+
+### Patch Changes
+
+- Response format
+
 ## 1.1.51
 
 ### Patch Changes
