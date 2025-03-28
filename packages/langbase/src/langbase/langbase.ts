@@ -13,7 +13,8 @@ export interface RunOptionsBase {
 	name?: string; // Pipe name for SDK,
 	apiKey?: string; // pipe level key for SDK
 	llmKey?: string; // LLM API key
-	json?: boolean;
+	json?: boolean
+	memory?: RuntimeMemory;
 }
 
 export interface RunOptionsT extends RunOptionsBase {
@@ -100,6 +101,10 @@ export interface Function {
 	name: string;
 	arguments: string;
 }
+
+export type RuntimeMemory = {
+	name: string;
+}[];
 
 export interface ToolCall {
 	id: string;
