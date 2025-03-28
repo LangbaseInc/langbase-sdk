@@ -80,7 +80,7 @@ export class Pipe {
 	/**
 	 * @deprecated This method is deprecated and will be removed in a future version.
 	 *
-	 * Please use `langbase.pipe.run()` instead
+	 * Please use `langbase.pipes.run()` instead
 	 * @see https://langbase.com/docs/sdk/pipe/run
 	 */
 	async generateText(options: GenerateOptions): Promise<GenerateResponse> {
@@ -93,7 +93,7 @@ export class Pipe {
 	/**
 	 * @deprecated This method is deprecated and will be removed in a future version.
 	 *
-	 * Please use `langbase.pipe.run()` instead
+	 * Please use `langbase.pipes.run()` instead
 	 * @see https://langbase.com/docs/sdk/pipe/run
 	 */
 	async streamText(options: StreamOptions): Promise<StreamResponse> {

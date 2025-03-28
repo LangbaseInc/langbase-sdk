@@ -45,4 +45,9 @@ npm run embed
 
 # parse
 npm run parse
+
+# threads
+npm run thread.messages.add
+npm run thread.messages.list
+npm run thread.delete
 ```

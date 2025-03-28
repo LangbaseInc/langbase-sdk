@@ -1,5 +1,5 @@
-import { Message, Role, RunResponse } from '@/langbase/langbase';
-import { getRunner, Runner } from '@/lib/helpers';
+import {Message, Role, RunResponse} from '@/langbase/langbase';
+import {getRunner, Runner} from '@/lib/helpers';
 import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {z} from 'zod';
 
@@ -13,9 +13,10 @@ interface PipeRequestOptions {
 interface UsePipeOptions {
 	apiRoute?: string;
 	onResponse?: (message: Message) => void;
-	onFinish?: (messages: Message[]) => void;
+	onFinish?: (messages: Message[], threadId: string) => void;
 	onConnect?: () => void;
 	onError?: (error: Error) => void;
+	onCancel?: (messages: Message[]) => void;
 	threadId?: string;
 	initialMessages?: Message[];
 	stream?: boolean;
@@ -33,6 +34,7 @@ export function usePipe({
 	threadId: initialThreadId,
 	initialMessages = [],
 	stream = true,
+	onCancel,
 }: UsePipeOptions = {}) {
 	const [messages, setMessages] = useState<Message[]>(initialMessages);
 	const [input, setInput] = useState('');
@@ -69,7 +71,7 @@ export function usePipe({
 				onResponse?.({...assistantMessage});
 			}
 
-			onFinish?.(messagesRef.current);
+			onFinish?.(messagesRef.current, threadIdRef.current || '');
 		},
 		[updateMessages, onResponse, onFinish],
 	);
@@ -83,7 +85,7 @@ export function usePipe({
 			const newMessages = [...messagesRef.current, assistantMessage];
 			updateMessages(newMessages);
 			onResponse?.(assistantMessage);
-			onFinish?.(newMessages);
+			onFinish?.(newMessages, threadIdRef.current || '');
 		},
 		[updateMessages, onResponse, onFinish],
 	);
@@ -256,6 +258,7 @@ export function usePipe({
 
 	const stop = useCallback(() => {
 		abortControllerRef.current?.abort();
+		onCancel?.(messagesRef.current);
 		setIsLoading(false);
 	}, []);
 

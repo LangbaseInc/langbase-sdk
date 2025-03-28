@@ -1,5 +1,120 @@
 # `langbase` SDK
 
+## 1.1.51
+
+### Patch Changes
+
+- Fix filter types
+
+## 1.1.50
+
+### Patch Changes
+
+- 👌 IMPROVE: Chunk inputs
+
+## 1.1.49
+
+### Patch Changes
+
+- Add workflows
+
+## 1.1.48
+
+### Patch Changes
+
+- 📦 NEW: Create memory response types
+
+## 1.1.47
+
+### Patch Changes
+
+- 👌 IMPROVE: llm.run()
+
+## 1.1.46
+
+### Patch Changes
+
+- Add chunk size and chunk overlap option in memory create
+
+## 1.1.45
+
+### Patch Changes
+
+- configurable top-k in memory
+
+## 1.1.44
+
+### Patch Changes
+
+- 👌 IMPROVE: Types
+
+## 1.1.43
+
+### Patch Changes
+
+- 👌 IMPROVE: Threads message response type
+
+## 1.1.42
+
+### Patch Changes
+
+- 📦 NEW: Export tool interface
+
+## 1.1.41
+
+### Patch Changes
+
+- Improve LLM Primitive
+
+## 1.1.40
+
+### Patch Changes
+
+- 📦 NEW: onCancel function in usePipe
+
+## 1.1.39
+
+### Patch Changes
+
+- Runtime LLM
+
+## 1.1.38
+
+### Patch Changes
+
+- 📦 NEW: Threads support
+
+## 1.1.37
+
+### Patch Changes
+
+- 📦 NEW: Base url
+
+## 1.1.36
+
+### Patch Changes
+
+- 👌 IMPROVE: SDK syntax
+
+## 1.1.35
+
+### Patch Changes
+
+- 📦 NEW: Threads support
+
+## 1.1.34
+
+### Patch Changes
+
+- 🐛 FIX: Thread id null in response
+
+## 1.1.33
+
+### Patch Changes
+
+- 4f0d103: 📦 NEW: Thread id in onFinish
+- 📦 NEW: Thread id in onFinish()
+
 ## 1.1.32
 
 ### Patch Changes

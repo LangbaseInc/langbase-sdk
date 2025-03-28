@@ -25,6 +25,33 @@ export interface RunOptionsStreamT extends RunOptionsBase {
 	stream: true;
 }
 
+export interface LlmOptionsBase {
+	messages: PromptMessage[];
+	model: string;
+	apiKey: string;
+	top_p?: number;
+	max_tokens?: number;
+	temperature?: number;
+	presence_penalty?: number;
+	frequency_penalty?: number;
+	stop?: string[];
+	tools?: Tools[];
+	tool_choice?: 'auto' | 'required' | ToolChoice;
+	parallel_tool_calls?: boolean;
+	reasoning_effort?: string | null;
+	max_completion_tokens?: number;
+	response_format?: ResponseFormat;
+	customModelParams?: Record<string, any>;
+}
+
+export interface LlmOptions extends LlmOptionsBase {
+	stream?: false;
+}
+
+export interface LlmOptionsStream extends LlmOptionsBase {
+	stream: true;
+}
+
 interface ChoiceGenerate {
 	index: number;
 	message: Message;
@@ -51,9 +78,6 @@ export interface RunResponse {
 	rawResponse?: {
 		headers: Record<string, string>;
 	};
-	messages: Message[];
-	llmKey?: string;
-	name?: string;
 }
 
 export interface RunResponseStream {
@@ -96,6 +120,45 @@ export interface Message {
 	tool_calls?: ToolCall[];
 }
 
+// Message with proper content type for Vision support
+export interface PromptMessage {
+	role: Role;
+	content: string | MessageContentType[] | null;
+	name?: string;
+	tool_call_id?: string;
+	tool_calls?: ToolCall[];
+}
+
+export interface MessageContentType {
+	type: string;
+	text?: string;
+	image_url?: {
+		url: string;
+		detail?: string;
+	};
+	cache_control?: {
+		type: 'ephemeral';
+	};
+}
+
+export type ResponseFormat =
+	| {type: 'text'}
+	| {type: 'json_object'}
+	| {
+			type: 'json_schema';
+			json_schema: {
+				description?: string;
+				name: string;
+				schema?: Record<string, unknown>;
+				strict?: boolean | null;
+			};
+	  };
+
+export interface ThreadMessage extends Message {
+	attachments?: any[];
+	metadata?: Record<string, string>;
+}
+
 export interface Variable {
 	name: string;
 	value: string;
@@ -106,7 +169,7 @@ interface ToolChoice {
 	function: {name: string};
 }
 
-interface Tools {
+export interface Tools {
 	type: 'function';
 	function: {
 		name: string;
@@ -139,6 +202,7 @@ interface PipeBaseOptions {
 	memory?: {
 		name: string;
 	}[];
+	response_format?: ResponseFormat;
 }
 
 export interface PipeListResponse {
@@ -210,6 +274,9 @@ export interface MemoryCreateOptions {
 	name: string;
 	description?: string;
 	embedding_model?: EmbeddingModels;
+	top_k?: number;
+	chunk_size?: number;
+	chunk_overlap?: number;
 }
 
 export interface MemoryDeleteOptions {
@@ -219,7 +286,8 @@ export interface MemoryDeleteOptions {
 type FilterOperator = 'Eq' | 'NotEq' | 'In' | 'NotIn' | 'And' | 'Or';
 type FilterConnective = 'And' | 'Or';
 type FilterValue = string | string[];
-type MemoryFilters = [FilterOperator | FilterConnective, FilterValue | MemoryFilters][];
+type FilterCondition = [string, FilterOperator, FilterValue];
+type MemoryFilters = [FilterConnective, MemoryFilters[]] | FilterCondition;
 
 export interface MemoryRetrieveOptions {
 	query: string;
@@ -253,6 +321,8 @@ export interface MemoryRetryDocEmbedOptions {
 }
 
 export interface MemoryCreateResponse extends MemoryBaseResponse {
+	chunk_size: number;
+	chunk_overlap: number;
 	embedding_model: EmbeddingModels;
 }
 export interface MemoryListResponse extends MemoryBaseResponse {
@@ -288,7 +358,7 @@ export interface MemoryListDocResponse {
 
 export interface LangbaseOptions {
 	apiKey: string;
-	baseUrl?: string;
+	baseUrl?: 'https://api.langbase.com' | 'https://eu-api.langbase.com';
 }
 
 export interface ToolWebSearchOptions {
@@ -328,7 +398,6 @@ export interface ChunkOptions {
 	contentType: ContentType;
 	chunkMaxLength?: string;
 	chunkOverlap?: string;
-	separator?: string;
 }
 
 export type ChunkResponse = string[];
@@ -344,10 +413,73 @@ export type ParseResponse = {
 	content: string;
 };
 
+export interface ThreadsCreate {
+	threadId?: string;
+	metadata?: Record<string, string>;
+	messages?: ThreadMessage[];
+}
+
+export interface ThreadsUpdate {
+	threadId: string;
+	metadata: Record<string, string>;
+}
+
+export interface ThreadsGet {
+	threadId: string;
+}
+
+export interface DeleteThreadOptions {
+	threadId: string;
+}
+
+export interface ThreadsBaseResponse {
+	id: string;
+	object: 'thread';
+	created_at: number;
+	metadata: Record<string, string>;
+}
+
+export interface ThreadMessagesCreate {
+	threadId: string;
+	messages: ThreadMessage[];
+}
+
+export interface ThreadMessagesList {
+	threadId: string;
+}
+
+export interface ThreadMessagesBaseResponse {
+	id: string;
+	created_at: number;
+	thread_id: string;
+	content: string;
+	role: Role;
+	tool_call_id: string | null;
+	tool_calls: ToolCall[] | [];
+	name: string | null;
+	attachments: any[] | [];
+	metadata: Record<string, string> | {};
+}
+
 export class Langbase {
 	private request: Request;
 	private apiKey: string;
 	private baseUrl: string;
+	public pipes: {
+		list: () => Promise<PipeListResponse[]>;
+		create: (options: PipeCreateOptions) => Promise<PipeCreateResponse>;
+		update: (options: PipeUpdateOptions) => Promise<PipeUpdateResponse>;
+		run: {
+			(options: RunOptionsStream): Promise<RunResponseStream>;
+			(options: RunOptions): Promise<RunResponse>;
+		};
+	};
+
+	/**
+	 * @deprecated This method is deprecated and will be removed in a future version.
+	 *
+	 * Please use `langbase.pipes`
+	 */
 	public pipe: {
 		list: () => Promise<PipeListResponse[]>;
 		create: (options: PipeCreateOptions) => Promise<PipeCreateResponse>;
@@ -357,6 +489,35 @@ export class Langbase {
 			(options: RunOptions): Promise<RunResponse>;
 		};
 	};
+
+	public memories: {
+		create: (options: MemoryCreateOptions) => Promise<MemoryCreateResponse>;
+		delete: (options: MemoryDeleteOptions) => Promise<MemoryDeleteResponse>;
+		retrieve: (
+			options: MemoryRetrieveOptions,
+		) => Promise<MemoryRetrieveResponse[]>;
+		list: () => Promise<MemoryListResponse[]>;
+		documents: {
+			list: (
+				options: MemoryListDocOptions,
+			) => Promise<MemoryListDocResponse[]>;
+			delete: (
+				options: MemoryDeleteDocOptions,
+			) => Promise<MemoryDeleteDocResponse>;
+			upload: (options: MemoryUploadDocOptions) => Promise<Response>;
+			embeddings: {
+				retry: (
+					options: MemoryRetryDocEmbedOptions,
+				) => Promise<MemoryRetryDocEmbedResponse>;
+			};
+		};
+	};
+
+	/**
+	 * @deprecated This method is deprecated and will be removed in a future version.
+	 *
+	 * Please use `langbase.memories`
+	 */
 	public memory: {
 		create: (options: MemoryCreateOptions) => Promise<MemoryCreateResponse>;
 		delete: (options: MemoryDeleteOptions) => Promise<MemoryDeleteResponse>;
@@ -380,7 +541,34 @@ export class Langbase {
 		};
 	};
 
+	public threads: {
+		create: (options: ThreadsCreate) => Promise<ThreadsBaseResponse>;
+		update: (options: ThreadsUpdate) => Promise<ThreadsBaseResponse>;
+		get: (options: ThreadsGet) => Promise<ThreadsBaseResponse>;
+		delete: (options: DeleteThreadOptions) => Promise<{success: boolean}>;
+		append: (
+			options: ThreadMessagesCreate,
+		) => Promise<ThreadMessagesBaseResponse[]>;
+		messages: {
+			list: (
+				options: ThreadMessagesList,
+			) => Promise<ThreadMessagesBaseResponse[]>;
+		};
+	};
+
+	/**
+	 * @deprecated This method is deprecated and will be removed in a future version.
+	 *
+	 * Please use `langbase.tools`
+	 */
 	public tool: {
+		crawl: (options: ToolCrawlOptions) => Promise<ToolCrawlResponse[]>;
+		webSearch: (
+			options: ToolWebSearchOptions,
+		) => Promise<ToolWebSearchResponse[]>;
+	};
+
+	public tools: {
 		crawl: (options: ToolCrawlOptions) => Promise<ToolCrawlResponse[]>;
 		webSearch: (
 			options: ToolWebSearchOptions,
@@ -390,6 +578,13 @@ export class Langbase {
 	public embed: (options: EmbedOptions) => Promise<EmbedResponse>;
 	public chunk: (options: ChunkOptions) => Promise<ChunkResponse>;
 	public parse: (options: ParseOptions) => Promise<ParseResponse>;
+
+	public llm: {
+		run: {
+			(options: LlmOptionsStream): Promise<RunResponseStream>;
+			(options: LlmOptions): Promise<RunResponse>;
+		};
+	};
 
 	constructor(options?: LangbaseOptions) {
 		this.baseUrl = options?.baseUrl ?? 'https://api.langbase.com';
@@ -401,6 +596,13 @@ export class Langbase {
 
 		// Initialize pipe property with method bindings
 		this.pipe = {
+			list: this.listPipe.bind(this),
+			create: this.createPipe.bind(this),
+			update: this.updatePipe.bind(this),
+			run: this.runPipe.bind(this),
+		};
+
+		this.pipes = {
 			list: this.listPipe.bind(this),
 			create: this.createPipe.bind(this),
 			update: this.updatePipe.bind(this),
@@ -423,6 +625,27 @@ export class Langbase {
 			},
 		};
 
+		// Initialize memory property with method bindings
+		this.memories = {
+			create: this.createMemory.bind(this),
+			delete: this.deleteMemory.bind(this),
+			retrieve: this.retrieveMemory.bind(this),
+			list: this.listMemory.bind(this),
+			documents: {
+				list: this.listDocs.bind(this),
+				delete: this.deleteDoc.bind(this),
+				upload: this.uploadDocs.bind(this),
+				embeddings: {
+					retry: this.retryDocEmbed.bind(this),
+				},
+			},
+		};
+
+		this.tools = {
+			crawl: this.webCrawl.bind(this),
+			webSearch: this.webSearch.bind(this),
+		};
+
 		this.tool = {
 			crawl: this.webCrawl.bind(this),
 			webSearch: this.webSearch.bind(this),
@@ -431,6 +654,20 @@ export class Langbase {
 		this.embed = this.generateEmbeddings.bind(this);
 		this.chunk = this.chunkDocument.bind(this);
 		this.parse = this.parseDocument.bind(this);
+		this.threads = {
+			create: this.createThread.bind(this),
+			update: this.updateThread.bind(this),
+			get: this.getThread.bind(this),
+			delete: this.deleteThread.bind(this),
+			append: this.appendThreadMessages.bind(this),
+			messages: {
+				list: this.listThreadMessages.bind(this),
+			},
+		};
+
+		this.llm = {
+			run: this.runLlm.bind(this),
+		};
 	}
 
 	private async runPipe(
@@ -740,7 +977,6 @@ export class Langbase {
 			formData.append('chunkMaxLength', options.chunkMaxLength);
 		if (options.chunkOverlap)
 			formData.append('chunkOverlap', options.chunkOverlap);
-		if (options.separator) formData.append('separator', options.separator);
 
 		const response = await fetch(`${this.baseUrl}/v1/chunk`, {
 			method: 'POST',
@@ -781,5 +1017,100 @@ export class Langbase {
 		});
 
 		return response.json();
+	}
+
+	/**
+	 * Creates a new thread with specified options.
+	 * @param {ThreadsCreate} options - The options object containing thread creation parameters.
+	 * @returns {Promise<ThreadsBaseResponse>} A promise that resolves to the created thread response.
+	 * @private
+	 */
+	private async createThread(
+		options: ThreadsCreate,
+	): Promise<ThreadsBaseResponse> {
+		return this.request.post({
+			endpoint: '/v1/threads',
+			body: options,
+		});
+	}
+
+	/**
+	 * Updates an existing thread with the provided options.
+	 *
+	 * @param options - The options to update the thread with
+	 * @param options.threadId - The ID of the thread to update
+	 * @returns A promise that resolves to the updated thread response
+	 * @throws {Error} If the request fails
+	 */
+	private async updateThread(
+		options: ThreadsUpdate,
+	): Promise<ThreadsBaseResponse> {
+		return this.request.post({
+			endpoint: `/v1/threads/${options.threadId}`,
+			body: options,
+		});
+	}
+
+	/**
+	 * Retrieves a thread by its ID.
+	 * @param {ThreadsGet} options - The options object containing the thread ID.
+	 * @param {string} options.threadId - The unique identifier of the thread to retrieve.
+	 * @returns {Promise<ThreadsBaseResponse>} A promise that resolves to the thread data.
+	 */
+	private async getThread(options: ThreadsGet): Promise<ThreadsBaseResponse> {
+		return this.request.get({
+			endpoint: `/v1/threads/${options.threadId}`,
+		});
+	}
+
+	private async deleteThread(
+		options: DeleteThreadOptions,
+	): Promise<{success: boolean}> {
+		return this.request.delete({
+			endpoint: `/v1/threads/${options.threadId}`,
+		});
+	}
+
+	private async appendThreadMessages(
+		options: ThreadMessagesCreate,
+	): Promise<ThreadMessagesBaseResponse[]> {
+		return this.request.post({
+			endpoint: `/v1/threads/${options.threadId}/messages`,
+			body: options.messages,
+		});
+	}
+
+	private async listThreadMessages(
+		options: ThreadMessagesList,
+	): Promise<ThreadMessagesBaseResponse[]> {
+		return this.request.get({
+			endpoint: `/v1/threads/${options.threadId}/messages`,
+		});
+	}
+
+	// Add the private implementation
+	private async runLlm(options: LlmOptionsStream): Promise<RunResponseStream>;
+
+	private async runLlm(options: LlmOptions): Promise<RunResponse>;
+
+	private async runLlm(
+		options: LlmOptions | LlmOptionsStream,
+	): Promise<RunResponse | RunResponseStream> {
+		if (!options.apiKey) {
+			throw new Error('LLM API key is required to run this LLM.');
+		}
+
+		// Remove stream property if it's not set to true
+		if (typeof options.stream === 'undefined') {
+			delete options.stream;
+		}
+
+		return this.request.post({
+			endpoint: '/v1/llm/run',
+			body: options,
+			headers: {
+				...(options.apiKey && {'LB-LLM-Key': options.apiKey}),
+			},
+		});
 	}
 }
