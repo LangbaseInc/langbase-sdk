@@ -33,11 +33,11 @@ const flags = {
 const commands = {
 	auth: { desc: `Authenticate with Langbase` },
 	deploy: { desc: `Deploy a script to Langbase` },
-	help: { desc: `Print help info` }
+	help: { desc: `Print help info` },
 };
 
 const helpText = meowHelp({
-	name: `baseai`,
+	name: `langbase`,
 	flags,
 	commands,
 	desc: false,
@@ -52,5 +52,6 @@ const options = {
 	hardRejection: false,
 	flags
 };
+
 
 export default meow(helpText, options);
