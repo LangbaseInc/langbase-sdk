@@ -17,7 +17,10 @@ const command = (cmd: string): boolean => input.includes(cmd);
 const flag = (flg: string): boolean => Boolean(flags[flg]);
 
 (async () => {
-	await cliInit({ clear });
+	// Skip welcome message for docs-mcp-server command
+	if (!command('docs-mcp-server')) {
+		await cliInit({ clear });
+	}
 	if (debug) debugMode(cli);
 
 	if (command('help')) {

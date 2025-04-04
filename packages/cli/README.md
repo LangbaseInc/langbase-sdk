@@ -9,7 +9,7 @@ Please follow the [Langbase documentation](https://langbase.com/docs) for the la
 ## Installation
 
 ```bash
-npm install -g @langbase/cli
+npx @langbase/cli
 ```
 
 # Usage
