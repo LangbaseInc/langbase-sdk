@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.54
+
+### Patch Changes
+
+- Improve types
+
 ## 1.1.53
 
 ### Patch Changes
