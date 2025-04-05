@@ -13,7 +13,7 @@ export interface RunOptionsBase {
 	name?: string; // Pipe name for SDK,
 	apiKey?: string; // pipe level key for SDK
 	llmKey?: string; // LLM API key
-	json?: boolean
+	json?: boolean;
 	memory?: RuntimeMemory;
 }
 
@@ -25,8 +25,9 @@ export interface RunOptionsStreamT extends RunOptionsBase {
 	stream: true;
 }
 
-export interface LlmOptionsBase {
-	messages: PromptMessage[];
+export interface AgentRunOptionsBase {
+	input: string | PromptMessage[];
+	instructions?: string | null;
 	model: string;
 	apiKey: string;
 	top_p?: number;
@@ -44,11 +45,11 @@ export interface LlmOptionsBase {
 	customModelParams?: Record<string, any>;
 }
 
-export interface LlmOptions extends LlmOptionsBase {
+export interface AgentRunOptions extends AgentRunOptionsBase {
 	stream?: false;
 }
 
-export interface LlmOptionsStream extends LlmOptionsBase {
+export interface AgentRunOptionsStream extends AgentRunOptionsBase {
 	stream: true;
 }
 
@@ -579,10 +580,10 @@ export class Langbase {
 	public chunk: (options: ChunkOptions) => Promise<ChunkResponse>;
 	public parse: (options: ParseOptions) => Promise<ParseResponse>;
 
-	public llm: {
+	public agent: {
 		run: {
-			(options: LlmOptionsStream): Promise<RunResponseStream>;
-			(options: LlmOptions): Promise<RunResponse>;
+			(options: AgentRunOptionsStream): Promise<RunResponseStream>;
+			(options: AgentRunOptions): Promise<RunResponse>;
 		};
 	};
 
@@ -665,8 +666,8 @@ export class Langbase {
 			},
 		};
 
-		this.llm = {
-			run: this.runLlm.bind(this),
+		this.agent = {
+			run: this.runAgent.bind(this),
 		};
 	}
 
@@ -1089,12 +1090,14 @@ export class Langbase {
 	}
 
 	// Add the private implementation
-	private async runLlm(options: LlmOptionsStream): Promise<RunResponseStream>;
+	private async runAgent(
+		options: AgentRunOptionsStream,
+	): Promise<RunResponseStream>;
 
-	private async runLlm(options: LlmOptions): Promise<RunResponse>;
+	private async runAgent(options: AgentRunOptions): Promise<RunResponse>;
 
-	private async runLlm(
-		options: LlmOptions | LlmOptionsStream,
+	private async runAgent(
+		options: AgentRunOptions | AgentRunOptionsStream,
 	): Promise<RunResponse | RunResponseStream> {
 		if (!options.apiKey) {
 			throw new Error('LLM API key is required to run this LLM.');
@@ -1106,7 +1109,7 @@ export class Langbase {
 		}
 
 		return this.request.post({
-			endpoint: '/v1/llm/run',
+			endpoint: '/v1/agent/run',
 			body: options,
 			headers: {
 				...(options.apiKey && {'LB-LLM-Key': options.apiKey}),
