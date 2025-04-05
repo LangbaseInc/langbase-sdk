@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.55
+
+### Patch Changes
+
+- Fixed response fields
+
 ## 1.1.54
 
 ### Patch Changes
