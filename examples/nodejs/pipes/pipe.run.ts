@@ -16,7 +16,7 @@ async function main() {
 			},
 		],
 		stream: false,
-		name: 'summary'
+		name: 'email-sentiment',
 	});
 	console.log('response: ', response);
 }

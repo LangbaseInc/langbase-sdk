@@ -31,6 +31,7 @@ interface HandleGenerateResponseParams {
 	response: Response;
 	threadId: string | null;
 	rawResponse: boolean;
+	endpoint?: string;
 }
 
 export class Request {
@@ -69,6 +70,7 @@ export class Request {
 					response,
 					threadId: null,
 					rawResponse: options.body?.rawResponse ?? false,
+					endpoint,
 				});
 			}
 
@@ -87,6 +89,7 @@ export class Request {
 				response,
 				threadId,
 				rawResponse: options.body?.rawResponse ?? false,
+				endpoint,
 			});
 		} else {
 			const res = response.json();
@@ -190,14 +193,23 @@ export class Request {
 		response,
 		threadId,
 		rawResponse,
+		endpoint,
 	}: HandleGenerateResponseParams): Promise<any> {
+		let isAgentRun = false;
+		if (endpoint === '/v1/agent/run') isAgentRun = true;
+
 		const generateResponse = await response.json();
 
 		const buildResponse = generateResponse.raw
-			? {
-					completion: generateResponse.completion,
-					...generateResponse.raw,
-				}
+			? isAgentRun
+				? {
+						output: generateResponse.output,
+						...generateResponse.raw,
+					}
+				: {
+						completion: generateResponse.completion,
+						...generateResponse.raw,
+					}
 			: generateResponse;
 
 		const result: any = {
