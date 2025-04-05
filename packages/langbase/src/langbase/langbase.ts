@@ -81,6 +81,21 @@ export interface RunResponse {
 	};
 }
 
+export interface AgentRunResponse {
+	output: string;
+	threadId?: string;
+	id: string;
+	object: string;
+	created: number;
+	model: string;
+	choices: ChoiceGenerate[];
+	usage: Usage;
+	system_fingerprint: string | null;
+	rawResponse?: {
+		headers: Record<string, string>;
+	};
+}
+
 export interface RunResponseStream {
 	stream: ReadableStream<any>;
 	threadId: string | null;
@@ -583,7 +598,7 @@ export class Langbase {
 	public agent: {
 		run: {
 			(options: AgentRunOptionsStream): Promise<RunResponseStream>;
-			(options: AgentRunOptions): Promise<RunResponse>;
+			(options: AgentRunOptions): Promise<AgentRunResponse>;
 		};
 	};
 
@@ -1094,11 +1109,11 @@ export class Langbase {
 		options: AgentRunOptionsStream,
 	): Promise<RunResponseStream>;
 
-	private async runAgent(options: AgentRunOptions): Promise<RunResponse>;
+	private async runAgent(options: AgentRunOptions): Promise<AgentRunResponse>;
 
 	private async runAgent(
 		options: AgentRunOptions | AgentRunOptionsStream,
-	): Promise<RunResponse | RunResponseStream> {
+	): Promise<AgentRunResponse | RunResponseStream> {
 		if (!options.apiKey) {
 			throw new Error('LLM API key is required to run this LLM.');
 		}
