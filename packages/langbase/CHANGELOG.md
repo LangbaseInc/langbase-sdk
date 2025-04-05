@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.53
+
+### Patch Changes
+
+- Add agent.run()
+
 ## 1.1.52
 
 ### Patch Changes
