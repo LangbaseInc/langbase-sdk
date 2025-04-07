@@ -49,7 +49,7 @@ export class Request {
 			response = await this.makeRequest({
 				url,
 				headers,
-				options: { ...options, endpoint },
+				options: { ...options, endpoint }
 			});
 		} catch (error) {
 			throw new APIConnectionError({

@@ -8,7 +8,7 @@ const langbase = new Langbase({
 async function main() {
 	const response = await langbase.memories.create({
 		name: 'memory-sdk',
-		embedding_model: 'cohere:embed-multilingual-v3.0'
+		embedding_model: 'cohere:embed-multilingual-v3.0',
 	});
 
 	console.log(response);

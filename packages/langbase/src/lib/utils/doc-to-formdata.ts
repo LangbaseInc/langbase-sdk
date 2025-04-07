@@ -1,4 +1,3 @@
-
 /**
  * Converts various document formats to FormData.
  *

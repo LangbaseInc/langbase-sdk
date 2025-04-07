@@ -1,8 +1,8 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useState } from 'react';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {useState} from 'react';
 
 export default function RunNonStreamExample() {
 	const [prompt, setPrompt] = useState('');
@@ -20,7 +20,7 @@ export default function RunNonStreamExample() {
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ prompt }),
+				body: JSON.stringify({prompt}),
 			});
 
 			if (!response.ok) {

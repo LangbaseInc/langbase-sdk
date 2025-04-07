@@ -27,7 +27,7 @@ const flags = {
 		type: `string`,
 		shortFlag: `k`,
 		desc: `Langbase API key`
-	},
+	}
 };
 
 const commands = {

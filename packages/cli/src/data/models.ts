@@ -257,7 +257,7 @@ export const modelsByProvider: ModelsByProviderInclCosts = {
 			id: 'meta-llama/Llama-3.3-70B-Instruct-Turbo',
 			provider: TOGETHER_AI,
 			promptCost: 0.88,
-			completionCost: 0.88,
+			completionCost: 0.88
 		},
 		{
 			id: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
@@ -437,7 +437,7 @@ export const modelsByProvider: ModelsByProviderInclCosts = {
 			id: 'llama-3.3-70b-versatile',
 			provider: GROQ,
 			promptCost: 0.59,
-			completionCost: 0.79,
+			completionCost: 0.79
 		},
 		{
 			id: 'llama-3.1-70b-versatile',
@@ -543,7 +543,7 @@ export const modelsByProvider: ModelsByProviderInclCosts = {
 			id: 'llama-v3p3-70b-instruct',
 			provider: FIREWORKS_AI,
 			promptCost: 0.88,
-			completionCost: 0.88,
+			completionCost: 0.88
 		},
 		{
 			id: 'llama-v3p1-405b-instruct',

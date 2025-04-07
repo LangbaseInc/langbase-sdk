@@ -13,7 +13,7 @@ async function main() {
 		messages: [{role: 'user', content: userMsg}],
 		stream: true,
 		rawResponse: true,
-		apiKey: process.env.PIPE_API_KEY!
+		apiKey: process.env.PIPE_API_KEY!,
 	});
 
 	// Convert the stream to a stream runner.

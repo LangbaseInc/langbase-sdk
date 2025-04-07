@@ -4,7 +4,7 @@
 
 ### Major Changes
 
--   ‼️ BREAKING: [`generateText()`](https://langbase.com/docs/langbase-sdk/generate-text) now doesn't return raw instead all properties are included in the main response.
+- ‼️ BREAKING: [`generateText()`](https://langbase.com/docs/langbase-sdk/generate-text) now doesn't return raw instead all properties are included in the main response.
 
     #### BEFORE
 
@@ -67,4 +67,4 @@
 
 ### Minor Changes
 
--   b026a61: Initial beta release
+- b026a61: Initial beta release

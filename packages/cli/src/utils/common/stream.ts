@@ -11,7 +11,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 
 	constructor(
 		private iterator: () => AsyncIterator<Item>,
-		controller: AbortController,
+		controller: AbortController
 	) {
 		this.controller = controller;
 	}
@@ -27,14 +27,14 @@ export class Stream<Item> implements AsyncIterable<Item> {
 	 */
 	static fromSSEResponse<Item>(
 		response: Response,
-		controller: AbortController,
+		controller: AbortController
 	) {
 		let consumed = false;
 
 		async function* iterator(): AsyncIterator<Item, any, undefined> {
 			if (consumed) {
 				throw new Error(
-					'Cannot iterate over a consumed stream, use `.tee()` to split the stream.',
+					'Cannot iterate over a consumed stream, use `.tee()` to split the stream.'
 				);
 			}
 			consumed = true;
@@ -42,7 +42,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 			try {
 				for await (const sse of _iterSSEMessages(
 					response,
-					controller,
+					controller
 				)) {
 					if (done) continue;
 
@@ -59,7 +59,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 						} catch (e) {
 							console.error(
 								`Could not parse message into JSON:`,
-								sse.data,
+								sse.data
 							);
 							console.error(`From chunk:`, sse.raw);
 							throw e;
@@ -77,7 +77,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 						} catch (e) {
 							console.error(
 								`Could not parse message into JSON:`,
-								sse.data,
+								sse.data
 							);
 							console.error(`From chunk:`, sse.raw);
 							throw e;
@@ -86,7 +86,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 						if (sse.event == 'error') {
 							throw new Error(data.message);
 						}
-						yield {event: sse.event, data: data} as any;
+						yield { event: sse.event, data: data } as any;
 					}
 				}
 				done = true;
@@ -114,7 +114,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 	 */
 	static fromReadableStream<Item>(
 		readableStream: ReadableStream,
-		controller: AbortController,
+		controller: AbortController
 	) {
 		let consumed = false;
 
@@ -136,7 +136,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 		async function* iterator(): AsyncIterator<Item, any, undefined> {
 			if (consumed) {
 				throw new Error(
-					'Cannot iterate over a consumed stream, use `.tee()` to split the stream.',
+					'Cannot iterate over a consumed stream, use `.tee()` to split the stream.'
 				);
 			}
 			consumed = true;
@@ -174,7 +174,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 		const iterator = this.iterator();
 
 		const teeIterator = (
-			queue: Array<Promise<IteratorResult<Item>>>,
+			queue: Array<Promise<IteratorResult<Item>>>
 		): AsyncIterator<Item> => {
 			return {
 				next: () => {
@@ -184,13 +184,13 @@ export class Stream<Item> implements AsyncIterable<Item> {
 						right.push(result);
 					}
 					return queue.shift()!;
-				},
+				}
 			};
 		};
 
 		return [
 			new Stream(() => teeIterator(left), this.controller),
-			new Stream(() => teeIterator(right), this.controller),
+			new Stream(() => teeIterator(right), this.controller)
 		];
 	}
 
@@ -209,7 +209,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 			},
 			async pull(ctrl: any) {
 				try {
-					const {value, done} = await iter.next();
+					const { value, done } = await iter.next();
 					if (done) return ctrl.close();
 
 					const bytes = encoder.encode(JSON.stringify(value) + '\n');
@@ -221,7 +221,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
 			},
 			async cancel() {
 				await iter.return?.();
-			},
+			}
 		});
 	}
 }
@@ -236,7 +236,7 @@ export class Stream<Item> implements AsyncIterable<Item> {
  */
 export async function* _iterSSEMessages(
 	response: Response,
-	controller: AbortController,
+	controller: AbortController
 ): AsyncGenerator<ServerSentEvent, void, unknown> {
 	if (!response.body) {
 		controller.abort();
@@ -270,7 +270,7 @@ export async function* _iterSSEMessages(
  * @returns An async generator that yields Uint8Array chunks.
  */
 async function* iterSSEChunks(
-	iterator: AsyncIterableIterator<Bytes>,
+	iterator: AsyncIterableIterator<Bytes>
 ): AsyncGenerator<Uint8Array> {
 	let data = new Uint8Array();
 
@@ -371,7 +371,7 @@ class SSEDecoder {
 			const sse: ServerSentEvent = {
 				event: this.event,
 				data: this.data.join('\n'),
-				raw: this.chunks,
+				raw: this.chunks
 			};
 
 			this.event = null;
@@ -440,7 +440,7 @@ class LineDecoder {
 		}
 
 		const trailingNewline = LineDecoder.NEWLINE_CHARS.has(
-			text[text.length - 1] || '',
+			text[text.length - 1] || ''
 		);
 		let lines = text.split(LineDecoder.NEWLINE_REGEXP);
 
@@ -481,7 +481,7 @@ class LineDecoder {
 			}
 
 			throw new Error(
-				`Unexpected: received non-Uint8Array (${bytes.constructor.name}) stream chunk in an environment with a global "Buffer" defined, which this library assumes to be Node. Please report this error.`,
+				`Unexpected: received non-Uint8Array (${bytes.constructor.name}) stream chunk in an environment with a global "Buffer" defined, which this library assumes to be Node. Please report this error.`
 			);
 		}
 
@@ -495,12 +495,12 @@ class LineDecoder {
 			throw new Error(
 				`Unexpected: received non-Uint8Array/ArrayBuffer (${
 					(bytes as any).constructor.name
-				}) in a web platform. Please report this error.`,
+				}) in a web platform. Please report this error.`
 			);
 		}
 
 		throw new Error(
-			`Unexpected: neither Buffer nor TextDecoder are available as globals. Please report this error.`,
+			`Unexpected: neither Buffer nor TextDecoder are available as globals. Please report this error.`
 		);
 	}
 
@@ -540,7 +540,7 @@ function partition(str: string, delimiter: string): [string, string, string] {
 		return [
 			str.substring(0, index),
 			delimiter,
-			str.substring(index + delimiter.length),
+			str.substring(index + delimiter.length)
 		];
 	}
 
@@ -554,7 +554,7 @@ function partition(str: string, delimiter: string): [string, string, string] {
  * This polyfill was pulled from https://github.com/MattiasBuelens/web-streams-polyfill/pull/122#issuecomment-1627354490
  */
 export function readableStreamAsyncIterable<T>(
-	stream: any,
+	stream: any
 ): AsyncIterableIterator<T> {
 	if (stream[Symbol.asyncIterator]) return stream;
 
@@ -574,10 +574,10 @@ export function readableStreamAsyncIterable<T>(
 			const cancelPromise = reader.cancel();
 			reader.releaseLock();
 			await cancelPromise;
-			return {done: true, value: undefined};
+			return { done: true, value: undefined };
 		},
 		[Symbol.asyncIterator]() {
 			return this;
-		},
+		}
 	};
 }

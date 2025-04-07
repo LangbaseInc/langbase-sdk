@@ -40,12 +40,12 @@ Check our [SDK documentation](https://langbase.com/docs/sdk) for more details.
 
 Check the following examples:
 
--   [Node: Generate Text](https://github.com/LangbaseInc/langbase-sdk/blob/main/examples/nodejs/pipes/pipe.run.ts)
--   [Node: Stream Text](https://github.com/LangbaseInc/langbase-sdk/blob/main/examples/nodejs/pipes/pipe.run.stream.ts)
--   [Next.js Example](https://github.com/LangbaseInc/langbase-sdk/tree/main/examples/nextjs)
-    -   TypeScript code
-    -   [React component](https://github.com/LangbaseInc/langbase-sdk/tree/main/examples/nextjs/components/langbase) to display the response
-    -   [API Route handlers](https://github.com/LangbaseInc/langbase-sdk/tree/main/examples/nextjs/app/langbase/pipe/run) to send requests to ⌘ Langbase
+- [Node: Generate Text](https://github.com/LangbaseInc/langbase-sdk/blob/main/examples/nodejs/pipes/pipe.run.ts)
+- [Node: Stream Text](https://github.com/LangbaseInc/langbase-sdk/blob/main/examples/nodejs/pipes/pipe.run.stream.ts)
+- [Next.js Example](https://github.com/LangbaseInc/langbase-sdk/tree/main/examples/nextjs)
+    - TypeScript code
+    - [React component](https://github.com/LangbaseInc/langbase-sdk/tree/main/examples/nextjs/components/langbase) to display the response
+    - [API Route handlers](https://github.com/LangbaseInc/langbase-sdk/tree/main/examples/nextjs/app/langbase/pipe/run) to send requests to ⌘ Langbase
 
 ### Node.js Example Code
 
@@ -106,27 +106,27 @@ import {getRunner, Langbase} from 'langbase';
 
 // 1. Initiate the Langbase.
 const langbase = new Langbase({
-    // Make sure you have a .env file with LANGBASE_API_KEY.
-    apiKey: process.env.LANGBASE_API_KEY!,
+	// Make sure you have a .env file with LANGBASE_API_KEY.
+	apiKey: process.env.LANGBASE_API_KEY!,
 });
 
 async function main() {
-    const userMsg = 'Who is an AI Engineer?';
+	const userMsg = 'Who is an AI Engineer?';
 
-    // 2. Run the pipe with a question.
-    const {stream} = await langbase.pipes.run({
-        stream: true,
-        name: 'summary', // pipe name to run
-        messages: [{role: 'user', content: userMsg}],
-    });
+	// 2. Run the pipe with a question.
+	const {stream} = await langbase.pipes.run({
+		stream: true,
+		name: 'summary', // pipe name to run
+		messages: [{role: 'user', content: userMsg}],
+	});
 
-    // 3. Get the runner and listen to the content.
-    const runner = getRunner(stream);
+	// 3. Get the runner and listen to the content.
+	const runner = getRunner(stream);
 
-    // 4. Print the response.
-    runner.on('content', content => {
-        process.stdout.write(content);
-    });
+	// 4. Print the response.
+	runner.on('content', content => {
+		process.stdout.write(content);
+	});
 }
 
 main();

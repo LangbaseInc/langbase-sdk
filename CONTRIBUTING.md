@@ -32,9 +32,9 @@ To test the changes locally, you can run the following command:
 
 ```json
 {
-  "dependencies": {
-    "langbase": "workspace:*"
-  },
+	"dependencies": {
+		"langbase": "workspace:*"
+	}
 }
 ```
 

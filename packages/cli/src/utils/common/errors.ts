@@ -1,4 +1,4 @@
-import {Headers} from './../../../types'; // Ensure this import is correct
+import { Headers } from './../../../types'; // Ensure this import is correct
 
 export class APIError extends Error {
 	readonly status: number | undefined;
@@ -15,7 +15,7 @@ export class APIError extends Error {
 		status: number | undefined,
 		error: Object | undefined,
 		message: string | undefined,
-		headers: Headers | undefined,
+		headers: Headers | undefined
 	) {
 		super(APIError.makeMessage(status, error, message));
 		this.status = status;
@@ -33,7 +33,7 @@ export class APIError extends Error {
 	private static makeMessage(
 		status: number | undefined,
 		error: any,
-		message: string | undefined,
+		message: string | undefined
 	): string {
 		const msg = error?.message
 			? typeof error.message === 'string'
@@ -59,12 +59,12 @@ export class APIError extends Error {
 		status: number | undefined,
 		errorResponse: Object | undefined,
 		message: string | undefined,
-		headers: Headers | undefined,
+		headers: Headers | undefined
 	): APIError {
 		if (!status) {
 			return new APIConnectionError({
 				cause:
-					errorResponse instanceof Error ? errorResponse : undefined,
+					errorResponse instanceof Error ? errorResponse : undefined
 			});
 		}
 
@@ -80,7 +80,7 @@ export class APIError extends Error {
 					status,
 					error,
 					message,
-					headers,
+					headers
 				);
 			case 404:
 				return new NotFoundError(status, error, message, headers);
@@ -91,7 +91,7 @@ export class APIError extends Error {
 					status,
 					error,
 					message,
-					headers,
+					headers
 				);
 			case 429:
 				return new RateLimitError(status, error, message, headers);
@@ -106,15 +106,15 @@ export class APIError extends Error {
 export class APIConnectionError extends APIError {
 	override readonly status: undefined = undefined;
 
-	constructor({message, cause}: {message?: string; cause?: Error}) {
+	constructor({ message, cause }: { message?: string; cause?: Error }) {
 		super(undefined, undefined, message || 'Connection error.', undefined);
 		if (cause) (this as Error).cause = cause;
 	}
 }
 
 export class APIConnectionTimeoutError extends APIConnectionError {
-	constructor({message}: {message?: string} = {}) {
-		super({message: message ?? 'Request timed out.'});
+	constructor({ message }: { message?: string } = {}) {
+		super({ message: message ?? 'Request timed out.' });
 	}
 }
 

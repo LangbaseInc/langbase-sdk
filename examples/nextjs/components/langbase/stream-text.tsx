@@ -1,9 +1,9 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { fromReadableStream } from 'langbase';
-import { useState } from 'react';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {fromReadableStream} from 'langbase';
+import {useState} from 'react';
 
 export default function StreamTextExample() {
 	const [prompt, setPrompt] = useState('');
@@ -20,8 +20,8 @@ export default function StreamTextExample() {
 		try {
 			const response = await fetch('/langbase/pipe/stream-text', {
 				method: 'POST',
-				body: JSON.stringify({ prompt }),
-				headers: { 'Content-Type': 'text/plain' },
+				body: JSON.stringify({prompt}),
+				headers: {'Content-Type': 'text/plain'},
 			});
 
 			if (response.body) {

@@ -16,7 +16,6 @@ async function main() {
 		name: 'summary',
 	});
 
-
 	console.log('Thread ID:', threadId);
 	console.log('');
 

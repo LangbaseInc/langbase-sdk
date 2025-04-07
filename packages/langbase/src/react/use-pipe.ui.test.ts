@@ -1,7 +1,7 @@
 import {act, renderHook} from '@testing-library/react';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {usePipe} from './use-pipe'; // Adjust the import path as needed
-import { Message } from '@/langbase/langbase';
+import {Message} from '@/langbase/langbase';
 
 // Mock fetch function
 global.fetch = vi.fn();
@@ -69,7 +69,6 @@ describe('usePipe', () => {
 
 	describe('sendMessage', () => {
 		describe('in local environment', () => {
-
 			it('should send all messages', async () => {
 				(global.fetch as any).mockResolvedValueOnce({
 					ok: true,

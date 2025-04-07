@@ -12,7 +12,7 @@ In software engineering, composition is a powerful concept. It allows for buildi
 
 **Effortlessly zero-config AI infra**: Maybe you want to use a smaller, domain-specific model for one task, and a larger general-purpose model for another task. Langbase makes it easy to use the right primitives and tools for each part of the job and provides developers with a zero-config composable AI infrastructure.
 
-That's a nice way of saying, *you get a unicorn-scale API in minutes, not months*.
+That's a nice way of saying, _you get a unicorn-scale API in minutes, not months_.
 
 > **The most common problem** I hear about in Gen AI space is that my AI agents are too complex and I can't scale them, too much AI talking to AI. I don't have control, I don't understand the cost, and the impact of this change vs that. Time from new model to prod is too long. Feels static, my customers can't personalize it. ⌘ Langbase fixes all this. — [AA](https://www.linkedin.com/in/MrAhmadAwais/)
 
@@ -24,19 +24,15 @@ But how does Composable AI work?
 
 Here's an interactive example of a composable AI Email Agent: Classifies, summarizes, responds. Click to send a spam or valid email and check how composable it is: Swap any pipes, any LLM, hyper-personalize (you or your users), observe costs. Everything is composable.
 
-
-
 ## Example: Composable AI Email Agent
-
 
 I have built an AI email agent that can read my emails, understand the sentiment, summarize, and respond to them. Let's break it down to how it works, hint several pipes working together to make smart personalized decisions.
 
 1. I created a pipe: `email-sentiment` — this one reads my emails to understand the sentiment
 2. `email-summarizer` pipe — it summarizes my emails so I can quickly understand them
 3. `email-decision-maker` pipe — should I respond? is it urgent? is it a newsletter?
-4. If `email-decision-maker` pipe says *yes*, then I need to respond. This invokes the final pipe
+4. If `email-decision-maker` pipe says _yes_, then I need to respond. This invokes the final pipe
 5. `email-writer` pipe — writes a draft response to my emails with one of the eight formats I have
-
 
 ## Why Composable AI is powerful?
 
@@ -46,7 +42,6 @@ Ah, the power of composition. I can swap out any of these pipes with a new one.
 - **Reusability**: Build complex systems from simple, tested parts
 - **Scalability**: Optimize at the component level for better performance
 - **Observability**: Monitor and debug each step of your AI pipeline
-
 
 ### Control flow
 
@@ -59,7 +54,6 @@ Ah, the power of composition. I can swap out any of these pipes with a new one.
 
 - **Add more when needed**: I can also add more pipes to this pipeline. Maybe I want to add a pipe that checks my calendar or the weather before I respond to an email. You get the idea. Always bet on composition.
 - **Eight Formats to write emails**: And I have several formats. Because Pipes are composable, I have eight different versions of `email-writer` pipe. I have a pipe `email-pick-writer` that picks the correct pipe to draft a response with. Why? I talk to my friends differently than my investors, reports, managers, vendors — you name it.
-
 
 ### Long-term memory and context awareness
 

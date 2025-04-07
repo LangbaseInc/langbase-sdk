@@ -25,7 +25,9 @@ export async function build(options: BuildOptions) {
 		});
 
 		// 3. Output success message
-		outro(color.green(`Built code is stored in ${distPath}/langbase.build.js`));
+		outro(
+			color.green(`Built code is stored in ${distPath}/langbase.build.js`)
+		);
 	} catch (error) {
 		handleError({
 			spinner,
