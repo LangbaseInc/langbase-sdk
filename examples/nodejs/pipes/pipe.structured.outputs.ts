@@ -32,8 +32,27 @@ async function createMathTutorPipe() {
 		response_format: {
 			type: 'json_schema',
 			json_schema: {
-				name: 'math_response',
-				schema: MathResponseSchema.shape, // Use Zod schema shape
+				name: 'math_reasoning',
+				schema: {
+					type: 'object',
+					properties: {
+						steps: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									explanation: {type: 'string'},
+									output: {type: 'string'},
+								},
+								required: ['explanation', 'output'],
+								additionalProperties: false,
+							},
+						},
+						final_answer: {type: 'string'},
+					},
+					required: ['steps', 'final_answer'],
+					additionalProperties: false,
+				},
 				strict: true,
 			},
 		},
@@ -62,8 +81,8 @@ async function main() {
 	}
 
 	// Run this only once to create the pipe. Uncomment if it's your first time setting it up.
-	// await createMathTutorPipe();
-	await runMathTutorPipe('How can I solve 8x - 7 = -23?');
+	await createMathTutorPipe();
+	await runMathTutorPipe('How can I solve 8x + 22 = -23?');
 }
 
 main();
