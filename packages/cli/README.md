@@ -30,6 +30,3 @@ Integrate the Langbase Docs MCP server into Cursor IDE.
   }
 }
 ```
-
-
-

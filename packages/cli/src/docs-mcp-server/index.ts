@@ -1,150 +1,213 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { z } from "zod";
-import { fetchDocsList, fetchDocsPost } from "./docs"
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { z } from 'zod';
+import { fetchDocsList, fetchDocsPost } from './docs';
 
-
+/**
+ * Starts the Documentation Message Control Protocol (MCP) server for Langbase.
+ *
+ * This function initializes and runs an MCP server that provides tools for
+ * fetching and searching Langbase documentation. The server includes several tools:
+ *
+ * - docs-route-finder: Searches through documentation routes based on user query
+ * - sdk-documentation-fetcher: Fetches detailed SDK documentation
+ * - examples-tool: Fetches code examples and sample implementations
+ * - guide-tool: Fetches detailed guides and tutorials
+ * - api-reference-tool: Fetches API reference documentation
+ *
+ * The server communicates using a standard I/O transport mechanism.
+ *
+ * @returns {Promise<void>} A promise that resolves when the server completes execution
+ *
+ * @throws Will throw an error if connecting to the transport fails
+ * @throws Will throw an error if there is a fatal error in the main execution
+ */
 export async function docsMcpServer() {
-    const server = new McpServer({
-        name: "langbase-docs-server",
-        version: "1.0.0"
-    });
+	const server = new McpServer({
+		name: 'langbase-docs-server',
+		version: '0.1.0'
+	});
 
-    server.tool(
-        "docs-route-finder",
-        "Searches through all available documentation routes and returns relevant paths based on the user's query. This tool helps navigate the documentation by finding the most appropriate sections that match the search criteria.",
-        { query: z.string().describe(`A refined search term extracted from the user's question. 
-            For example, if user asks 'How do I create a pipe?', the query would be 'SDK Pipe'. 
+	server.tool(
+		'docs-route-finder',
+		"Searches through all available documentation routes and returns relevant paths based on the user's query. This tool helps navigate the documentation by finding the most appropriate sections that match the search criteria.",
+		{
+			query: z.string()
+				.describe(`A refined search term extracted from the user's question.
+            For example, if user asks 'How do I create a pipe?', the query would be 'SDK Pipe'.
             This should be the specific concept or topic to search for in the documentation.
             Treat keyword add as create if user ask for Eg. 'How do I add memory to pipe?' the query should be 'create memory'`)
-        },
-        async ({ query }) => {
-            const docs = await fetchDocsList()
-            // search through the docs and return the most relevent path based on the query
-            const docLines = docs.split('\n').filter(line => line.trim());
+		},
+		async ({ query }) => {
+			const docs = await fetchDocsList();
+			// search through the docs and return the most relevent path based on the query
+			const docLines = docs.split('\n').filter(line => line.trim());
 
-            
-            const getRelevanceScore = (line: string, searchQuery: string) => {
-                const lowerLine = line.toLowerCase();
-                const lowerQuery = searchQuery.toLowerCase();
-                // Higher score for exact matches
-                if (lowerLine.includes(lowerQuery)) {
-                    return 3;
-                }
-                
-                // Score based on word matches
-                const queryWords = lowerQuery.split(' ');
-                return queryWords.reduce((score, word) => {
-                return score + (lowerLine.includes(word) ? 1 : 0);
-                }, 0);
-            };
-            
-            // Score and sort the documentation entries
-            const scoredDocs = docLines
-                .map(line => ({
-                line,
-                score: getRelevanceScore(line, query)
-                }))
-                .sort((a, b) => b.score - a.score)
-                .filter(doc => doc.score > 0)
-                .slice(0, 3); // Get top 3 most relevant results
-            
+			const getRelevanceScore = (line: string, searchQuery: string) => {
+				const lowerLine = line.toLowerCase();
+				const lowerQuery = searchQuery.toLowerCase();
+				// Higher score for exact matches
+				if (lowerLine.includes(lowerQuery)) {
+					return 3;
+				}
 
-            if (scoredDocs.length === 0) {
-                return {
-                    content: [{
-                        type: "text",
-                        text: "No relevant documentation found for the query: " + query
-                    }]
-                };
-            }
-            
-            const results = scoredDocs.map(doc => doc.line).join('\n');
-            
-            return {
-                content: [{
-                    type: "text",
-                    text: results
-                }]
-            };
-        }
-    );
+				// Score based on word matches
+				const queryWords = lowerQuery.split(' ');
+				return queryWords.reduce((score, word) => {
+					return score + (lowerLine.includes(word) ? 1 : 0);
+				}, 0);
+			};
 
-    server.tool(
-        "sdk-documentation-fetcher",
-        "Fetches detailed SDK documentation, specializing in implementation guides for core features like pipes, memory, and tools. This is the primary source for the latest SDK documentation and should be consulted first for questions about creating or implementing SDK components. Use this tool for detailed step-by-step instructions on building pipes, configuring memory systems, and developing custom tools.",
-        { url: z.string().describe("URL of a specific SDK page to fetch. Format: /sdk/...") },
-        async ({ url }) => {
-            const content = await fetchDocsPost(`https://langbase.com/docs${url}`);
-            return {
-                content: [{
-                    type: "text",
-                    text: content
-                }]
-            };
-        }
-    );
+			// Score and sort the documentation entries
+			const scoredDocs = docLines
+				.map(line => ({
+					line,
+					score: getRelevanceScore(line, query)
+				}))
+				.sort((a, b) => b.score - a.score)
+				.filter(doc => doc.score > 0)
+				.slice(0, 3); // Get top 3 most relevant results
 
-    server.tool(
-        "examples-tool",
-        "Fetches code examples and sample implementations from the documentation. Use this tool when users specifically request examples, sample code, or implementation demonstrations. This tool provides practical code snippets and complete working examples that demonstrate how to implement various features.",
-        { url: z.string().describe("URL of a specific examples page to fetch. Format: /examples/...") },
-        async ({ url }) => {
-            const content = await fetchDocsPost(`https://langbase.com/docs${url}`);
-            return {
-                content: [{
-                    type: "text",
-                    text: content
-                }]
-            };
-        }
-    );
+			if (scoredDocs.length === 0) {
+				return {
+					content: [
+						{
+							type: 'text',
+							text:
+								'No relevant documentation found for the query: ' +
+								query
+						}
+					]
+				};
+			}
 
-    server.tool(
-        "guide-tool",
-        "Fetches detailed guides and tutorials from the documentation. Use this tool when users explicitly request guides, tutorials, or how-to content. This tool provides step-by-step instructions and practical examples for implementing various features.",
-        { url: z.string().describe("URL of a specific guide page to fetch. Format: /guides/...") },
-        async ({ url }) => {
-            const content = await fetchDocsPost(`https://langbase.com/docs${url}`);
-            return {
-                content: [{
-                    type: "text",
-                    text: content
-                }]
-            };
-        }
-    );
+			const results = scoredDocs.map(doc => doc.line).join('\n');
 
-    server.tool(
-        "api-reference-tool",
-        "Fetches API reference documentation. Use this tool ONLY when the user explicitly asks about API endpoints, REST API calls, or programmatically creating/updating/deleting resources (like pipes, memory, etc.) through the API interface. For general SDK implementation questions, use the sdk-documentation-fetcher instead.",
-        { url: z.string().describe("URL of a specific api-reference page to fetch. Format: /api-reference/...") },
-        async ({ url }) => {
-            const content = await fetchDocsPost(`https://langbase.com/docs${url}`);
-            return {
-                content: [{
-                    type: "text",
-                    text: content,
-                }]
-            };
-        }
-    );
+			return {
+				content: [
+					{
+						type: 'text',
+						text: results
+					}
+				]
+			};
+		}
+	);
 
-    async function main() {
-        const transport = new StdioServerTransport();
+	server.tool(
+		'sdk-documentation-fetcher',
+		'Fetches detailed SDK documentation, specializing in implementation guides for core features like pipes, memory, and tools. This is the primary source for the latest SDK documentation and should be consulted first for questions about creating or implementing SDK components. Use this tool for detailed step-by-step instructions on building pipes, configuring memory systems, and developing custom tools.',
+		{
+			url: z
+				.string()
+				.describe(
+					'URL of a specific SDK page to fetch. Format: /sdk/...'
+				)
+		},
+		async ({ url }) => {
+			const content = await fetchDocsPost(
+				`https://langbase.com/docs${url}`
+			);
+			return {
+				content: [
+					{
+						type: 'text',
+						text: content
+					}
+				]
+			};
+		}
+	);
 
-        try {
-            await server.connect(transport);
-            console.error("Langbase service MCP Server running on stdio");
-        } catch (error) {
-            console.error("Error connecting to transport:", error);
-            process.exit(1);
-        }
-    }
+	server.tool(
+		'examples-tool',
+		'Fetches code examples and sample implementations from the documentation. Use this tool when users specifically request examples, sample code, or implementation demonstrations. This tool provides practical code snippets and complete working examples that demonstrate how to implement various features.',
+		{
+			url: z
+				.string()
+				.describe(
+					'URL of a specific examples page to fetch. Format: /examples/...'
+				)
+		},
+		async ({ url }) => {
+			const content = await fetchDocsPost(
+				`https://langbase.com/docs${url}`
+			);
+			return {
+				content: [
+					{
+						type: 'text',
+						text: content
+					}
+				]
+			};
+		}
+	);
 
-    main().catch((error) => {
-        console.error("Fatal error in main():", error);
-        process.exit(1);
-    });
+	server.tool(
+		'guide-tool',
+		'Fetches detailed guides and tutorials from the documentation. Use this tool when users explicitly request guides, tutorials, or how-to content. This tool provides step-by-step instructions and practical examples for implementing various features.',
+		{
+			url: z
+				.string()
+				.describe(
+					'URL of a specific guide page to fetch. Format: /guides/...'
+				)
+		},
+		async ({ url }) => {
+			const content = await fetchDocsPost(
+				`https://langbase.com/docs${url}`
+			);
+			return {
+				content: [
+					{
+						type: 'text',
+						text: content
+					}
+				]
+			};
+		}
+	);
+
+	server.tool(
+		'api-reference-tool',
+		'Fetches API reference documentation. Use this tool ONLY when the user explicitly asks about API endpoints, REST API calls, or programmatically creating/updating/deleting resources (like pipes, memory, etc.) through the API interface. For general SDK implementation questions, use the sdk-documentation-fetcher instead.',
+		{
+			url: z
+				.string()
+				.describe(
+					'URL of a specific api-reference page to fetch. Format: /api-reference/...'
+				)
+		},
+		async ({ url }) => {
+			const content = await fetchDocsPost(
+				`https://langbase.com/docs${url}`
+			);
+			return {
+				content: [
+					{
+						type: 'text',
+						text: content
+					}
+				]
+			};
+		}
+	);
+
+	async function main() {
+		const transport = new StdioServerTransport();
+
+		try {
+			await server.connect(transport);
+			console.error('Langbase service MCP Server running on stdio');
+		} catch (error) {
+			console.error('Error connecting to transport:', error);
+			process.exit(1);
+		}
+	}
+
+	main().catch(error => {
+		console.error('Something went wrong:', error);
+		process.exit(1);
+	});
 }
-
