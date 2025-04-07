@@ -1,4 +1,5 @@
 import meowHelp from 'cli-meow-help';
+// @ts-ignore
 import meow from 'meow';
 
 const flags = {
