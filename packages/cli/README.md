@@ -1,14 +1,10 @@
 # Langbase CLI
 
-Langbase CLI is a command line interface for Langbase. It allows you to interact with Langbase from the command line.
+The Langbase CLI is a command-line interface for Langbase. It provides a set of commands to interact with the Langbase SDK and perform various tasks related to AI development.
 
-# Documentation
+## Usage
 
-Please follow the [Langbase documentation](https://langbase.com/docs) for the latest information.
-
-# Usage
-
-### DOCS MCP Server
+### Langbase Docs MCP Server
 
 Integrate the Langbase Docs MCP server into your IDEs and Claude Desktop.
 
@@ -60,3 +56,8 @@ Integrate the Langbase Docs MCP server into your IDEs and Claude Desktop.
     }
 }
 ```
+
+## Next steps
+
+- Read the [Langbase SDK documentation](https://langbase.com/docs/sdk) for more details
+- Join our [Discord](https://langbase.com/discord) community for feedback, requests, and support
