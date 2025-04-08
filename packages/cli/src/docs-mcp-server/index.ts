@@ -1,9 +1,8 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { z } from "zod";
-import { fetchDocsList, fetchDocsPost } from "./docs"
-import { getRelevanceScore } from "@/utils/get-score";
-
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { z } from 'zod';
+import { fetchDocsList, fetchDocsPost } from './docs';
+import { getRelevanceScore } from '@/utils/get-score';
 
 export async function docsMcpServer() {
 	const server = new McpServer({
@@ -20,44 +19,49 @@ export async function docsMcpServer() {
             For example, if user asks 'How do I create a pipe?', the query would be 'SDK Pipe'.
             This should be the specific concept or topic to search for in the documentation.
             Treat keyword add as create if user ask for Eg. 'How do I add memory to pipe?' the query should be 'create memory'`)
-        },
-        async ({ query }) => {
-            const docs = await fetchDocsList()
-            // search through the docs and return the most relevent path based on the query
-            const docLines = docs.split('\n').filter(line => line.trim());
+		},
+		async ({ query }) => {
+			const docs = await fetchDocsList();
+			// search through the docs and return the most relevent path based on the query
+			const docLines = docs.split('\n').filter(line => line.trim());
 
-            
-            // Score and sort the documentation entries
-            const scoredDocs = docLines
-                .map(line => ({
-                line,
-                score: getRelevanceScore(line, query)
-                }))
-                .sort((a, b) => b.score - a.score)
-                .filter(doc => doc.score > 0)
-                .slice(0, 3); // Get top 3 most relevant results
-            
-            const hasRelevantDocs = scoredDocs.length === 0;
+			// Score and sort the documentation entries
+			const scoredDocs = docLines
+				.map(line => ({
+					line,
+					score: getRelevanceScore(line, query)
+				}))
+				.sort((a, b) => b.score - a.score)
+				.filter(doc => doc.score > 0)
+				.slice(0, 3); // Get top 3 most relevant results
 
-            if (hasRelevantDocs) {
-                return {
-                    content: [{
-                        type: "text",
-                        text: "No relevant documentation found for the query: " + query
-                    }]
-                };
-            }
-            
-            const results = scoredDocs.map(doc => doc.line).join('\n');
-            
-            return {
-                content: [{
-                    type: "text",
-                    text: results
-                }]
-            };
-        }
-    );
+			const hasRelevantDocs = scoredDocs.length === 0;
+
+			if (hasRelevantDocs) {
+				return {
+					content: [
+						{
+							type: 'text',
+							text:
+								'No relevant documentation found for the query: ' +
+								query
+						}
+					]
+				};
+			}
+
+			const results = scoredDocs.map(doc => doc.line).join('\n');
+
+			return {
+				content: [
+					{
+						type: 'text',
+						text: results
+					}
+				]
+			};
+		}
+	);
 
 	server.tool(
 		'sdk-documentation-fetcher',
@@ -134,31 +138,41 @@ export async function docsMcpServer() {
 		}
 	);
 
-    server.tool(
-        "api-reference-tool",
-        "Fetches API reference documentation. Use this tool ONLY when the user explicitly asks about API endpoints, REST API calls, or programmatically creating/updating/deleting resources (like pipes, memory, etc.) through the API interface. For general SDK implementation questions, use the sdk-documentation-fetcher instead.",
-        { url: z.string().describe("URL of a specific api-reference page to fetch. Format: /api-reference/...") },
-        async ({ url }) => {
-            const content = await fetchDocsPost(`https://langbase.com/docs${url}`);
-            return {
-                content: [{
-                    type: "text",
-                    text: content
-                }]
-            };
-        }
-    );
+	server.tool(
+		'api-reference-tool',
+		'Fetches API reference documentation. Use this tool ONLY when the user explicitly asks about API endpoints, REST API calls, or programmatically creating/updating/deleting resources (like pipes, memory, etc.) through the API interface. For general SDK implementation questions, use the sdk-documentation-fetcher instead.',
+		{
+			url: z
+				.string()
+				.describe(
+					'URL of a specific api-reference page to fetch. Format: /api-reference/...'
+				)
+		},
+		async ({ url }) => {
+			const content = await fetchDocsPost(
+				`https://langbase.com/docs${url}`
+			);
+			return {
+				content: [
+					{
+						type: 'text',
+						text: content
+					}
+				]
+			};
+		}
+	);
 
 	async function main() {
 		const transport = new StdioServerTransport();
 
-        try {
-            await server.connect(transport);
-        } catch (error) {
-            console.error("Error connecting to transport:", error);
-            process.exit(1);
-        }
-    }
+		try {
+			await server.connect(transport);
+		} catch (error) {
+			console.error('Error connecting to transport:', error);
+			process.exit(1);
+		}
+	}
 
 	main().catch(error => {
 		console.error('Something went wrong:', error);

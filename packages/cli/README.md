@@ -6,12 +6,6 @@ Langbase CLI is a command line interface for Langbase. It allows you to interact
 
 Please follow the [Langbase documentation](https://langbase.com/docs) for the latest information.
 
-## Execute
-
-```bash
-npx @langbase/cli
-```
-
 # Usage
 
 ### DOCS MCP Server
@@ -31,7 +25,7 @@ Integrate the Langbase Docs MCP server into your IDEs and Claude Desktop.
         "args": ["@langbase/cli","docs-mcp-server"]
         }
     }
-}   
+}
 ```
 
 #### Windsurf
@@ -66,5 +60,3 @@ Integrate the Langbase Docs MCP server into your IDEs and Claude Desktop.
     }
 }
 ```
-
-
