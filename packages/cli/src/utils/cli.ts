@@ -1,4 +1,5 @@
 import meowHelp from 'cli-meow-help';
+// @ts-ignore
 import meow from 'meow';
 
 const flags = {
@@ -37,7 +38,7 @@ const commands = {
 };
 
 const helpText = meowHelp({
-	name: `baseai`,
+	name: `@langbase/cli`,
 	flags,
 	commands,
 	desc: false,

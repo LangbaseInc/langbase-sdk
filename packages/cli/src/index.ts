@@ -2,6 +2,7 @@
 import { auth } from './auth';
 import { build } from './build';
 import { deploy } from './deploy';
+import { docsMcpServer } from './docs-mcp-server';
 import cli from './utils/cli';
 import debugMode from './utils/debug-mode';
 import cliInit from './utils/init';
@@ -16,7 +17,10 @@ const command = (cmd: string): boolean => input.includes(cmd);
 const flag = (flg: string): boolean => Boolean(flags[flg]);
 
 (async () => {
-	await cliInit({ clear });
+	// Skip welcome message for docs-mcp-server command
+	if (!command('docs-mcp-server')) {
+		await cliInit({ clear });
+	}
 	if (debug) debugMode(cli);
 
 	if (command('help')) {
@@ -41,5 +45,9 @@ const flag = (flg: string): boolean => Boolean(flags[flg]);
 		const apiKey = flags.key;
 
 		await deploy({ isDev, agent, filePath, apiKey });
+	}
+
+	if (command('docs-mcp-server')) {
+		await docsMcpServer();
 	}
 })();

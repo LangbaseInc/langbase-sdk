@@ -1,3 +1,4 @@
+// @ts-ignore
 import unhandled from 'cli-handle-unhandled';
 import welcome from 'cli-welcome';
 import path from 'path';
