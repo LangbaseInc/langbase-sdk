@@ -115,7 +115,7 @@ importers:
         specifier: ^16.4.5
         version: 16.4.7
       langbase:
-        specifier: 1.1.52
+        specifier: ^1.1.52
         version: 1.1.52(react@18.3.1)(ws@8.18.0)
       uuid:
         specifier: ^11.1.0
@@ -276,7 +276,7 @@ importers:
         version: 5.7.3
       vitest:
         specifier: 1.6.0
-        version: 1.6.0(@edge-runtime/vm@4.0.4)(@types/node@22.13.5)(jsdom@24.1.3)(terser@5.38.1)
+        version: 1.6.0(@edge-runtime/vm@4.0.4)(@types/node@22.13.5)(jsdom@24.1.3(canvas@2.11.2))(terser@5.38.1)
 
   packages/langbase:
     dependencies:
@@ -10037,7 +10037,7 @@ snapshots:
       - supports-color
       - terser
 
-  vitest@1.6.0(@edge-runtime/vm@4.0.4)(@types/node@22.13.5)(jsdom@24.1.3)(terser@5.38.1):
+  vitest@1.6.0(@edge-runtime/vm@4.0.4)(@types/node@22.13.5)(jsdom@24.1.3(canvas@2.11.2))(terser@5.38.1):
     dependencies:
       '@vitest/expect': 1.6.0
       '@vitest/runner': 1.6.0

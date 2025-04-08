@@ -1,5 +1,11 @@
 # @langbase/cli
 
+## 0.1.3
+
+### Patch Changes
+
+- 📦 NEW: Langbase Docs MCP server
+
 ## 0.1.2
 
 ### Patch Changes
