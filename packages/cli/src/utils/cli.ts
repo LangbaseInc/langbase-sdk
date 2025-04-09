@@ -13,27 +13,30 @@ const flags = {
 		default: false,
 		shortFlag: `d`,
 		desc: `Print debug info`
-	},
-	agent: {
-		type: `string`,
-		shortFlag: `a`,
-		desc: `Agent to deploy the script into`
-	},
-	file: {
-		type: `string`,
-		shortFlag: `f`,
-		desc: `Script path to deploy`
-	},
-	key: {
-		type: `string`,
-		shortFlag: `k`,
-		desc: `Langbase API key`
 	}
+	// agent: {
+	// 	type: `string`,
+	// 	shortFlag: `a`,
+	// 	desc: `Agent to deploy the script into`
+	// },
+	// file: {
+	// 	type: `string`,
+	// 	shortFlag: `f`,
+	// 	desc: `Script path to deploy`
+	// },
+	// key: {
+	// 	type: `string`,
+	// 	shortFlag: `k`,
+	// 	desc: `Langbase API key`
+	// }
 };
 
 const commands = {
-	auth: { desc: `Authenticate with Langbase` },
-	deploy: { desc: `Deploy a script to Langbase` },
+	'docs-mcp-server': {
+		desc: `Start the Langbase docs MCP server`
+	},
+	// auth: { desc: `Authenticate with Langbase` },
+	// deploy: { desc: `Deploy a script to Langbase` },
 	help: { desc: `Print help info` }
 };
 
