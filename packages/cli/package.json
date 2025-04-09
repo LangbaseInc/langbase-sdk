@@ -1,7 +1,7 @@
 {
 	"name": "@langbase/cli",
 	"description": "Langbase CLI",
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"license": "UNLICENSED",
 	"type": "module",
 	"main": "./dist/index.js",

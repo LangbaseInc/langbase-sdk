@@ -1,5 +1,12 @@
 # @langbase/cli
 
+## 0.1.4
+
+### Patch Changes
+
+- 3619dad: 📦 NEW: CLI command
+- 📦 NEW: Add CLI commands
+
 ## 0.1.3
 
 ### Patch Changes
