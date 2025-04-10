@@ -1,5 +1,11 @@
 # @langbase/cli
 
+## 0.1.5
+
+### Patch Changes
+
+- 👌 IMPROVE: Langbase CLI
+
 ## 0.1.4
 
 ### Patch Changes
