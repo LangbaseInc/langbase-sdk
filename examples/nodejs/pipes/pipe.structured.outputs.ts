@@ -1,13 +1,14 @@
 import 'dotenv/config';
 import {Langbase} from 'langbase';
 import {z} from 'zod';
+import {zodToJsonSchema} from 'zod-to-json-schema';
 
 const langbase = new Langbase({
 	apiKey: process.env.LANGBASE_API_KEY!,
 });
 
 // Define the Strucutred Output JSON schema with Zod
-const MathResponseSchema = z.object({
+const MathReasoningSchema = z.object({
 	steps: z.array(
 		z.object({
 			explanation: z.string(),
@@ -16,6 +17,8 @@ const MathResponseSchema = z.object({
 	),
 	final_answer: z.string(),
 });
+
+const jsonSchema = zodToJsonSchema(MathReasoningSchema, {target: 'openAi'});
 
 async function createMathTutorPipe() {
 	const pipe = await langbase.pipes.create({
@@ -33,27 +36,7 @@ async function createMathTutorPipe() {
 			type: 'json_schema',
 			json_schema: {
 				name: 'math_reasoning',
-				schema: {
-					type: 'object',
-					properties: {
-						steps: {
-							type: 'array',
-							items: {
-								type: 'object',
-								properties: {
-									explanation: {type: 'string'},
-									output: {type: 'string'},
-								},
-								required: ['explanation', 'output'],
-								additionalProperties: false,
-							},
-						},
-						final_answer: {type: 'string'},
-					},
-					required: ['steps', 'final_answer'],
-					additionalProperties: false,
-				},
-				strict: true,
+				schema: jsonSchema,
 			},
 		},
 	});
@@ -69,7 +52,7 @@ async function runMathTutorPipe(question: string) {
 	});
 
 	// Parse and validate the response using Zod
-	const solution = MathResponseSchema.parse(JSON.parse(completion));
+	const solution = MathReasoningSchema.parse(JSON.parse(completion));
 
 	console.log('✅ Structured Output Response:', solution);
 }
@@ -81,7 +64,7 @@ async function main() {
 	}
 
 	// Run this only once to create the pipe. Uncomment if it's your first time setting it up.
-	await createMathTutorPipe();
+	// await createMathTutorPipe();
 	await runMathTutorPipe('How can I solve 8x + 22 = -23?');
 }
 
