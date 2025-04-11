@@ -57,6 +57,77 @@ Integrate the Langbase Docs MCP server into your IDEs and Claude Desktop.
 }
 ```
 
+
+## CLI Commands
+
+Get started with the Langbase CLI by running the following command:
+
+```bash
+npx @langbase/cli help
+```
+
+### Pipe Agent
+The CLI provides commands to manage your Langbase pipes.
+
+- Create a new pipe agent 
+```bash
+npx @langbase/cli pipe  
+```
+
+- Run a pipe agent
+```bash
+npx @langbase/cli pipe --run
+```
+
+- List all pipe agents
+```bash
+npx @langbase/cli pipe --listPipes
+```
+
+- Update a pipe agent
+```bash
+npx @langbase/cli pipe --update
+```
+
+
+### Memory
+The CLI provides commands to manage your Langbase memories.
+
+- Create a new memory
+```bash
+npx @langbase/cli memory
+```
+
+- Upload a document to memory
+```bash
+npx @langbase/cli memory --upload
+```
+
+- List all memories
+```bash
+npx @langbase/cli memory --listMemories
+```
+
+- Retrieve chunks from memory
+```bash
+npx @langbase/cli memory --retrieve
+```
+
+- List all documents in memory
+```bash
+npx @langbase/cli memory --listDocs
+```
+
+- Retry embedding of a document in a memory
+```bash
+npx @langbase/cli memory --embed
+```
+
+- Delete a memory
+```bash
+npx @langbase/cli memory --delete
+```
+
 ## Next steps
 
 - Read the [Langbase SDK documentation](https://langbase.com/docs/sdk) for more details
