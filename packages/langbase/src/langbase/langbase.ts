@@ -1,5 +1,6 @@
 import {convertDocToFormData} from '@/lib/utils/doc-to-formdata';
 import {Request} from '../common/request';
+import {Workflow} from './workflows';
 
 export type Role = 'user' | 'assistant' | 'system' | 'tool';
 
@@ -639,6 +640,8 @@ export class Langbase {
 		};
 	};
 
+	public workflow: (config: {debug?: boolean; name: string}) => Workflow;
+
 	constructor(options?: LangbaseOptions) {
 		this.baseUrl = options?.baseUrl ?? 'https://api.langbase.com';
 		this.apiKey = options?.apiKey ?? '';
@@ -723,6 +726,8 @@ export class Langbase {
 		this.agent = {
 			run: this.runAgent.bind(this),
 		};
+
+		this.workflow = (config) => new Workflow({...config, langbase: this});
 	}
 
 	private async runPipe(
