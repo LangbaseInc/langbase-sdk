@@ -10,12 +10,7 @@ const langbase = new Langbase({
 });
 
 async function main() {
-	const documentPath = path.join(
-		process.cwd(),
-		'examples',
-		'chunk',
-		'index.ts',
-	);
+	const documentPath = path.join(process.cwd(), 'chunk', 'index.ts');
 
 	const results = await langbase.chunk({
 		document: fs.readFileSync(documentPath),
