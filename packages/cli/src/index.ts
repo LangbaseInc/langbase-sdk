@@ -61,7 +61,12 @@ const flag = (flg: string): boolean => Boolean(flags[flg]);
 		await docsMcpServer();
 	}
 
-	if (command('pipe') && !flag('run') && !flag('update') && !flag('listPipes')) {
+	if (
+		command('pipe') &&
+		!flag('run') &&
+		!flag('update') &&
+		!flag('listPipes')
+	) {
 		await createPipe();
 	}
 
@@ -77,15 +82,22 @@ const flag = (flg: string): boolean => Boolean(flags[flg]);
 		await listPipes();
 	}
 
-
-	if (command('memory') && !flag('upload') && !flag('embed') && !flag('retrieve') && !flag('listDocs') && !flag('delete') && !flag('listMemories')) {
+	if (
+		command('memory') &&
+		!flag('upload') &&
+		!flag('embed') &&
+		!flag('retrieve') &&
+		!flag('listDocs') &&
+		!flag('delete') &&
+		!flag('listMemories')
+	) {
 		await createMemory();
 	}
 
 	if (command('memory') && flag('listMemories')) {
 		await listMemories();
 	}
-	
+
 	if (command('memory') && flag('delete')) {
 		await deleteMemory();
 	}
@@ -105,5 +117,4 @@ const flag = (flg: string): boolean => Boolean(flags[flg]);
 	if (command('memory') && flag('listDocs')) {
 		await listDocs();
 	}
-
 })();

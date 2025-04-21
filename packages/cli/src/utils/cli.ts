@@ -28,7 +28,7 @@ const flags = {
 		type: `boolean`,
 		default: false,
 		desc: `List all pipe agents`
-	},	
+	},
 	listMemories: {
 		type: `boolean`,
 		default: false,
@@ -78,7 +78,7 @@ const flags = {
 };
 
 const commands = {
-	'pipe': {
+	pipe: {
 		desc: `Create a pipe agent`,
 		flags: {
 			create: {
@@ -88,8 +88,8 @@ const commands = {
 			}
 		}
 	},
-	'memory': {
-		desc: `Create a memory`,
+	memory: {
+		desc: `Create a memory`
 	},
 	'docs-mcp-server': {
 		desc: `Start the Langbase docs MCP server`
