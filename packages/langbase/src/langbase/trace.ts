@@ -2,12 +2,15 @@ export interface Trace {
 	name: string;
 	startTime: number;
 	endTime?: number;
+	duration?: number;
 	steps: StepTrace[];
+	error?: string;
 }
 
 export interface StepTrace {
 	name: string;
 	output: any;
+	error?: string;
 	traces: string[] | null;
 	duration: number;
 	startTime: number;
@@ -38,6 +41,7 @@ export class TraceManager {
 		const trace = this.traces.get(traceId);
 		if (trace) {
 			trace.endTime = Date.now();
+			trace.duration = trace.endTime - trace.startTime;
 		}
 	}
 
