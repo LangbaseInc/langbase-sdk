@@ -88,21 +88,50 @@ export class Workflow {
 
 			// Replace with intercepted version
 			obj[method] = async function (...args: any[]) {
-				// Call original method with the correct 'this' context
-				const result = await originalMethod.apply(this, args);
+				// Add custom arguments for tracing
+				// Add rawResponse to the options if it's an object
+				const lastArg = args[args.length - 1];
+				const newArgs = [...args];
+
+				if (lastArg && typeof lastArg === 'object') {
+					newArgs[newArgs.length - 1] = {
+						...lastArg,
+						rawResponse: true,
+					};
+				}
+				// Append a new object if the last argument is not an object
+				else {
+					newArgs.push({rawResponse: true});
+				}
+
+				const result = await originalMethod.apply(this, newArgs);
+				console.log(`🔄 Intercepted method: ${fullPath}`, result);
 
 				// Process result for tracing if we have an active collector
-				if (
-					global._activeTraceCollector &&
-					result &&
-					typeof result === 'object'
-				) {
+				if (global._activeTraceCollector) {
 					// Extract or create traceId
-					let traceId: string;
+					let traceId: string | undefined;
 
-					if ('traceId' in result && result.traceId) {
-						traceId = result.traceId;
-						global._activeTraceCollector(traceId);
+					// Check if result is an object with response headers
+					if (result && typeof result === 'object') {
+						// Extract from response headers
+						if ('rawResponse' in result && result.rawResponse) {
+							// Check for lb-trace-id in headers
+							if (result.rawResponse.headers['lb-trace-id']) {
+								// Plain object headers
+								traceId =
+									result.rawResponse.headers['lb-trace-id'];
+							}
+						}
+
+						// Notify collector if traceId was found
+						if (traceId && global._activeTraceCollector) {
+							if (debug)
+								console.log(
+									`🔍 Trace ID extracted: ${traceId}`,
+								);
+							global._activeTraceCollector(traceId);
+						}
 					}
 				}
 
