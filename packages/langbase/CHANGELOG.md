@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.56
+
+### Patch Changes
+
+- 👌 IMPROVE: Tools API key
+
 ## 1.1.55
 
 ### Patch Changes
