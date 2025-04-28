@@ -382,7 +382,7 @@ export interface ToolWebSearchOptions {
 	service: 'exa';
 	totalResults?: number;
 	domains?: string[];
-	apiKey?: string;
+	apiKey: string;
 }
 
 export interface ToolWebSearchResponse {
@@ -393,7 +393,7 @@ export interface ToolWebSearchResponse {
 export interface ToolCrawlOptions {
 	url: string[];
 	maxPages?: number;
-	apiKey?: string;
+	apiKey: string;
 }
 
 export interface ToolCrawlResponse {
