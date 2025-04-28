@@ -922,15 +922,11 @@ export class Langbase {
 	private async webSearch(
 		options: ToolWebSearchOptions,
 	): Promise<ToolWebSearchResponse[]> {
-		const apiKey = options.apiKey ? options.apiKey : null;
-		apiKey && delete options.apiKey;
 		return this.request.post({
 			endpoint: '/v1/tools/web-search',
 			body: options,
 			headers: {
-				...(apiKey && {
-					'LB-WEB-SEARCH-KEY': apiKey,
-				}),
+				'LB-WEB-SEARCH-KEY': options.apiKey,
 			},
 		});
 	}
@@ -944,15 +940,11 @@ export class Langbase {
 	private async webCrawl(
 		options: ToolCrawlOptions,
 	): Promise<ToolCrawlResponse[]> {
-		const apiKey = options.apiKey ? options.apiKey : null;
-		apiKey && delete options.apiKey;
 		return this.request.post({
 			endpoint: '/v1/tools/crawl',
 			body: options,
 			headers: {
-				...(apiKey && {
-					'LB-CRAWL-KEY': apiKey,
-				}),
+				'LB-CRAWL-KEY': options.apiKey,
 			},
 		});
 	}
