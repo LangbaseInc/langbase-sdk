@@ -409,11 +409,9 @@ export interface EmbedOptions {
 export type EmbedResponse = number[][];
 
 export interface ChunkOptions {
-	document: Buffer | File | FormData | ReadableStream;
-	documentName: string;
-	contentType: ContentType;
-	chunkMaxLength?: string;
-	chunkOverlap?: string;
+	content: string;
+	chunkOverlap?: number;
+	chunkMaxLength?: number;
 }
 
 export type ChunkResponse = string[];
@@ -975,26 +973,10 @@ export class Langbase {
 	 * @returns A promise that resolves to the chunked document response.
 	 */
 	private async chunkDocument(options: ChunkOptions): Promise<ChunkResponse> {
-		const formData = await convertDocToFormData({
-			document: options.document,
-			documentName: options.documentName,
-			contentType: options.contentType,
+		return this.request.post({
+			endpoint: '/v1/chunk',
+			body: options,
 		});
-
-		if (options.chunkMaxLength)
-			formData.append('chunkMaxLength', options.chunkMaxLength);
-		if (options.chunkOverlap)
-			formData.append('chunkOverlap', options.chunkOverlap);
-
-		const response = await fetch(`${this.baseUrl}/v1/chunk`, {
-			method: 'POST',
-			headers: {
-				Authorization: `Bearer ${this.apiKey}`,
-			},
-			body: formData,
-		});
-
-		return response.json();
 	}
 
 	/**
