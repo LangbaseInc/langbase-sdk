@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.58
+
+### Patch Changes
+
+- 👌 IMPROVE: Chunk function
+
 ## 1.1.57
 
 ### Patch Changes
