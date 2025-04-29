@@ -51,8 +51,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       langbase:
-        specifier: ^1.1.57
-        version: 1.1.57(react@18.3.1)(ws@8.18.0)
+        specifier: ^1.1.58
+        version: 1.1.58(react@18.3.1)(ws@8.18.0)
       lucide-react:
         specifier: ^0.416.0
         version: 0.416.0(react@18.3.1)
@@ -115,8 +115,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.7
       langbase:
-        specifier: ^1.1.57
-        version: 1.1.57(react@18.3.1)(ws@8.18.0)
+        specifier: ^1.1.58
+        version: 1.1.58(react@18.3.1)(ws@8.18.0)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -3359,8 +3359,8 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  langbase@1.1.57:
-    resolution: {integrity: sha512-LZEOi1hKW65r0mqPCOCWASOUycbjZzhKmJ9UZ+5bxWlsfSXXv8m7iY6nWaPzb0EJwD8PqsRhzgjrVy4rMR8ymQ==}
+  langbase@1.1.58:
+    resolution: {integrity: sha512-2zxKOh6YdBze3FCLbMRIuYVHbClfY0OkXa4yzIyggyp5N299u6gAKcqGa+Zn+qZB5TpUUbVECscpgsk6ywZo7g==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19
@@ -6793,7 +6793,7 @@ snapshots:
 
   clear-any-console@1.16.3(react@18.3.1)(ws@8.18.0):
     dependencies:
-      langbase: 1.1.57(react@18.3.1)(ws@8.18.0)
+      langbase: 1.1.58(react@18.3.1)(ws@8.18.0)
     transitivePeerDependencies:
       - encoding
       - react
@@ -6811,7 +6811,7 @@ snapshots:
   cli-handle-error@4.4.1(react@18.3.1)(ws@8.18.0):
     dependencies:
       chalk: 3.0.0
-      langbase: 1.1.57(react@18.3.1)(ws@8.18.0)
+      langbase: 1.1.58(react@18.3.1)(ws@8.18.0)
       log-symbols: 3.0.0
     transitivePeerDependencies:
       - encoding
@@ -6821,7 +6821,7 @@ snapshots:
   cli-handle-unhandled@1.1.2(react@18.3.1)(ws@8.18.0):
     dependencies:
       cli-handle-error: 4.4.1(react@18.3.1)(ws@8.18.0)
-      langbase: 1.1.57(react@18.3.1)(ws@8.18.0)
+      langbase: 1.1.58(react@18.3.1)(ws@8.18.0)
     transitivePeerDependencies:
       - encoding
       - react
@@ -6848,7 +6848,7 @@ snapshots:
     dependencies:
       chalk: 5.4.1
       clear-any-console: 1.16.3(react@18.3.1)(ws@8.18.0)
-      langbase: 1.1.57(react@18.3.1)(ws@8.18.0)
+      langbase: 1.1.58(react@18.3.1)(ws@8.18.0)
     transitivePeerDependencies:
       - encoding
       - react
@@ -7314,7 +7314,7 @@ snapshots:
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.7.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint@8.57.1)
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.1)
       eslint-plugin-react: 7.37.4(eslint@8.57.1)
       eslint-plugin-react-hooks: 5.0.0-canary-7118f5dd7-20230705(eslint@8.57.1)
@@ -7359,7 +7359,7 @@ snapshots:
       is-glob: 4.0.3
       stable-hash: 0.0.4
     optionalDependencies:
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -7435,7 +7435,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1):
+  eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.8
@@ -8400,7 +8400,7 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  langbase@1.1.57(react@18.3.1)(ws@8.18.0):
+  langbase@1.1.58(react@18.3.1)(ws@8.18.0):
     dependencies:
       dotenv: 16.4.7
       openai: 4.83.0(ws@8.18.0)(zod@3.24.1)
