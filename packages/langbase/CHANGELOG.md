@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.59
+
+### Patch Changes
+
+- 📦 NEW: Parser and chunker functions
+
 ## 1.1.58
 
 ### Patch Changes
