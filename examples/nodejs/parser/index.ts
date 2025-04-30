@@ -10,14 +10,9 @@ const langbase = new Langbase({
 });
 
 async function main() {
-	const documentPath = path.join(
-		process.cwd(),
-		'examples',
-		'parse',
-		'composable-ai.md',
-	);
+	const documentPath = path.join(process.cwd(), 'parser', 'composable-ai.md');
 
-	const results = await langbase.parse({
+	const results = await langbase.parser({
 		document: fs.readFileSync(documentPath),
 		documentName: 'composable-ai.md',
 		contentType: 'application/pdf',

@@ -8,7 +8,7 @@ const langbase = new Langbase({
 });
 
 async function main() {
-	const results = await langbase.chunk({
+	const results = await langbase.chunker({
 		content: `Langbase is the most powerful serverless AI platform for building AI agents with memory.
 Build, deploy, and scale AI agents with tools and memory (RAG). Simple AI primitives with a world-class developer experience without using any frameworks.
 

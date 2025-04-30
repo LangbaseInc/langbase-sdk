@@ -591,7 +591,9 @@ export class Langbase {
 
 	public embed: (options: EmbedOptions) => Promise<EmbedResponse>;
 	public chunk: (options: ChunkOptions) => Promise<ChunkResponse>;
+	public chunker: (options: ChunkOptions) => Promise<ChunkResponse>;
 	public parse: (options: ParseOptions) => Promise<ParseResponse>;
+	public parser: (options: ParseOptions) => Promise<ParseResponse>;
 
 	public agent: {
 		run: {
@@ -667,7 +669,9 @@ export class Langbase {
 
 		this.embed = this.generateEmbeddings.bind(this);
 		this.chunk = this.chunkDocument.bind(this);
+		this.chunker = this.chunkDocument.bind(this);
 		this.parse = this.parseDocument.bind(this);
+		this.parser = this.parseDocument.bind(this);
 		this.threads = {
 			create: this.createThread.bind(this),
 			update: this.updateThread.bind(this),
@@ -974,7 +978,7 @@ export class Langbase {
 	 */
 	private async chunkDocument(options: ChunkOptions): Promise<ChunkResponse> {
 		return this.request.post({
-			endpoint: '/v1/chunk',
+			endpoint: '/v1/chunker',
 			body: options,
 		});
 	}
@@ -998,7 +1002,7 @@ export class Langbase {
 			contentType: options.contentType,
 		});
 
-		const response = await fetch(`${this.baseUrl}/v1/parse`, {
+		const response = await fetch(`${this.baseUrl}/v1/parser`, {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${this.apiKey}`,
