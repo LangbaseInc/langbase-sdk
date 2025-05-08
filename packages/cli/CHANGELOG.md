@@ -1,5 +1,11 @@
 # @langbase/cli
 
+## 0.1.6
+
+### Patch Changes
+
+- 👌 IMPROVE: Docs MCP server score algo
+
 ## 0.1.5
 
 ### Patch Changes
