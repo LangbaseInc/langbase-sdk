@@ -20,6 +20,20 @@ export async function fetchDocsList() {
 	}
 }
 
+export async function fetchSdkDocsList() {
+	try {
+		const response = await fetch('https://langbase.com/docs/llms-sdk.txt');
+		if (!response.ok) {
+			throw new Error('Failed to fetch docs');
+		}
+
+		const text = await response.text();
+		return text;
+	} catch (error) {
+		throw new Error('Failed to fetch docs ' + JSON.stringify(error));
+	}
+}
+
 /**
  * Fetches and converts a blog post to markdown
  *
@@ -45,12 +59,14 @@ export async function fetchDocsPost(url: string): Promise<string> {
 
 		// Get the main content
 		const content = document.body.textContent?.trim() || '';
+
 		if (!content) {
 			throw new Error('No content found in docs');
 		}
 
 		return content;
 	} catch (error) {
+		console.error('Error fetching docs:', error);
 		throw new Error(
 			`Failed to fetch docs: ${error instanceof Error ? error.message : 'Something went wrong. Please try again.'}`
 		);
