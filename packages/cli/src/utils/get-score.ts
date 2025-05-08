@@ -30,8 +30,8 @@ export const getRelevanceScore = (
 	let score = 0;
 
 	// Highest score for exact matches (10 points)
-	const isExactMatch = lowerText.includes(lowerQuery);
-	if (isExactMatch) {
+	const isPartialMatch = lowerText.includes(lowerQuery);
+	if (isPartialMatch) {
 		score += 10;
 	}
 
@@ -46,8 +46,8 @@ export const getRelevanceScore = (
 		const isWordShort = word.length < 2;
 		if (isWordShort) continue;
 
-		const isWordMatch = lowerText.includes(word);
-		if (isWordMatch) {
+		const isPartialWordMatch = lowerText.includes(word);
+		if (isPartialWordMatch) {
 			// Full word match
 			if (isTitle) {
 				score += 5;

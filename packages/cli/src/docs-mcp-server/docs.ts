@@ -20,7 +20,7 @@ export async function fetchDocsList() {
 	}
 }
 
-export async function fetchSdKDocsList() {
+export async function fetchSdkDocsList() {
 	try {
 		const response = await fetch('https://langbase.com/docs/llms-sdk.txt');
 		if (!response.ok) {
@@ -49,7 +49,6 @@ export async function fetchDocsPost(url: string): Promise<string> {
 		}
 
 		const html = await response.text();
-		console.log('Fetched HTML:', html);
 
 		const dom = new JSDOM(html);
 		const document = dom.window.document;
@@ -60,7 +59,6 @@ export async function fetchDocsPost(url: string): Promise<string> {
 
 		// Get the main content
 		const content = document.body.textContent?.trim() || '';
-		console.log('Content:', content);
 
 		if (!content) {
 			throw new Error('No content found in docs');

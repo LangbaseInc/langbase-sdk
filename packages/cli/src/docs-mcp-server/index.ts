@@ -1,7 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
-import { fetchDocsList, fetchDocsPost, fetchSdKDocsList } from './docs';
+import { fetchDocsList, fetchDocsPost, fetchSdkDocsList } from './docs';
 import { findRelevantLink } from '@/utils/get-relevent-link';
 
 export async function docsMcpServer() {
@@ -59,7 +59,7 @@ export async function docsMcpServer() {
             Treat keyword add as create if user ask for Eg. 'How do I add memory to pipe?' the query should be 'create memory'`)
 		},
 		async ({ query }) => {
-			const docs = await fetchSdKDocsList();
+			const docs = await fetchSdkDocsList();
 			const url = findRelevantLink(docs, query);
 
 			if (!url) {
