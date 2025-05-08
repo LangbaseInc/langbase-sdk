@@ -5,7 +5,7 @@ body:
     - type: markdown
       attributes:
           value: |
-              This template is to report bugs for the Langbase. If you need help with your own project, feel free to [start a new thread in our discussions](https://github.com/LangbaseInc/langbase/discussions).
+              This template is to report bugs for the Langbase. If you need help with your own project, feel free to [start a new thread in our discord forum](https://discord.com/invite/qz6VsMtvXU).
     - type: textarea
       attributes:
           label: Description
