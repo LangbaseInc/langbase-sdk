@@ -62,6 +62,17 @@ export class Request {
 		const isLllmGenerationEndpoint =
 			GENERATION_ENDPOINTS.includes(endpoint);
 
+		// All endpoints should return headers if rawResponse is true
+		if (!isLllmGenerationEndpoint && options.body?.rawResponse) {
+			const responseData = await response.json();
+			return {
+				...responseData,
+				rawResponse: {
+					headers: Object.fromEntries(response.headers.entries()),
+				},
+			} as T;
+		}
+
 		if (isLllmGenerationEndpoint) {
 			const threadId = response.headers.get('lb-thread-id');
 
