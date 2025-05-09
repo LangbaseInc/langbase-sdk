@@ -17,11 +17,11 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/LangbaseInc/components.git",
+		"url": "https://github.com/LangbaseInc/langbase-sdk.git",
 		"directory": "packages/cli"
 	},
 	"bugs": {
-		"url": "https://github.com/LangbaseInc/components/issues"
+		"url": "https://github.com/LangbaseInc/langbase-sdk/issues"
 	},
 	"homepage": "https://langbase.com",
 	"files": [
