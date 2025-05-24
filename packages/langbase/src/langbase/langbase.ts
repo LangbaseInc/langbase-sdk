@@ -342,7 +342,7 @@ export interface MemoryCreateResponse extends MemoryBaseResponse {
 	embedding_model: EmbeddingModels;
 }
 export interface MemoryListResponse extends MemoryBaseResponse {
-	embedding_model: EmbeddingModels;
+	embeddingModel: EmbeddingModels;
 }
 export interface BaseDeleteResponse {
 	success: boolean;
