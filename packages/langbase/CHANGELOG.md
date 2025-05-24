@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.60
+
+### Patch Changes
+
+- 📦 NEW: Service option to crawl primtive
+
 ## 1.1.59
 
 ### Patch Changes
