@@ -33,6 +33,7 @@
     "pipe.structured.outputs": "npx tsx ./pipes/pipe.structured.outputs.ts",
     "tools.web-search": "npx tsx ./tools/web-search.ts",
     "tools.crawl": "npx tsx ./tools/crawl.ts",
+    "tools.crawl.firecrawl": "npx tsx ./tools/crawl.firecrawl.ts",
     "embed": "npx tsx ./embed/index.ts",
     "chunker": "npx tsx ./chunker/index.ts",
     "parser": "npx tsx ./parser/index.ts",

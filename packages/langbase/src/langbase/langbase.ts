@@ -394,6 +394,7 @@ export interface ToolCrawlOptions {
 	url: string[];
 	maxPages?: number;
 	apiKey: string;
+	service?: 'spider' | 'firecrawl';
 }
 
 export interface ToolCrawlResponse {

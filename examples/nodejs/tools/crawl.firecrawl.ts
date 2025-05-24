@@ -8,17 +8,18 @@ const langbase = new Langbase({
 });
 
 /**
- * Crawls specified URLs using spider.cloud service.
+ * Crawls specified URLs using firecrawl.dev service.
  *
  * Get your API key from the following link and set it in .env file.
  *
- * @link https://spider.cloud/docs/quickstart
+ * @link https://docs.firecrawl.dev/introduction
  */
 async function main() {
 	const results = await langbase.tools.crawl({
 		url: ['https://langbase.com', 'https://langbase.com/about'],
 		maxPages: 1,
-		apiKey: process.env.CRAWL_KEY!,
+		apiKey: process.env.FIRECRAWL_KEY!,
+		service: 'firecrawl',
 	});
 
 	console.log(results);
