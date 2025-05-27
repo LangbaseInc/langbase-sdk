@@ -51,7 +51,7 @@
   "dependencies": {
     "@langbase/cli": "workspace:*",
     "dotenv": "^16.4.5",
-    "langbase": "^1.1.60",
+    "langbase": "^1.1.61",
     "uuid": "^11.1.0",
     "zod": "^3.21.4",
     "zod-to-json-schema": "^3.24.5"
