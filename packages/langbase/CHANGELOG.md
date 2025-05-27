@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.61
+
+### Patch Changes
+
+- 🐛 FIX: Memory list response type
+
 ## 1.1.60
 
 ### Patch Changes
