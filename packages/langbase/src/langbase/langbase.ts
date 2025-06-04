@@ -46,7 +46,10 @@ export interface AgentRunOptionsBase {
 	customModelParams?: Record<string, any>;
 }
 
-export type AgentRunOptionsWithoutMcp = Omit<AgentRunOptionsBase, 'mcp_servers'> & {
+export type AgentRunOptionsWithoutMcp = Omit<
+	AgentRunOptionsBase,
+	'mcp_servers'
+> & {
 	stream?: false;
 };
 
@@ -55,23 +58,28 @@ export type AgentRunOptionsWithMcp = AgentRunOptionsBase & {
 	stream: false;
 };
 
-export type AgentRunOptionsStreamT = Omit<AgentRunOptionsBase, 'mcp_servers'> & {
+export type AgentRunOptionsStreamT = Omit<
+	AgentRunOptionsBase,
+	'mcp_servers'
+> & {
 	stream: true;
 };
 
-export type AgentRunOptions = AgentRunOptionsWithoutMcp | AgentRunOptionsWithMcp;
+export type AgentRunOptions =
+	| AgentRunOptionsWithoutMcp
+	| AgentRunOptionsWithMcp;
 export type AgentRunOptionsStream = AgentRunOptionsStreamT;
 
 export interface McpServerSchema {
 	name: string;
 	type: 'url';
-	url:  string;
+	url: string;
 	authorization_token?: string;
 	tool_configuration?: {
 		allowed_tools?: string[];
 		enabled?: boolean;
-	}
-	custom_headers?: Record<string, string>
+	};
+	custom_headers?: Record<string, string>;
 }
 
 interface ChoiceGenerate {
