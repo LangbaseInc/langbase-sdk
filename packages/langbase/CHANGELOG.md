@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.62
+
+### Patch Changes
+
+- 📦 NEW: MCP support in agent run
+
 ## 1.1.61
 
 ### Patch Changes
