@@ -43,6 +43,7 @@ export interface AgentRunOptionsBase {
 	max_completion_tokens?: number;
 	response_format?: ResponseFormat;
 	customModelParams?: Record<string, any>;
+	mcp_servers?: McpServerSchema[];
 }
 
 export interface AgentRunOptions extends AgentRunOptionsBase {
@@ -94,6 +95,18 @@ export interface AgentRunResponse {
 	rawResponse?: {
 		headers: Record<string, string>;
 	};
+}
+
+export interface McpServerSchema {
+	name: string;
+	type: 'url';
+	url: string;
+	authorization_token?: string | null;
+	tool_configuration?: {
+		allowed_tools?: string[] | null;
+		enabled?: boolean;
+	} | null;
+	custom_headers?: any | null;
 }
 
 export interface RunResponseStream {
