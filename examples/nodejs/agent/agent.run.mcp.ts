@@ -16,7 +16,7 @@ async function main() {
 			},
 		],
 		model: 'openai:gpt-4.1-mini',
-		apiKey: process.env.LLM_API_KEY!,
+		apiKey: process.env.OPENAI_API_KEY!,
 		instructions:
 			'You are a helpful assistant that help users summarize text.',
 		input: [
