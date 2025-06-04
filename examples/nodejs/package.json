@@ -43,7 +43,8 @@
     "threads.append": "npx tsx ./threads/threads.append.ts",
     "threads.messages.list": "npx tsx ./threads/threads.messages.list.ts",
     "threads.get": "npx tsx ./threads/threads.get.ts",
-    "workflow": "npx tsx ./workflows/workflows.ts"
+    "workflow": "npx tsx ./workflows/workflows.ts",
+    "agent.run.mcp": "npx tsx ./agent/agent.run.mcp.ts"
   },
   "keywords": [],
   "author": "Ahmad Awais <me@AhmadAwais.com> (https://twitter.com/MrAhmadAwais)",
@@ -51,7 +52,7 @@
   "dependencies": {
     "@langbase/cli": "workspace:*",
     "dotenv": "^16.4.5",
-    "langbase": "^1.1.61",
+    "langbase": "^1.1.62",
     "uuid": "^11.1.0",
     "zod": "^3.21.4",
     "zod-to-json-schema": "^3.24.5"

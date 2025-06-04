@@ -50,4 +50,7 @@ npm run parse
 npm run thread.messages.add
 npm run thread.messages.list
 npm run thread.delete
+
+# agent
+npm run agent.run.mcp
 ```
