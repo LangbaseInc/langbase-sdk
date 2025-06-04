@@ -39,18 +39,47 @@ export interface AgentRunOptionsBase {
 	tools?: Tools[];
 	tool_choice?: 'auto' | 'required' | ToolChoice;
 	parallel_tool_calls?: boolean;
+	mcp_servers?: McpServerSchema[];
 	reasoning_effort?: string | null;
 	max_completion_tokens?: number;
 	response_format?: ResponseFormat;
 	customModelParams?: Record<string, any>;
 }
 
-export interface AgentRunOptions extends AgentRunOptionsBase {
+export type AgentRunOptionsWithoutMcp = Omit<
+	AgentRunOptionsBase,
+	'mcp_servers'
+> & {
 	stream?: false;
-}
+};
 
-export interface AgentRunOptionsStream extends AgentRunOptionsBase {
+export type AgentRunOptionsWithMcp = AgentRunOptionsBase & {
+	mcp_servers: McpServerSchema[];
+	stream: false;
+};
+
+export type AgentRunOptionsStreamT = Omit<
+	AgentRunOptionsBase,
+	'mcp_servers'
+> & {
 	stream: true;
+};
+
+export type AgentRunOptions =
+	| AgentRunOptionsWithoutMcp
+	| AgentRunOptionsWithMcp;
+export type AgentRunOptionsStream = AgentRunOptionsStreamT;
+
+export interface McpServerSchema {
+	name: string;
+	type: 'url';
+	url: string;
+	authorization_token?: string;
+	tool_configuration?: {
+		allowed_tools?: string[];
+		enabled?: boolean;
+	};
+	custom_headers?: Record<string, string>;
 }
 
 interface ChoiceGenerate {
@@ -474,6 +503,13 @@ export interface ThreadMessagesBaseResponse {
 	name: string | null;
 	attachments: any[] | [];
 	metadata: Record<string, string> | {};
+}
+
+interface ChoiceGenerate {
+	index: number;
+	message: Message;
+	logprobs: boolean | null;
+	finish_reason: string;
 }
 
 export class Langbase {
