@@ -204,10 +204,12 @@ export interface ThreadMessage extends Message {
 	metadata?: Record<string, string>;
 }
 
-export interface Variable {
-	name: string;
-	value: string;
-}
+export type Variable =
+	| {
+			name: string;
+			value: string;
+	  }
+	| Record<string, string>;
 
 interface ToolChoice {
 	type: 'function';
