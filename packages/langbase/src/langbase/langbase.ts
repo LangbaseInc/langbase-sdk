@@ -243,7 +243,7 @@ interface PipeBaseOptions {
 	tool_choice?: 'auto' | 'required' | ToolChoice;
 	parallel_tool_calls?: boolean;
 	messages?: Message[];
-	variables?: Variable[];
+	variables?: Variable[] | Record<string, string>;
 	memory?: {
 		name: string;
 	}[];
