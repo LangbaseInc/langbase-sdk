@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.63
+
+### Patch Changes
+
+- 👌 IMPROVE: Variable mapping
+
 ## 1.1.62
 
 ### Patch Changes
