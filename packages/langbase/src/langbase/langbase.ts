@@ -204,12 +204,10 @@ export interface ThreadMessage extends Message {
 	metadata?: Record<string, string>;
 }
 
-export type Variable =
-	| {
-			name: string;
-			value: string;
-	  }
-	| Record<string, string>;
+export interface Variable {
+	name: string;
+	value: string;
+}
 
 interface ToolChoice {
 	type: 'function';
@@ -245,7 +243,7 @@ interface PipeBaseOptions {
 	tool_choice?: 'auto' | 'required' | ToolChoice;
 	parallel_tool_calls?: boolean;
 	messages?: Message[];
-	variables?: Variable[];
+	variables?: Variable[] | Record<string, string>;
 	memory?: {
 		name: string;
 	}[];
