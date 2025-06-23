@@ -49,7 +49,7 @@ export class TraceManager {
 	private traces: Map<string, PrimitiveTrace> = new Map();
 
 	createTrace(type: TraceType, traceData: any = {}): string {
-		const traceId = `trace_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+		const traceId = crypto.randomUUID();
 		let trace: PrimitiveTrace;
 		const createdAt = new Date().toISOString();
 		if (type === 'workflow') {
