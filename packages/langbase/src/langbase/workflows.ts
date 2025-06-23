@@ -55,6 +55,7 @@ export class Workflow {
 	private traceManager: TraceManager;
 	private traceId: string;
 	private langbase: Langbase;
+
 	private originalMethods: Map<string, Function> = new Map();
 	public readonly step: <T = any>(config: StepConfig<T>) => Promise<T>;
 
@@ -376,19 +377,31 @@ export class Workflow {
 		return new Promise(resolve => setTimeout(resolve, ms));
 	}
 
-	public end() {
+	public async end(): Promise<void> {
+		// Finalise and grab the trace
 		this.traceManager.endTrace(this.traceId);
 		this.traceManager.printTrace(this.traceId);
+		const traceData = this.traceManager.getTrace(this.traceId);
+
+		// --- send to LB API v1/traces/create using SDK method ---
+		try {
+			const res = await this.langbase.traces.create(traceData);
+
+			if (!res || res.error) {
+				console.error(
+					`❌ Trace upload failed: ${res?.status || ''} ${res?.statusText || ''}`,
+				);
+			} else if (this.debug) {
+				console.log(`✅ Trace ${this.traceId} sent to collector`);
+			}
+		} catch (err) {
+			console.error('❌ Error while sending trace', err);
+		}
+		// -------------------------------------------------------------------------
 
 		if (this.debug) {
 			console.log('\n🔍 DEBUG: Final trace data:');
-			console.log(
-				JSON.stringify(
-					this.traceManager.getTrace(this.traceId),
-					null,
-					2,
-				),
-			);
+			console.log(JSON.stringify(traceData, null, 2));
 		}
 	}
 }
