@@ -65,7 +65,9 @@ export class Workflow {
 		this.name = config.name;
 		this.langbase = config.langbase;
 		this.traceManager = new TraceManager();
-		this.traceId = this.traceManager.createTrace(this.name);
+		this.traceId = this.traceManager.createTrace('workflow', {
+			name: this.name,
+		});
 		this.step = this._step.bind(this);
 
 		// Set global debug flag
