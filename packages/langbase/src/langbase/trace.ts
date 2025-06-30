@@ -57,7 +57,7 @@ export class TraceManager {
 				workflow: {
 					createdAt,
 					id: traceId,
-					agentWorkflowId: traceData.agentWorkflowId || '',
+					agentWorkflowId: process.env.LANGBASE_AGENT_ID || '',
 					name: traceData.name || '',
 					startTime: Date.now(),
 					steps: [],
