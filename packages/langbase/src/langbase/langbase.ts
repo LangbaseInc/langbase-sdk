@@ -1,6 +1,5 @@
 import {convertDocToFormData} from '@/lib/utils/doc-to-formdata';
 import {Request} from '../common/request';
-import {Workflow} from './workflows';
 
 export type Role = 'user' | 'assistant' | 'system' | 'tool';
 
@@ -640,12 +639,6 @@ export class Langbase {
 		};
 	};
 
-	public workflow: (config: {debug?: boolean; name: string}) => Workflow;
-
-	public traces: {
-		create: (trace: any) => Promise<any>;
-	};
-
 	constructor(options?: LangbaseOptions) {
 		this.baseUrl = options?.baseUrl ?? 'https://api.langbase.com';
 		this.apiKey = options?.apiKey ?? '';
@@ -729,12 +722,6 @@ export class Langbase {
 
 		this.agent = {
 			run: this.runAgent.bind(this),
-		};
-
-		this.workflow = config => new Workflow({...config, langbase: this});
-
-		this.traces = {
-			create: this.createTrace.bind(this),
 		};
 	}
 
@@ -1157,19 +1144,6 @@ export class Langbase {
 			headers: {
 				...(options.apiKey && {'LB-LLM-Key': options.apiKey}),
 			},
-		});
-	}
-
-	/**
-	 * Creates a new trace on Langbase.
-	 *
-	 * @param {any} trace - The trace data to send.
-	 * @returns {Promise<any>} A promise that resolves to the response of the trace creation.
-	 */
-	private async createTrace(trace: any): Promise<any> {
-		return this.request.post({
-			endpoint: '/v1/traces',
-			body: trace,
 		});
 	}
 }
