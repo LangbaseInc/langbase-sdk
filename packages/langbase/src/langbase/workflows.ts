@@ -1,12 +1,22 @@
 import {TraceManager, StepTrace} from './trace';
 import {Langbase} from './langbase';
 
+// Cross-platform global object
+const _global: any =
+	typeof global !== 'undefined'
+		? global
+		: typeof window !== 'undefined'
+			? window
+			: typeof self !== 'undefined'
+				? self
+				: typeof globalThis !== 'undefined'
+					? globalThis
+					: {};
+
 // Declare the global langbase instance
-declare global {
-	var langbase: Langbase;
-	var _activeTraceCollector: ((traceId: string) => void) | null;
-	var _workflowDebugEnabled: boolean;
-}
+_global.langbase = _global.langbase || new Langbase();
+_global._activeTraceCollector = _global._activeTraceCollector || null;
+_global._workflowDebugEnabled = _global._workflowDebugEnabled || false;
 
 type WorkflowContext = {
 	outputs: Record<string, any>;
@@ -38,16 +48,6 @@ class TimeoutError extends Error {
 	}
 }
 
-// Setup the global trace collector for cross-instance communication
-if (typeof global._activeTraceCollector === 'undefined') {
-	global._activeTraceCollector = null;
-}
-
-// For debug flag
-if (typeof global._workflowDebugEnabled === 'undefined') {
-	global._workflowDebugEnabled = false;
-}
-
 export class Workflow {
 	private context: WorkflowContext;
 	private debug: boolean;
@@ -71,7 +71,7 @@ export class Workflow {
 		this.step = this._step.bind(this);
 
 		// Set global debug flag
-		global._workflowDebugEnabled = this.debug;
+		_global._workflowDebugEnabled = this.debug;
 	}
 
 	/**
@@ -111,7 +111,7 @@ export class Workflow {
 				console.log(`🔄 Intercepted method: ${fullPath}`, result);
 
 				// Process result for tracing if we have an active collector
-				if (global._activeTraceCollector) {
+				if (_global._activeTraceCollector) {
 					// Extract or create traceId
 					let traceId: string | undefined;
 
@@ -128,12 +128,12 @@ export class Workflow {
 						}
 
 						// Notify collector if traceId was found
-						if (traceId && global._activeTraceCollector) {
+						if (traceId && _global._activeTraceCollector) {
 							if (debug)
 								console.log(
 									`🔍 Trace ID extracted: ${traceId}`,
 								);
-							global._activeTraceCollector(traceId);
+							_global._activeTraceCollector(traceId);
 						}
 					}
 				}
@@ -246,8 +246,8 @@ export class Workflow {
 		this.setupMethodInterceptors();
 
 		// Set the global active trace collector
-		const previousTraceCollector = global._activeTraceCollector;
-		global._activeTraceCollector = collectTrace;
+		const previousTraceCollector = _global._activeTraceCollector;
+		_global._activeTraceCollector = collectTrace;
 
 		try {
 			// Execute the step function directly
@@ -298,13 +298,13 @@ export class Workflow {
 
 			// Restore original methods and trace collector
 			this.restoreOriginalMethods();
-			global._activeTraceCollector = previousTraceCollector;
+			_global._activeTraceCollector = previousTraceCollector;
 
 			return result;
 		} catch (error) {
 			// Restore original methods and trace collector on error
 			this.restoreOriginalMethods();
-			global._activeTraceCollector = previousTraceCollector;
+			_global._activeTraceCollector = previousTraceCollector;
 
 			// Store error for potential retry or final throw
 			lastError = error as Error;
