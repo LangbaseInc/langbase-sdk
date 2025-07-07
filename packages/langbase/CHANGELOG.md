@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.1.67
+
+### Patch Changes
+
+- Fix workflow bugs
+
 ## 1.1.66
 
 ### Patch Changes
