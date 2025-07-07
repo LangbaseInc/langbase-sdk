@@ -1,11 +1,5 @@
 # `langbase` SDK
 
-## 1.1.66
-
-### Patch Changes
-
-- Tracing support
-
 ## 1.1.65
 
 ### Patch Changes
