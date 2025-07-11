@@ -1,6 +1,5 @@
-// Test script for the simplified proxy approach
 import 'dotenv/config';
-import {Langbase} from 'langbase';
+import {Langbase, Workflow} from 'langbase';
 
 // Create Langbase instance
 const langbase = new Langbase({
@@ -10,9 +9,15 @@ const langbase = new Langbase({
 async function main() {
 	// Create a workflow with debug mode enabled
 	const workflow = langbase.workflow({
-		name: 'simplified-proxy-test',
-		debug: true, // Enable debug logging
+		name: 'Test Agent Workflow',
+		debug: true,
 	});
+	// OR
+	// const workflow = new Workflow({
+	// 	name: 'Test Agent Workflow',
+	// 	debug: true,
+	// 	langbase,
+	// });
 
 	try {
 		// STEP 1: Call langbase.agent.run but don't return its result directly
@@ -76,7 +81,7 @@ async function main() {
 	} catch (error) {
 		console.error('❌ Workflow error:', error);
 	} finally {
-		// End the workflow to show trace report
+		// End the workflow to send trace
 		workflow.end();
 	}
 }
