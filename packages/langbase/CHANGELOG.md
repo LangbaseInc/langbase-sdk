@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.2.0
+
+### Minor Changes
+
+- Improved workflows and tracing
+
 ## 1.1.67
 
 ### Patch Changes
