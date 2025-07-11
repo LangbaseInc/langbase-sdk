@@ -37,7 +37,7 @@ type StepConfig<T = any> = {
 type WorkflowConfig = {
 	debug?: boolean;
 	name?: string;
-	langbase: Langbase;
+	langbase?: Langbase; // Now optional for backward compatibility
 };
 
 class TimeoutError extends Error {
@@ -51,9 +51,9 @@ export class Workflow {
 	private context: WorkflowContext;
 	private debug: boolean;
 	private name: string;
-	private traceManager: TraceManager;
-	private traceId: string;
-	private langbase: Langbase;
+	private traceManager?: TraceManager; // Optional
+	private traceId?: string; // Optional
+	private langbase?: Langbase; // Optional
 
 	private originalMethods: Map<string, Function> = new Map();
 	public readonly step: <T = any>(config: StepConfig<T>) => Promise<T>;
@@ -63,20 +63,24 @@ export class Workflow {
 		this.debug = config.debug ?? false;
 		this.name = config.name ?? 'workflow';
 		this.langbase = config.langbase;
-		this.traceManager = new TraceManager();
-		this.traceId = this.traceManager.createTrace('workflow', {
-			name: this.name,
-		});
-		this.step = this._step.bind(this);
 
-		// Set global debug flag
-		_global._workflowDebugEnabled = this.debug;
+		// Only initialize tracing if langbase is provided
+		if (this.langbase) {
+			this.traceManager = new TraceManager();
+			this.traceId = this.traceManager.createTrace('workflow', {
+				name: this.name,
+			});
+			// Set global debug flag
+			_global._workflowDebugEnabled = this.debug;
+		}
+		this.step = this._step.bind(this);
 	}
 
 	/**
 	 * Replace a method in the Langbase instance with a traced version
 	 */
 	private interceptMethod(obj: any, method: string, path: string = ''): void {
+		if (!this.langbase) return; // Skip if no langbase instance provided (no tracing)
 		if (!obj || typeof obj[method] !== 'function') return;
 
 		const fullPath = path ? `${path}.${method}` : method;
@@ -146,6 +150,7 @@ export class Workflow {
 	 * Restore all original methods that were intercepted
 	 */
 	private restoreOriginalMethods(): void {
+		if (!this.langbase) return; // Skip if no langbase (no tracing)
 		this.originalMethods.forEach((originalMethod, path) => {
 			// Parse the path to find the object and method
 			const parts = path.split('.');
@@ -179,6 +184,7 @@ export class Workflow {
 	 * Intercept all important methods in the Langbase instance
 	 */
 	private setupMethodInterceptors(): void {
+		if (!this.langbase) return; // Skip if no langbase (no tracing)
 		// Agent methods
 		this.interceptMethod(this.langbase.agent, 'run', 'agent');
 
@@ -241,12 +247,12 @@ export class Workflow {
 			? config.retries.limit + 1
 			: 1;
 
-		// Set up method interceptors before running the step
-		this.setupMethodInterceptors();
+		// Set up method interceptors before running the step (only if tracing)
+		if (this.langbase) this.setupMethodInterceptors();
 
-		// Set the global active trace collector
+		// Set the global active trace collector (only if tracing)
 		const previousTraceCollector = _global._activeTraceCollector;
-		_global._activeTraceCollector = collectTrace;
+		if (this.langbase) _global._activeTraceCollector = collectTrace;
 
 		try {
 			// Execute the step function directly
@@ -281,29 +287,32 @@ export class Workflow {
 				}
 			}
 
-			// Create step trace
-			const stepEndTime = Date.now();
-			const stepTrace: StepTrace = {
-				name: config.id,
-				output: result,
-				traces: stepTraces.length > 0 ? stepTraces : null,
-				duration: stepEndTime - stepStartTime,
-				startTime: stepStartTime,
-				endTime: stepEndTime,
-			};
+			// Create step trace (only if tracing)
+			if (this.langbase && this.traceManager && this.traceId) {
+				const stepEndTime = Date.now();
+				const stepTrace: StepTrace = {
+					name: config.id,
+					output: result,
+					traces: stepTraces.length > 0 ? stepTraces : null,
+					duration: stepEndTime - stepStartTime,
+					startTime: stepStartTime,
+					endTime: stepEndTime,
+				};
+				this.traceManager.addStep(this.traceId, stepTrace);
+			}
 
-			// Add step to trace manager
-			this.traceManager.addStep(this.traceId, stepTrace);
-
-			// Restore original methods and trace collector
-			this.restoreOriginalMethods();
-			_global._activeTraceCollector = previousTraceCollector;
-
+			// Restore original methods and trace collector (only if tracing)
+			if (this.langbase) {
+				this.restoreOriginalMethods();
+				_global._activeTraceCollector = previousTraceCollector;
+			}
 			return result;
 		} catch (error) {
-			// Restore original methods and trace collector on error
-			this.restoreOriginalMethods();
-			_global._activeTraceCollector = previousTraceCollector;
+			// Restore original methods and trace collector on error (only if tracing)
+			if (this.langbase) {
+				this.restoreOriginalMethods();
+				_global._activeTraceCollector = previousTraceCollector;
+			}
 
 			// Store error for potential retry or final throw
 			lastError = error as Error;
@@ -379,6 +388,8 @@ export class Workflow {
 	}
 
 	public async end(): Promise<void> {
+		// If tracing is not enabled, do nothing (no-op for backward compatibility)
+		if (!this.langbase || !this.traceManager || !this.traceId) return;
 		// Finalise and grab the trace
 		this.traceManager.endTrace(this.traceId);
 		this.traceManager.printTrace(this.traceId);
