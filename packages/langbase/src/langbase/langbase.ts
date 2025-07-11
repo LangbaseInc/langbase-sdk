@@ -640,7 +640,7 @@ export class Langbase {
 		};
 	};
 
-	public workflow: (config: {debug?: boolean; name: string}) => Workflow;
+	public workflow: (config: {debug?: boolean; name?: string}) => Workflow;
 
 	public traces: {
 		create: (trace: any) => Promise<any>;
