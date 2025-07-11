@@ -13,8 +13,7 @@ const _global: any =
 					? globalThis
 					: {};
 
-// Declare the global langbase instance
-_global.langbase = _global.langbase || new Langbase();
+// Global state for tracing
 _global._activeTraceCollector = _global._activeTraceCollector || null;
 _global._workflowDebugEnabled = _global._workflowDebugEnabled || false;
 
@@ -37,7 +36,7 @@ type StepConfig<T = any> = {
 
 type WorkflowConfig = {
 	debug?: boolean;
-	name: string;
+	name?: string;
 	langbase: Langbase;
 };
 
@@ -62,7 +61,7 @@ export class Workflow {
 	constructor(config: WorkflowConfig) {
 		this.context = {outputs: {}};
 		this.debug = config.debug ?? false;
-		this.name = config.name;
+		this.name = config.name ?? 'workflow';
 		this.langbase = config.langbase;
 		this.traceManager = new TraceManager();
 		this.traceId = this.traceManager.createTrace('workflow', {
