@@ -52,12 +52,17 @@ export class TraceManager {
 		const traceId = crypto.randomUUID();
 		let trace: PrimitiveTrace;
 		const createdAt = new Date().toISOString();
+		const agentWorkflowId =
+			typeof process !== 'undefined' && process.env?.LANGBASE_AGENT_ID
+				? process.env.LANGBASE_AGENT_ID
+				: '';
+
 		if (type === 'workflow') {
 			trace = {
 				workflow: {
 					createdAt,
 					id: traceId,
-					agentWorkflowId: process?.env?.LANGBASE_AGENT_ID || '',
+					agentWorkflowId,
 					name: traceData.name || '',
 					startTime: Date.now(),
 					steps: [],
