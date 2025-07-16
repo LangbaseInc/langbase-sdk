@@ -111,7 +111,6 @@ export class Workflow {
 				}
 
 				const result = await originalMethod.apply(this, newArgs);
-				console.log(`🔄 Intercepted method: ${fullPath}`, result);
 
 				// Process result for tracing if we have an active collector
 				if (_global._activeTraceCollector) {
