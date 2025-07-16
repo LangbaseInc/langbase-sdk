@@ -65,6 +65,18 @@ export class Request {
 		// All endpoints should return headers if rawResponse is true
 		if (!isLllmGenerationEndpoint && options.body?.rawResponse) {
 			const responseData = await response.json();
+			// For array responses, attach rawResponse as a hidden property to preserve response type as array
+			// while still providing access to response headers when needed
+			if (Array.isArray(responseData)) {
+				Object.defineProperty(responseData, 'rawResponse', {
+					value: {
+						headers: Object.fromEntries(response.headers.entries()),
+					},
+					enumerable: false,
+					writable: true,
+				});
+				return responseData as T;
+			}
 			return {
 				...responseData,
 				rawResponse: {
