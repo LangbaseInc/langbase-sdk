@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.2.1
+
+### Patch Changes
+
+- Improve logs
+
 ## 1.2.0
 
 ### Minor Changes
