@@ -51,8 +51,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       langbase:
-        specifier: ^1.1.64
-        version: 1.1.64(react@18.3.1)(ws@8.18.0)
+        specifier: ^1.2.2
+        version: 1.2.2(react@18.3.1)(ws@8.18.0)
       lucide-react:
         specifier: ^0.416.0
         version: 0.416.0(react@18.3.1)
@@ -109,14 +109,14 @@ importers:
   examples/nodejs:
     dependencies:
       '@langbase/cli':
-        specifier: workspace:*
-        version: link:../../packages/cli
+        specifier: ^0.1.7
+        version: 0.1.7(@types/node@22.13.5)(canvas@2.11.2)(react@18.3.1)(typescript@5.7.3)(ws@8.18.0)
       dotenv:
         specifier: ^16.4.5
         version: 16.4.7
       langbase:
-        specifier: ^1.1.64
-        version: 1.1.64(react@18.3.1)(ws@8.18.0)
+        specifier: 1.2.2
+        version: 1.2.2(react@18.3.1)(ws@8.18.0)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -1099,6 +1099,10 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@langbase/cli@0.1.7':
+    resolution: {integrity: sha512-cHtqbdQ9tHOubrnUxskHuaFi2FDwFmu6/K5aw3F6RdosQj2RJrp1FNVQU/cz7fQhed/MKonemp1vckAIFF/Uag==}
+    hasBin: true
 
   '@manypkg/find-root@1.1.0':
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
@@ -3359,8 +3363,8 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  langbase@1.1.64:
-    resolution: {integrity: sha512-aCjrUD0iSQ/Cs+1oVvti2BfFk30yga2XLZY8vu9Pv9Qfmj/4EvzeNuhlw6RtFPo8AybRMYdkiunrxI7A6DyxzQ==}
+  langbase@1.2.2:
+    resolution: {integrity: sha512-7Ot0997tc1FPxJ7m+ybmgCIJQVjLJE97nRR3GnfF7m0jeLyHdok7nseZmoUZWMxBZYOp/gfPln+oIsadCmsMTg==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19
@@ -5697,6 +5701,61 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
+  '@langbase/cli@0.1.7(@types/node@22.13.5)(canvas@2.11.2)(react@18.3.1)(typescript@5.7.3)(ws@8.18.0)':
+    dependencies:
+      '@antfu/ni': 0.23.2
+      '@clack/core': 0.3.5
+      '@clack/prompts': 0.7.0
+      '@hono/node-server': 1.13.8(hono@4.7.2)
+      '@hono/zod-openapi': 0.16.4(hono@4.7.2)(zod@3.24.1)
+      '@modelcontextprotocol/sdk': 1.8.0
+      '@sindresorhus/slugify': 2.2.1
+      camelcase: 8.0.0
+      chalk: 5.4.1
+      cli-alerts: 2.0.0
+      cli-handle-error: 4.4.1(react@18.3.1)(ws@8.18.0)
+      cli-handle-unhandled: 1.1.2(react@18.3.1)(ws@8.18.0)
+      cli-meow-help: 4.0.0
+      cli-table3: 0.6.5
+      cli-welcome: 3.0.1(react@18.3.1)(ws@8.18.0)
+      compute-cosine-similarity: 1.1.0
+      cosmiconfig: 9.0.0(typescript@5.7.3)
+      cosmiconfig-typescript-loader: 5.1.0(@types/node@22.13.5)(cosmiconfig@9.0.0(typescript@5.7.3))(typescript@5.7.3)
+      dotenv: 16.4.7
+      esbuild: 0.24.2
+      execa: 9.5.2
+      fast-glob: 3.3.3
+      figures: 6.1.0
+      get-package-json-file: 2.0.0
+      hono: 4.7.2
+      js-tiktoken: 1.0.19
+      jsdom: 24.1.3(canvas@2.11.2)
+      log-symbols: 7.0.0
+      lowdb: 7.0.1
+      meow: 13.2.0
+      node-fetch: 3.3.2
+      open: 10.1.0
+      openai: 4.83.0(ws@8.18.0)(zod@3.24.1)
+      p-map: 7.0.3
+      picocolors: 1.1.1
+      prettier: 3.5.0
+      source-map-support: 0.5.21
+      unpdf: 0.11.0
+      uuid: 10.0.0
+      xlsx: 0.18.5
+      zod: 3.24.1
+      zod-error: 1.5.0
+    transitivePeerDependencies:
+      - '@types/node'
+      - bufferutil
+      - canvas
+      - encoding
+      - react
+      - supports-color
+      - typescript
+      - utf-8-validate
+      - ws
+
   '@manypkg/find-root@1.1.0':
     dependencies:
       '@babel/runtime': 7.26.7
@@ -6793,7 +6852,7 @@ snapshots:
 
   clear-any-console@1.16.3(react@18.3.1)(ws@8.18.0):
     dependencies:
-      langbase: 1.1.64(react@18.3.1)(ws@8.18.0)
+      langbase: 1.2.2(react@18.3.1)(ws@8.18.0)
     transitivePeerDependencies:
       - encoding
       - react
@@ -6811,7 +6870,7 @@ snapshots:
   cli-handle-error@4.4.1(react@18.3.1)(ws@8.18.0):
     dependencies:
       chalk: 3.0.0
-      langbase: 1.1.64(react@18.3.1)(ws@8.18.0)
+      langbase: 1.2.2(react@18.3.1)(ws@8.18.0)
       log-symbols: 3.0.0
     transitivePeerDependencies:
       - encoding
@@ -6821,7 +6880,7 @@ snapshots:
   cli-handle-unhandled@1.1.2(react@18.3.1)(ws@8.18.0):
     dependencies:
       cli-handle-error: 4.4.1(react@18.3.1)(ws@8.18.0)
-      langbase: 1.1.64(react@18.3.1)(ws@8.18.0)
+      langbase: 1.2.2(react@18.3.1)(ws@8.18.0)
     transitivePeerDependencies:
       - encoding
       - react
@@ -6848,7 +6907,7 @@ snapshots:
     dependencies:
       chalk: 5.4.1
       clear-any-console: 1.16.3(react@18.3.1)(ws@8.18.0)
-      langbase: 1.1.64(react@18.3.1)(ws@8.18.0)
+      langbase: 1.2.2(react@18.3.1)(ws@8.18.0)
     transitivePeerDependencies:
       - encoding
       - react
@@ -8400,7 +8459,7 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  langbase@1.1.64(react@18.3.1)(ws@8.18.0):
+  langbase@1.2.2(react@18.3.1)(ws@8.18.0):
     dependencies:
       dotenv: 16.4.7
       openai: 4.83.0(ws@8.18.0)(zod@3.24.1)
