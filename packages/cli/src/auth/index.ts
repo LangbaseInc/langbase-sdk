@@ -112,5 +112,4 @@ export async function auth() {
 			`Authentication successful. API key is stored in ${envFile}`
 		)
 	);
-	process.exit(0);
 }
