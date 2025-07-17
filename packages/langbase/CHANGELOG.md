@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.2.2
+
+### Patch Changes
+
+- Improve response headers handling
+
 ## 1.2.1
 
 ### Patch Changes
