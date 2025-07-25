@@ -3,10 +3,20 @@ import { auth } from './auth';
 import { build } from './build';
 import { deploy } from './deploy';
 import { docsMcpServer } from './docs-mcp-server';
+import { createPipe } from './pipe/create';
+import { runPipe } from './pipe/run';
+import { updatePipe } from './pipe/update';
+import { listPipes } from './pipe/list';
 import cli from './utils/cli';
 import debugMode from './utils/debug-mode';
 import cliInit from './utils/init';
-
+import { createMemory } from './memory/create';
+import { listMemories } from './memory/list';
+import { deleteMemory } from './memory/delete';
+import { uploadDocs } from './memory/upload-docs';
+import { embedDoc } from './memory/embed-doc';
+import { retriveFromMemory } from './memory/retrive';
+import { listDocs } from './memory/list-docs';
 const { flags, input, showHelp } = cli;
 const { clear, debug } = flags;
 
@@ -49,5 +59,62 @@ const flag = (flg: string): boolean => Boolean(flags[flg]);
 
 	if (command('docs-mcp-server')) {
 		await docsMcpServer();
+	}
+
+	if (
+		command('pipe') &&
+		!flag('run') &&
+		!flag('update') &&
+		!flag('listPipes')
+	) {
+		await createPipe();
+	}
+
+	if (command('pipe') && flag('run')) {
+		await runPipe();
+	}
+
+	if (command('pipe') && flag('update')) {
+		await updatePipe();
+	}
+
+	if (command('pipe') && flag('listPipes')) {
+		await listPipes();
+	}
+
+	if (
+		command('memory') &&
+		!flag('upload') &&
+		!flag('embed') &&
+		!flag('retrieve') &&
+		!flag('listDocs') &&
+		!flag('delete') &&
+		!flag('listMemories')
+	) {
+		await createMemory();
+	}
+
+	if (command('memory') && flag('listMemories')) {
+		await listMemories();
+	}
+
+	if (command('memory') && flag('delete')) {
+		await deleteMemory();
+	}
+
+	if (command('memory') && flag('upload')) {
+		await uploadDocs();
+	}
+
+	if (command('memory') && flag('embed')) {
+		await embedDoc();
+	}
+
+	if (command('memory') && flag('retrieve')) {
+		await retriveFromMemory();
+	}
+
+	if (command('memory') && flag('listDocs')) {
+		await listDocs();
 	}
 })();
