@@ -82,7 +82,7 @@ async function main() {
 		console.error('❌ Workflow error:', error);
 	} finally {
 		// End the workflow to send trace
-		workflow.end();
+		await workflow.end();
 	}
 }
 
