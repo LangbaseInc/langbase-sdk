@@ -58,11 +58,11 @@ export class Workflow {
 	private originalMethods: Map<string, Function> = new Map();
 	public readonly step: <T = any>(config: StepConfig<T>) => Promise<T>;
 
-	constructor(config: WorkflowConfig) {
+	constructor(config?: WorkflowConfig) {
 		this.context = {outputs: {}};
-		this.debug = config.debug ?? false;
-		this.name = config.name ?? 'workflow';
-		this.langbase = config.langbase;
+		this.debug = config?.debug ?? false;
+		this.name = config?.name ?? 'workflow';
+		this.langbase = config?.langbase;
 
 		// Only initialize tracing if langbase is provided
 		if (this.langbase) {
