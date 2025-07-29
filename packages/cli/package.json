@@ -51,6 +51,7 @@
 		"@clack/prompts": "^0.7.0",
 		"@hono/node-server": "^1.13.1",
 		"@hono/zod-openapi": "^0.16.0",
+		"@langbase/cli": "^0.1.4",
 		"@modelcontextprotocol/sdk": "^1.8.0",
 		"@sindresorhus/slugify": "^2.2.1",
 		"camelcase": "^8.0.0",
@@ -73,6 +74,7 @@
 		"hono": "^4.5.11",
 		"js-tiktoken": "^1.0.14",
 		"jsdom": "^24.1.0",
+		"langbase": "^1.1.55",
 		"log-symbols": "^7.0.0",
 		"lowdb": "^7.0.1",
 		"meow": "^13.2.0",
@@ -87,7 +89,8 @@
 		"uuid": "^10.0.0",
 		"xlsx": "^0.18.5",
 		"zod": "^3.23.8",
-		"zod-error": "^1.5.0"
+		"zod-error": "^1.5.0",
+		"zod-validation-error": "^3.3.0"
 	},
 	"devDependencies": {
 		"@langbase/eslint-config": "workspace:*",
