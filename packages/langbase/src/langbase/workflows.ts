@@ -131,10 +131,11 @@ export class Workflow {
 
 						// Notify collector if traceId was found
 						if (traceId && _global._activeTraceCollector) {
-							if (debug)
+							if (debug) {
 								console.log(
 									`🔍 Trace ID extracted: ${traceId}`,
 								);
+							}
 							_global._activeTraceCollector(traceId);
 						}
 					}
@@ -391,7 +392,9 @@ export class Workflow {
 		if (!this.langbase || !this.traceManager || !this.traceId) return;
 		// Finalise and grab the trace
 		this.traceManager.endTrace(this.traceId);
-		this.traceManager.printTrace(this.traceId);
+		if (this.debug) {
+			this.traceManager.printTrace(this.traceId);
+		}
 		const traceData = this.traceManager.getTrace(this.traceId);
 
 		// --- send to LB API v1/traces/create using SDK method ---

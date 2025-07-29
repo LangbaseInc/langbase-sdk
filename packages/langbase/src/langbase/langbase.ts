@@ -640,7 +640,7 @@ export class Langbase {
 		};
 	};
 
-	public workflow: (config: {debug?: boolean; name?: string}) => Workflow;
+	public workflow: (config?: {debug?: boolean; name?: string}) => Workflow;
 
 	public traces: {
 		create: (trace: any) => Promise<any>;
@@ -731,7 +731,8 @@ export class Langbase {
 			run: this.runAgent.bind(this),
 		};
 
-		this.workflow = config => new Workflow({...config, langbase: this});
+		this.workflow = (config = {}) =>
+			new Workflow({...config, langbase: this});
 
 		this.traces = {
 			create: this.createTrace.bind(this),
