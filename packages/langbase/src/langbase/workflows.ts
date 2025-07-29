@@ -58,11 +58,11 @@ export class Workflow {
 	private originalMethods: Map<string, Function> = new Map();
 	public readonly step: <T = any>(config: StepConfig<T>) => Promise<T>;
 
-	constructor(config: WorkflowConfig) {
+	constructor(config?: WorkflowConfig) {
 		this.context = {outputs: {}};
-		this.debug = config.debug ?? false;
-		this.name = config.name ?? 'workflow';
-		this.langbase = config.langbase;
+		this.debug = config?.debug ?? false;
+		this.name = config?.name ?? 'workflow';
+		this.langbase = config?.langbase;
 
 		// Only initialize tracing if langbase is provided
 		if (this.langbase) {
@@ -131,10 +131,11 @@ export class Workflow {
 
 						// Notify collector if traceId was found
 						if (traceId && _global._activeTraceCollector) {
-							if (debug)
+							if (debug) {
 								console.log(
 									`🔍 Trace ID extracted: ${traceId}`,
 								);
+							}
 							_global._activeTraceCollector(traceId);
 						}
 					}
@@ -391,7 +392,9 @@ export class Workflow {
 		if (!this.langbase || !this.traceManager || !this.traceId) return;
 		// Finalise and grab the trace
 		this.traceManager.endTrace(this.traceId);
-		this.traceManager.printTrace(this.traceId);
+		if (this.debug) {
+			this.traceManager.printTrace(this.traceId);
+		}
 		const traceData = this.traceManager.getTrace(this.traceId);
 
 		// --- send to LB API v1/traces/create using SDK method ---
