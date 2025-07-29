@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.2.3
+
+### Patch Changes
+
+- 📦 NEW: Make workflow config optional
+
 ## 1.2.2
 
 ### Patch Changes
