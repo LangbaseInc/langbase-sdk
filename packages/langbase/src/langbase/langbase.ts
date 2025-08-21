@@ -366,6 +366,13 @@ export interface MemoryRetryDocEmbedOptions {
 	documentName: string;
 }
 
+export interface MemoryAddTextOptions {
+	memoryName: string;
+	text: string;
+	documentName?: string;
+	metadata?: Record<string, string>;
+}
+
 export interface MemoryCreateResponse extends MemoryBaseResponse {
 	chunk_size: number;
 	chunk_overlap: number;
@@ -381,6 +388,13 @@ export interface BaseDeleteResponse {
 export interface MemoryDeleteResponse extends BaseDeleteResponse {}
 export interface MemoryDeleteDocResponse extends BaseDeleteResponse {}
 export interface MemoryRetryDocEmbedResponse extends BaseDeleteResponse {}
+
+export interface MemoryAddTextResponse {
+	documentName: string;
+	status: 'queued';
+	memoryName: string;
+	url: string;
+}
 
 export interface MemoryRetrieveResponse {
 	text: string;
@@ -549,6 +563,7 @@ export class Langbase {
 			options: MemoryRetrieveOptions,
 		) => Promise<MemoryRetrieveResponse[]>;
 		list: () => Promise<MemoryListResponse[]>;
+		add: (options: MemoryAddTextOptions) => Promise<MemoryAddTextResponse>;
 		documents: {
 			list: (
 				options: MemoryListDocOptions,
@@ -577,6 +592,7 @@ export class Langbase {
 			options: MemoryRetrieveOptions,
 		) => Promise<MemoryRetrieveResponse[]>;
 		list: () => Promise<MemoryListResponse[]>;
+		add: (options: MemoryAddTextOptions) => Promise<MemoryAddTextResponse>;
 		documents: {
 			list: (
 				options: MemoryListDocOptions,
@@ -675,6 +691,7 @@ export class Langbase {
 			delete: this.deleteMemory.bind(this),
 			retrieve: this.retrieveMemory.bind(this),
 			list: this.listMemory.bind(this),
+			add: this.addTextToMemory.bind(this),
 			documents: {
 				list: this.listDocs.bind(this),
 				delete: this.deleteDoc.bind(this),
@@ -691,6 +708,7 @@ export class Langbase {
 			delete: this.deleteMemory.bind(this),
 			retrieve: this.retrieveMemory.bind(this),
 			list: this.listMemory.bind(this),
+			add: this.addTextToMemory.bind(this),
 			documents: {
 				list: this.listDocs.bind(this),
 				delete: this.deleteDoc.bind(this),
@@ -962,6 +980,25 @@ export class Langbase {
 	): Promise<MemoryRetryDocEmbedResponse> {
 		return this.request.get({
 			endpoint: `/v1/memory/${options.memoryName}/documents/${options.documentName}/embeddings/retry`,
+		});
+	}
+
+	/**
+	 * Adds text directly to a memory without file upload.
+	 *
+	 * @param options - The options for adding text to memory.
+	 * @param options.memoryName - The name of the memory to add text to.
+	 * @param options.text - The text content to add to the memory.
+	 * @param options.documentName - Optional custom document name.
+	 * @param options.metadata - Optional metadata for the text document.
+	 * @returns A promise that resolves to the response of the text addition operation.
+	 */
+	private async addTextToMemory(
+		options: MemoryAddTextOptions,
+	): Promise<MemoryAddTextResponse> {
+		return this.request.post({
+			endpoint: '/v1/memory/text',
+			body: options,
 		});
 	}
 
