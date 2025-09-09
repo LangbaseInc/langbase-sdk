@@ -37,7 +37,7 @@ importers:
         version: 2.4.1
       vitest:
         specifier: ^1.6.0
-        version: 1.6.0(@edge-runtime/vm@4.0.4)(@types/node@20.17.17)(jsdom@24.1.3)(terser@5.38.1)
+        version: 1.6.0(@edge-runtime/vm@4.0.4)(@types/node@20.17.17)(jsdom@24.1.3(canvas@2.11.2))(terser@5.38.1)
 
   examples/nextjs:
     dependencies:
@@ -337,7 +337,7 @@ importers:
         version: 5.7.3
       vitest:
         specifier: 1.6.0
-        version: 1.6.0(@edge-runtime/vm@4.0.4)(@types/node@20.17.17)(jsdom@24.1.3)(terser@5.38.1)
+        version: 1.6.0(@edge-runtime/vm@4.0.4)(@types/node@20.17.17)(jsdom@24.1.3(canvas@2.11.2))(terser@5.38.1)
 
   tools/eslint-config:
     devDependencies:
@@ -10049,7 +10049,7 @@ snapshots:
       fsevents: 2.3.3
       terser: 5.38.1
 
-  vitest@1.6.0(@edge-runtime/vm@4.0.4)(@types/node@20.17.17)(jsdom@24.1.3)(terser@5.38.1):
+  vitest@1.6.0(@edge-runtime/vm@4.0.4)(@types/node@20.17.17)(jsdom@24.1.3(canvas@2.11.2))(terser@5.38.1):
     dependencies:
       '@vitest/expect': 1.6.0
       '@vitest/runner': 1.6.0
