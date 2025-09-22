@@ -1,6 +1,8 @@
 import {convertDocToFormData} from '@/lib/utils/doc-to-formdata';
 import {Request} from '../common/request';
 import {Workflow} from './workflows';
+import {validateLangbaseOptions, formatValidationErrors, validateRunOptions} from '@/lib/validation';
+import {ErrorFactory} from '@/lib/errors';
 
 export type Role = 'user' | 'assistant' | 'system' | 'tool';
 
@@ -513,6 +515,24 @@ interface ChoiceGenerate {
 	finish_reason: string;
 }
 
+/**
+ * The main Langbase SDK client for interacting with pipes, memories, tools, and more.
+ * 
+ * @example
+ * ```typescript
+ * import { Langbase } from 'langbase';
+ * 
+ * const langbase = new Langbase({
+ *   apiKey: process.env.LANGBASE_API_KEY!
+ * });
+ * 
+ * // Run a pipe
+ * const response = await langbase.pipes.run({
+ *   name: 'my-pipe',
+ *   messages: [{ role: 'user', content: 'Hello!' }]
+ * });
+ * ```
+ */
 export class Langbase {
 	private request: Request;
 	private apiKey: string;
@@ -521,6 +541,31 @@ export class Langbase {
 		list: () => Promise<PipeListResponse[]>;
 		create: (options: PipeCreateOptions) => Promise<PipeCreateResponse>;
 		update: (options: PipeUpdateOptions) => Promise<PipeUpdateResponse>;
+		/**
+		 * Run a pipe with messages and get a response
+		 * 
+		 * @example Non-streaming
+		 * ```typescript
+		 * const response = await langbase.pipes.run({
+		 *   name: 'summary',
+		 *   messages: [{ role: 'user', content: 'Summarize this...' }]
+		 * });
+		 * console.log(response.completion);
+		 * ```
+		 * 
+		 * @example Streaming
+		 * ```typescript
+		 * const { stream } = await langbase.pipes.run({
+		 *   name: 'summary',
+		 *   stream: true,
+		 *   messages: [{ role: 'user', content: 'Summarize this...' }]
+		 * });
+		 * 
+		 * for await (const chunk of stream) {
+		 *   process.stdout.write(chunk.choices[0]?.delta?.content || '');
+		 * }
+		 * ```
+		 */
 		run: {
 			(options: RunOptionsStream): Promise<RunResponseStream>;
 			(options: RunOptions): Promise<RunResponse>;
@@ -646,9 +691,45 @@ export class Langbase {
 		create: (trace: any) => Promise<any>;
 	};
 
+	// Developer Experience utilities
+	public utils: {
+		/** Create a fluent message builder */
+		createMessageBuilder: (pipeName?: string) => any; // Using any for now to avoid circular imports
+		/** Create helper messages */
+		userMessage: (content: string, name?: string) => Message;
+		assistantMessage: (content: string, name?: string) => Message;
+		systemMessage: (content: string, name?: string) => Message;
+		/** Create a conversation from exchanges */
+		createConversation: (exchanges: Array<{user: string; assistant: string}>) => Message[];
+		/** Add system message to existing messages */
+		withSystemMessage: (system: string, messages: Message[]) => Message[];
+		/** Debug utilities */
+		debug: {
+			enable: () => void;
+			disable: () => void;
+			getLogs: () => any[];
+			clearLogs: () => void;
+			getSummary: () => any;
+		};
+	};
+
 	constructor(options?: LangbaseOptions) {
+		// Validate constructor options
+		const validation = validateLangbaseOptions(options);
+		if (!validation.valid) {
+			throw ErrorFactory.validation(
+				formatValidationErrors(validation.errors)
+			);
+		}
+
 		this.baseUrl = options?.baseUrl ?? 'https://api.langbase.com';
 		this.apiKey = options?.apiKey ?? '';
+
+		// Additional API key validation
+		if (!this.apiKey) {
+			throw ErrorFactory.invalidApiKey();
+		}
+
 		this.request = new Request({
 			apiKey: this.apiKey,
 			baseUrl: this.baseUrl,
@@ -737,6 +818,134 @@ export class Langbase {
 		this.traces = {
 			create: this.createTrace.bind(this),
 		};
+
+		// Initialize developer experience utilities
+		this.utils = {
+			createMessageBuilder: (pipeName?: string) => {
+				const { createMessageBuilder } = require('../lib/builder');
+				return createMessageBuilder(this, pipeName);
+			},
+			userMessage: (content: string, name?: string) => {
+				const { userMessage } = require('../lib/builder');
+				return userMessage(content, name);
+			},
+			assistantMessage: (content: string, name?: string) => {
+				const { assistantMessage } = require('../lib/builder');
+				return assistantMessage(content, name);
+			},
+			systemMessage: (content: string, name?: string) => {
+				const { systemMessage } = require('../lib/builder');
+				return systemMessage(content, name);
+			},
+			createConversation: (exchanges: Array<{user: string; assistant: string}>) => {
+				const { createConversation } = require('../lib/builder');
+				return createConversation(exchanges);
+			},
+			withSystemMessage: (system: string, messages: Message[]) => {
+				const { withSystemMessage } = require('../lib/builder');
+				return withSystemMessage(system, messages);
+			},
+			debug: {
+				enable: () => {
+					const { langbaseDebugger } = require('../lib/debug');
+					langbaseDebugger.enable();
+				},
+				disable: () => {
+					const { langbaseDebugger } = require('../lib/debug');
+					langbaseDebugger.disable();
+				},
+				getLogs: () => {
+					const { langbaseDebugger } = require('../lib/debug');
+					return langbaseDebugger.getLogs();
+				},
+				clearLogs: () => {
+					const { langbaseDebugger } = require('../lib/debug');
+					langbaseDebugger.clearLogs();
+				},
+				getSummary: () => {
+					const { langbaseDebugger } = require('../lib/debug');
+					return langbaseDebugger.getSummary();
+				},
+			},
+		};
+	}
+
+	/**
+	 * Quick run method for simple pipe execution with just a prompt
+	 * 
+	 * @example
+	 * ```typescript
+	 * const response = await langbase.run('my-pipe', 'What is AI?');
+	 * console.log(response.completion);
+	 * ```
+	 */
+	async run(pipeName: string, prompt: string | Message[]): Promise<RunResponse> {
+		const messages = typeof prompt === 'string' 
+			? [{ role: 'user' as const, content: prompt }]
+			: prompt;
+
+		return this.pipes.run({
+			name: pipeName,
+			messages,
+			stream: false,
+		});
+	}
+
+	/**
+	 * Quick stream method for simple streaming pipe execution
+	 * 
+	 * @example
+	 * ```typescript
+	 * const { stream } = await langbase.stream('my-pipe', 'What is AI?');
+	 * for await (const chunk of stream) {
+	 *   process.stdout.write(chunk.choices[0]?.delta?.content || '');
+	 * }
+	 * ```
+	 */
+	async stream(pipeName: string, prompt: string | Message[]): Promise<RunResponseStream> {
+		const messages = typeof prompt === 'string' 
+			? [{ role: 'user' as const, content: prompt }]
+			: prompt;
+
+		return this.pipes.run({
+			name: pipeName,
+			messages,
+			stream: true,
+		});
+	}
+
+	/**
+	 * Create a quick conversation with alternating user/assistant messages
+	 * 
+	 * @example
+	 * ```typescript
+	 * const response = await langbase.chat('my-pipe', [
+	 *   { user: 'Hello!', assistant: 'Hi there!' },
+	 *   { user: 'How are you?', assistant: 'I am doing well!' },
+	 * ], 'What can you help me with?');
+	 * ```
+	 */
+	async chat(
+		pipeName: string,
+		history: Array<{ user: string; assistant: string }>,
+		newMessage: string
+	): Promise<RunResponse> {
+		const messages: Message[] = [];
+		
+		// Add conversation history
+		history.forEach(exchange => {
+			messages.push({ role: 'user', content: exchange.user });
+			messages.push({ role: 'assistant', content: exchange.assistant });
+		});
+		
+		// Add new user message
+		messages.push({ role: 'user', content: newMessage });
+
+		return this.pipes.run({
+			name: pipeName,
+			messages,
+			stream: false,
+		});
 	}
 
 	private async runPipe(
@@ -746,9 +955,19 @@ export class Langbase {
 	private async runPipe(
 		options: RunOptions | RunOptionsStream,
 	): Promise<RunResponse | RunResponseStream> {
+		// Enhanced validation with detailed error messages
+		const validation = validateRunOptions(options);
+		if (!validation.valid) {
+			throw ErrorFactory.validation(
+				formatValidationErrors(validation.errors)
+			);
+		}
+
+		// Legacy validation for backward compatibility
 		if (!options.name?.trim() && !options.apiKey) {
-			throw new Error(
-				'Pipe name or Pipe API key is required to run the pipe.',
+			throw ErrorFactory.validation(
+				'Either pipe name or pipe API key is required to run the pipe.',
+				'name|apiKey'
 			);
 		}
 
@@ -765,15 +984,23 @@ export class Langbase {
 			});
 		}
 
-		return this.request.post({
-			endpoint: '/v1/pipes/run',
-			body: options,
-			headers: {
-				...(options.llmKey && {
-					'LB-LLM-KEY': options.llmKey,
-				}),
-			},
-		});
+		try {
+			return await this.request.post({
+				endpoint: '/v1/pipes/run',
+				body: options,
+				headers: {
+					...(options.llmKey && {
+						'LB-LLM-KEY': options.llmKey,
+					}),
+				},
+			});
+		} catch (error) {
+			// Enhanced error handling with context
+			if (error instanceof Error && error.message.includes('404')) {
+				throw ErrorFactory.pipeNotFound(options.name || 'unknown');
+			}
+			throw error;
+		}
 	}
 
 	/**

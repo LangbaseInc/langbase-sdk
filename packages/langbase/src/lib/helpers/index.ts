@@ -3,6 +3,38 @@ import {Stream} from 'openai/streaming';
 import {ChatCompletionMessageToolCall} from 'openai/resources/chat/completions';
 import {RunResponse, RunResponseStream} from '@/langbase/langbase';
 
+// Re-export specific utilities to avoid conflicts
+export { 
+	createMessageBuilder,
+	userMessage,
+	assistantMessage, 
+	systemMessage,
+	createConversation,
+	withSystemMessage 
+} from '../builder';
+
+export {
+	validateApiKey,
+	validatePipeName,
+	validateMessages,
+	validateRunOptions,
+	validateLangbaseOptions,
+	formatValidationErrors
+} from '../validation';
+
+export {
+	LangbaseError,
+	ErrorFactory,
+	ErrorHandler
+} from '../errors';
+
+export {
+	langbaseDebugger,
+	withDebug,
+	inspect,
+	perf
+} from '../debug';
+
 export interface Runner extends ChatCompletionStream {}
 
 export interface ToolCallResult extends ChatCompletionMessageToolCall {}
