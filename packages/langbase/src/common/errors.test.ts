@@ -54,7 +54,12 @@ describe('Error Classes', () => {
 		});
 
 		it('should handle message only', () => {
-			const apiError = new APIError(undefined, undefined, 'Custom message', {});
+			const apiError = new APIError(
+				undefined,
+				undefined,
+				'Custom message',
+				{},
+			);
 
 			expect(apiError.message).toBe('Custom message');
 		});
@@ -71,7 +76,7 @@ describe('Error Classes', () => {
 					400,
 					{error: {message: 'Bad request'}},
 					'Bad Request',
-					{}
+					{},
 				);
 
 				expect(error).toBeInstanceOf(BadRequestError);
@@ -83,7 +88,7 @@ describe('Error Classes', () => {
 					401,
 					{error: {message: 'Unauthorized'}},
 					'Unauthorized',
-					{}
+					{},
 				);
 
 				expect(error).toBeInstanceOf(AuthenticationError);
@@ -95,7 +100,7 @@ describe('Error Classes', () => {
 					403,
 					{error: {message: 'Forbidden'}},
 					'Forbidden',
-					{}
+					{},
 				);
 
 				expect(error).toBeInstanceOf(PermissionDeniedError);
@@ -107,7 +112,7 @@ describe('Error Classes', () => {
 					404,
 					{error: {message: 'Not found'}},
 					'Not Found',
-					{}
+					{},
 				);
 
 				expect(error).toBeInstanceOf(NotFoundError);
@@ -119,7 +124,7 @@ describe('Error Classes', () => {
 					409,
 					{error: {message: 'Conflict'}},
 					'Conflict',
-					{}
+					{},
 				);
 
 				expect(error).toBeInstanceOf(ConflictError);
@@ -131,7 +136,7 @@ describe('Error Classes', () => {
 					422,
 					{error: {message: 'Validation failed'}},
 					'Unprocessable Entity',
-					{}
+					{},
 				);
 
 				expect(error).toBeInstanceOf(UnprocessableEntityError);
@@ -143,7 +148,7 @@ describe('Error Classes', () => {
 					429,
 					{error: {message: 'Rate limit exceeded'}},
 					'Too Many Requests',
-					{}
+					{},
 				);
 
 				expect(error).toBeInstanceOf(RateLimitError);
@@ -155,7 +160,7 @@ describe('Error Classes', () => {
 					500,
 					{error: {message: 'Internal error'}},
 					'Internal Server Error',
-					{}
+					{},
 				);
 
 				expect(error).toBeInstanceOf(InternalServerError);
@@ -167,7 +172,7 @@ describe('Error Classes', () => {
 					418,
 					{error: {message: "I'm a teapot"}},
 					"I'm a teapot",
-					{}
+					{},
 				);
 
 				expect(error).toBeInstanceOf(APIError);
@@ -179,7 +184,7 @@ describe('Error Classes', () => {
 					undefined,
 					new Error('Network error'),
 					undefined,
-					{}
+					{},
 				);
 
 				expect(error).toBeInstanceOf(APIConnectionError);
