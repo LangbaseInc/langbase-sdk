@@ -1,4 +1,4 @@
-import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {describe, expect, it} from 'vitest';
 import {
 	APIError,
 	APIConnectionError,
@@ -35,7 +35,9 @@ describe('Error Classes', () => {
 			const error = {message: {details: 'Detailed error info'}};
 			const apiError = new APIError(400, error, 'Test', {});
 
-			expect(apiError.message).toBe('400 {"details":"Detailed error info"}');
+			expect(apiError.message).toBe(
+				'400 {"details":"Detailed error info"}',
+			);
 		});
 
 		it('should handle error without specific message', () => {
