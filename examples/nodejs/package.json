@@ -44,7 +44,12 @@
     "threads.messages.list": "npx tsx ./threads/threads.messages.list.ts",
     "threads.get": "npx tsx ./threads/threads.get.ts",
     "workflow": "npx tsx ./workflows/workflows.ts",
-    "agent.run.mcp": "npx tsx ./agent/agent.run.mcp.ts"
+    "agent.run.mcp": "npx tsx ./agent/agent.run.mcp.ts",
+    "images.openai": "npx tsx ./images/openai.ts",
+    "images.google": "npx tsx ./images/google.ts",
+    "images.together": "npx tsx ./images/together.ts",
+    "images.openrouter": "npx tsx ./images/openrouter.ts"
+
   },
   "keywords": [],
   "author": "Ahmad Awais <me@AhmadAwais.com> (https://twitter.com/MrAhmadAwais)",
@@ -52,9 +57,12 @@
   "dependencies": {
     "@langbase/cli": "^0.1.7",
     "dotenv": "^16.4.5",
-    "langbase": "1.2.3",
+    "langbase": "workspace:*",
     "uuid": "^11.1.0",
     "zod": "^3.21.4",
     "zod-to-json-schema": "^3.24.5"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.1"
   }
 }
