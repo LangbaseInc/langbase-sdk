@@ -1,7 +1,11 @@
 import {convertDocToFormData} from '@/lib/utils/doc-to-formdata';
 import {Request} from '../common/request';
 import {Workflow} from './workflows';
-import {Images, ImageGenerationOptions, ImageGenerationResponse} from './images';
+import {
+	Images,
+	ImageGenerationOptions,
+	ImageGenerationResponse,
+} from './images';
 
 export type Role = 'user' | 'assistant' | 'system' | 'tool';
 
@@ -648,7 +652,9 @@ export class Langbase {
 	};
 
 	public images: {
-		generate: (options: ImageGenerationOptions) => Promise<ImageGenerationResponse>;
+		generate: (
+			options: ImageGenerationOptions,
+		) => Promise<ImageGenerationResponse>;
 	};
 
 	constructor(options?: LangbaseOptions) {

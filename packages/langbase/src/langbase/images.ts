@@ -8,6 +8,7 @@ export interface ImageGenerationOptions {
 	image_url?: string;
 	steps?: number;
 	n?: number;
+	negative_prompt?: string;
 	apiKey: string;
 	[key: string]: any;
 }
@@ -58,16 +59,16 @@ export class Images {
 
 	/**
 	 * Generate images using various AI providers
-	 * 
+	 *
 	 * @param options - Image generation options
 	 * @returns Promise that resolves to the image generation response
 	 */
-	async generate(options: ImageGenerationOptions): Promise<ImageGenerationResponse> {
+	async generate(
+		options: ImageGenerationOptions,
+	): Promise<ImageGenerationResponse> {
 		// Comprehensive input validation
 		if (!options) {
-			throw new Error(
-				'Image generation options are required.',
-			);
+			throw new Error('Image generation options are required.');
 		}
 
 		// Extract apiKey from options for headers, remove from body
@@ -83,9 +84,7 @@ export class Images {
 			});
 		} catch (error: any) {
 			console.error(error);
-			throw new Error(
-				error.message,
-			);
+			throw new Error(error.message);
 		}
 	}
 }
