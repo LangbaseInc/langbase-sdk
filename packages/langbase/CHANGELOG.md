@@ -1,5 +1,11 @@
 # `langbase` SDK
 
+## 1.2.4
+
+### Patch Changes
+
+- Added image generation
+
 ## 1.2.3
 
 ### Patch Changes
