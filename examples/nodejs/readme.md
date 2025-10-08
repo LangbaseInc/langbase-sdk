@@ -53,4 +53,10 @@ npm run thread.delete
 
 # agent
 npm run agent.run.mcp
+
+# images
+npm run images.openai
+npm run images.google
+npm run images.together
+npm run images.openrouter
 ```

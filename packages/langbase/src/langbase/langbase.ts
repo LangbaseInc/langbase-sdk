@@ -1,6 +1,11 @@
 import {convertDocToFormData} from '@/lib/utils/doc-to-formdata';
 import {Request} from '../common/request';
 import {Workflow} from './workflows';
+import {
+	Images,
+	ImageGenerationOptions,
+	ImageGenerationResponse,
+} from './images';
 
 export type Role = 'user' | 'assistant' | 'system' | 'tool';
 
@@ -646,6 +651,12 @@ export class Langbase {
 		create: (trace: any) => Promise<any>;
 	};
 
+	public images: {
+		generate: (
+			options: ImageGenerationOptions,
+		) => Promise<ImageGenerationResponse>;
+	};
+
 	constructor(options?: LangbaseOptions) {
 		this.baseUrl = options?.baseUrl ?? 'https://api.langbase.com';
 		this.apiKey = options?.apiKey ?? '';
@@ -736,6 +747,12 @@ export class Langbase {
 
 		this.traces = {
 			create: this.createTrace.bind(this),
+		};
+
+		// Initialize images primitive
+		const imagesInstance = new Images(this.request);
+		this.images = {
+			generate: imagesInstance.generate.bind(imagesInstance),
 		};
 	}
 
@@ -942,7 +959,7 @@ export class Langbase {
 					Authorization: `Bearer ${this.apiKey}`,
 					'Content-Type': options.contentType,
 				},
-				body: options.document,
+				body: options.document as any,
 			});
 		} catch (error) {
 			throw error;
