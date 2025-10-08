@@ -1,5 +1,5 @@
 import {GENERATION_ENDPOINTS} from '@/data/constants';
-import {Headers} from './../../types'; // Ensure this import is correct
+import {Headers} from './../../types';
 import {APIConnectionError, APIError} from './errors';
 import {Stream} from './stream';
 
@@ -23,7 +23,7 @@ interface SendOptions extends RequestOptions {
 
 interface MakeRequestParams {
 	url: string;
-	options: RequestOptions;
+	options: Omit<RequestOptions, 'endpoint'>;
 	headers: Record<string, string>;
 }
 
@@ -127,12 +127,20 @@ export class Request {
 	private buildHeaders({
 		headers,
 	}: {
-		headers?: Record<string, string>;
+		headers?: Headers;
 	}): Record<string, string> {
+		const sanitizedHeaders = headers
+			? Object.fromEntries(
+					Object.entries(headers).filter(
+						(entry): entry is [string, string] => entry[1] != null,
+					),
+				)
+			: {};
+
 		return {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${this.config.apiKey}`,
-			...headers,
+			...sanitizedHeaders,
 		};
 	}
 
