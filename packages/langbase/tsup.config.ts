@@ -26,21 +26,25 @@ export default defineConfig([
 		clean: true,
 		sourcemap: true,
 	},
-	// CLI - completely separate build with bundled dependencies
+	// CLI - completely separate build with ALL dependencies bundled and treeshaken
+	// This ensures SDK users NEVER see CLI dependencies in their node_modules
 	{
 		entry: ['src/cli.ts'],
 		outDir: 'dist/cli',
 		format: ['cjs'],
 		bundle: true,
-		minify: false,
+		minify: true,
 		sourcemap: false,
+		// Bundle EVERYTHING - no external dependencies
+		// This is critical for zero SDK impact
 		noExternal: [/.*/],
-		external: ['dotenv', 'openai', 'zod', 'zod-validation-error'],
 		platform: 'node',
 		target: 'node18',
 		clean: false,
 		dts: false,
 		shims: true,
+		// Aggressive treeshaking to remove unused code
+		treeshake: true,
 		esbuildOptions(options) {
 			options.banner = {
 				js: '#!/usr/bin/env node',
