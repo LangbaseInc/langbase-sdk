@@ -6,6 +6,9 @@
 	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.ts",
+	"bin": {
+		"langbase": "./dist/cli/cli.js"
+	},
 	"files": [
 		"dist/**",
 		"react/dist/**"

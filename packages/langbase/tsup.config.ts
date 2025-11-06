@@ -26,4 +26,25 @@ export default defineConfig([
 		clean: true,
 		sourcemap: true,
 	},
+	// CLI - completely separate build with bundled dependencies
+	{
+		entry: ['src/cli.ts'],
+		outDir: 'dist/cli',
+		format: ['cjs'],
+		bundle: true,
+		minify: false,
+		sourcemap: false,
+		noExternal: [/.*/],
+		external: ['dotenv', 'openai', 'zod', 'zod-validation-error'],
+		platform: 'node',
+		target: 'node18',
+		clean: false,
+		dts: false,
+		shims: true,
+		esbuildOptions(options) {
+			options.banner = {
+				js: '#!/usr/bin/env node',
+			};
+		},
+	},
 ]);
