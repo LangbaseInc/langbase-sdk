@@ -1,0 +1,19 @@
+{
+	"extends": "./node_modules/@langbase/tsconfig/react-library.json",
+	"include": ["src/cli/**/*"],
+	"exclude": ["*/dist", "dist", "build", "node_modules"],
+	"compilerOptions": {
+		"target": "ES2020",
+		"stripInternal": true,
+		"lib": ["esnext"],
+		"types": ["@types/node", "vitest/globals"],
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["src/*"]
+		},
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"resolveJsonModule": true
+	}
+}

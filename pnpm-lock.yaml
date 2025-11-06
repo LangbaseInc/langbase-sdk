@@ -115,8 +115,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.7
       langbase:
-        specifier: 1.2.3
-        version: 1.2.3(react@18.3.1)(ws@8.18.0)
+        specifier: 1.2.4
+        version: 1.2.4(react@18.3.1)(ws@8.18.0)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -126,6 +126,10 @@ importers:
       zod-to-json-schema:
         specifier: ^3.24.5
         version: 3.24.5(zod@3.24.1)
+    devDependencies:
+      tsx:
+        specifier: ^4.19.1
+        version: 4.19.3
 
   packages/cli:
     dependencies:
@@ -283,6 +287,9 @@ importers:
 
   packages/langbase:
     dependencies:
+      commander:
+        specifier: ^14.0.2
+        version: 14.0.2
       dotenv:
         specifier: ^16.4.5
         version: 16.4.7
@@ -2135,6 +2142,10 @@ packages:
     resolution: {integrity: sha512-/rFeCpNJQbhSZjGVwO9RFV3xPqbnERS8MmIQzCtD/zl6gpJuV/bMLuN92oG3F7d8oDEHHRrujSXNUr8fpjntKw==}
     engines: {node: '>=18'}
 
+  commander@14.0.2:
+    resolution: {integrity: sha512-TywoWNNRbhoD0BXs1P3ZEScW8W5iKrnbithIl0YH+uCmBd0QpPOA8yc82DS3BIE5Ma6FnBVUsJ7wVUDz4dvOWQ==}
+    engines: {node: '>=20'}
+
   commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
 
@@ -3369,6 +3380,15 @@ packages:
 
   langbase@1.2.3:
     resolution: {integrity: sha512-rhJaursMFuXFB/KzY+7Eztyt7qZEkhz9z9ryl+IQLSvSsjbn61dgFGsxh0tSzA2M+DygW3cXTyYZr/K3SA3OXA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      react: ^18 || ^19
+    peerDependenciesMeta:
+      react:
+        optional: true
+
+  langbase@1.2.4:
+    resolution: {integrity: sha512-bbZ3n79mWlQw6Gp+Vg9b/8nVJg4WF28PmZD70mq0X9K+F8lA5wdI5sIyBRkV3Jj1jqv3OXJFu4I5l6gVzRh51g==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19
@@ -6858,7 +6878,7 @@ snapshots:
 
   clear-any-console@1.16.3(react@18.3.1)(ws@8.18.0):
     dependencies:
-      langbase: 1.2.3(react@18.3.1)(ws@8.18.0)
+      langbase: 1.2.4(react@18.3.1)(ws@8.18.0)
     transitivePeerDependencies:
       - encoding
       - react
@@ -6876,7 +6896,7 @@ snapshots:
   cli-handle-error@4.4.1(react@18.3.1)(ws@8.18.0):
     dependencies:
       chalk: 3.0.0
-      langbase: 1.2.3(react@18.3.1)(ws@8.18.0)
+      langbase: 1.2.4(react@18.3.1)(ws@8.18.0)
       log-symbols: 3.0.0
     transitivePeerDependencies:
       - encoding
@@ -6886,7 +6906,7 @@ snapshots:
   cli-handle-unhandled@1.1.2(react@18.3.1)(ws@8.18.0):
     dependencies:
       cli-handle-error: 4.4.1(react@18.3.1)(ws@8.18.0)
-      langbase: 1.2.3(react@18.3.1)(ws@8.18.0)
+      langbase: 1.2.4(react@18.3.1)(ws@8.18.0)
     transitivePeerDependencies:
       - encoding
       - react
@@ -6913,7 +6933,7 @@ snapshots:
     dependencies:
       chalk: 5.6.0
       clear-any-console: 1.16.3(react@18.3.1)(ws@8.18.0)
-      langbase: 1.2.3(react@18.3.1)(ws@8.18.0)
+      langbase: 1.2.4(react@18.3.1)(ws@8.18.0)
     transitivePeerDependencies:
       - encoding
       - react
@@ -6947,6 +6967,8 @@ snapshots:
       delayed-stream: 1.0.0
 
   commander@13.1.0: {}
+
+  commander@14.0.2: {}
 
   commander@2.20.3: {}
 
@@ -7379,7 +7401,7 @@ snapshots:
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.7.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint@8.57.1)
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.1)
       eslint-plugin-react: 7.37.4(eslint@8.57.1)
       eslint-plugin-react-hooks: 5.0.0-canary-7118f5dd7-20230705(eslint@8.57.1)
@@ -7424,7 +7446,7 @@ snapshots:
       is-glob: 4.0.3
       stable-hash: 0.0.4
     optionalDependencies:
-      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-plugin-import: 2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -7500,7 +7522,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1):
+  eslint-plugin-import@2.31.0(@typescript-eslint/parser@7.2.0(eslint@8.57.1)(typescript@5.7.3))(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.8
@@ -8466,6 +8488,18 @@ snapshots:
       json-buffer: 3.0.1
 
   langbase@1.2.3(react@18.3.1)(ws@8.18.0):
+    dependencies:
+      dotenv: 16.4.7
+      openai: 4.83.0(ws@8.18.0)(zod@3.24.1)
+      zod: 3.24.1
+      zod-validation-error: 3.4.0(zod@3.24.1)
+    optionalDependencies:
+      react: 18.3.1
+    transitivePeerDependencies:
+      - encoding
+      - ws
+
+  langbase@1.2.4(react@18.3.1)(ws@8.18.0):
     dependencies:
       dotenv: 16.4.7
       openai: 4.83.0(ws@8.18.0)(zod@3.24.1)

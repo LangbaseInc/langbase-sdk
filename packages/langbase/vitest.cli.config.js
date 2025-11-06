@@ -3,17 +3,15 @@ import {defineConfig} from 'vite';
 // https://vitejs.dev/config/
 export default defineConfig({
 	test: {
-		environment: 'edge-runtime',
+		environment: 'node',
 		globals: true,
-		include: ['**/*.test.ts{,x}'],
+		include: ['src/cli/**/*.test.ts{,x}'],
 		exclude: [
-			'**/*.ui.test.ts{,x}',
-			'**/*.e2e.test.ts{,x}',
 			'**/node_modules/**',
-			'src/cli/**',
 		],
 		typecheck: {
 			enabled: true,
+			tsconfig: './tsconfig.cli.json',
 		},
 	},
 });

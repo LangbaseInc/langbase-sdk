@@ -29,7 +29,7 @@ export default defineConfig([
 	// CLI - completely separate build with ALL dependencies bundled and treeshaken
 	// This ensures SDK users NEVER see CLI dependencies in their node_modules
 	{
-		entry: ['src/cli.ts'],
+		entry: ['src/cli/cli.ts'],
 		outDir: 'dist/cli',
 		format: ['cjs'],
 		bundle: true,
@@ -45,6 +45,8 @@ export default defineConfig([
 		shims: true,
 		// Aggressive treeshaking to remove unused code
 		treeshake: true,
+		// Use separate tsconfig for CLI
+		tsconfig: './tsconfig.cli.json',
 		esbuildOptions(options) {
 			options.banner = {
 				js: '#!/usr/bin/env node',

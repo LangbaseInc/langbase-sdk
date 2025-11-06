@@ -10,6 +10,7 @@ export default defineConfig({
 			'**/*.ui.test.ts{,x}',
 			'**/*.e2e.test.ts{,x}',
 			'**/node_modules/**',
+			'src/cli/**',
 		],
 		typecheck: {
 			enabled: true,

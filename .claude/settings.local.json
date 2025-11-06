@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm add:*)",
+      "Bash(mkdir:*)",
+      "Bash(pnpm build:*)",
+      "Bash(node dist/cli/cli.js:*)",
+      "Bash(pnpm type-check:sdk:*)",
+      "Bash(pnpm type-check:cli:*)",
+      "Bash(npm pack:*)",
+      "Bash(npm link)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
