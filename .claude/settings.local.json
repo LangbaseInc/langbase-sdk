@@ -8,7 +8,10 @@
       "Bash(pnpm type-check:sdk:*)",
       "Bash(pnpm type-check:cli:*)",
       "Bash(npm pack:*)",
-      "Bash(npm link)"
+      "Bash(npm link)",
+      "Bash(pnpm test:node:*)",
+      "Bash(pnpm --filter langbase test:node:*)",
+      "Bash(pnpm --filter langbase test:node:pipes:*)"
     ],
     "deny": [],
     "ask": []
