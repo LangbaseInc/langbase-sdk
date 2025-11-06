@@ -11,7 +11,8 @@
       "Bash(npm link)",
       "Bash(pnpm test:node:*)",
       "Bash(pnpm --filter langbase test:node:*)",
-      "Bash(pnpm --filter langbase test:node:pipes:*)"
+      "Bash(pnpm --filter langbase test:node:pipes:*)",
+      "Bash(pnpm --filter langbase test:node:chunker:*)"
     ],
     "deny": [],
     "ask": []
