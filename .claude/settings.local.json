@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh release list:*)",
+      "Bash(chmod:*)",
+      "Bash(node .github/scripts/sync-github-releases.js:*)",
+      "Bash(gh release view:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
