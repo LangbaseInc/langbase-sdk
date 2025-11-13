@@ -1,0 +1,81 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Delete a Memory',
+    description: `An example of how to delete a memory.`,
+    section: 'Examples',
+    slug: '/examples/memory/delete-memory'
+});
+
+# Delete a Memory
+
+This example demonstrates how to delete a memory from Langbase.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/memory"
+
+	title="Delete a Memory Example"
+	output={`{ "success": true }`}
+explanation={`
+This code illustrates the deletion of a memory using Langbase. Here's a step-by-step guide:
+
+1. Memory Deletion:
+   - Specifies the memory name "memory-sdk"
+
+2. Execution:
+   - The memory is deleted using the Langbase SDK
+   - Outputs the response to confirm successful deletion
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Delete a Memory Example" exampleTitle="Delete a Memory Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.memories.delete({
+		name: 'memory-sdk',
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Delete Memory Example" exampleTitle="Delete Memory Example">
+```python {{ title: 'index.py' }}
+import os
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main():
+    response = langbase.memories.delete(
+        name='memory-sdk'
+    )
+
+    print(response)
+
+if __name__ == '__main__':
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

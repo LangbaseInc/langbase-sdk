@@ -1,0 +1,118 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'List Messages in a Thread',
+    description: `An example of how to list messages in a thread.`,
+    section: 'Examples',
+    slug: '/examples/threads/list-messages'
+});
+
+
+# List Messages in a Thread
+
+This example demonstrates how to list messages in a thread.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="List Messages in a Thread Example"
+	output={`[{
+    id: "1f8807d9-7393-42a9-9f5c-63e02b192bce",
+    created_at: 1743212407,
+    thread_id: "1e3af16c-bfe6-4129-8a2a-4c098fc6933d",
+    content: "hello",
+    role: "user",
+    tool_call_id: null,
+    tool_calls: [],
+    name: null,
+    attachments: [],
+    metadata: {
+      size: "small",
+    }
+  },
+  {
+    id: "c7912edd-6441-4c45-a268-7ebf4cebdd38",
+    created_at: 1743212462,
+    thread_id: "1e3af16c-bfe6-4129-8a2a-4c098fc6933d",
+    content: "Nice to meet you",
+    role: "assistant",
+    tool_call_id: null,
+    tool_calls: [],
+    name: null,
+    attachments: [],
+    metadata: {
+      size: "small",
+    }
+  }]`}
+explanation={`
+This code demonstrates how to list messages in a thread in Langbase. Here's a step-by-step guide:
+
+1. Thread Identification:
+   - Specifies the thread ID of the thread whose messages are to be listed
+
+2. Execution:
+   - The list request is executed using the Langbase SDK
+   - Outputs the response to display the messages in the thread
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="List Messages in a Thread Example" exampleTitle="List Messages in a Thread Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.threads.messages.list({
+		threadId: 'REPLACE_WITH_THREAD_ID',
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="List Messages in a Thread Example" exampleTitle="List Messages in a Thread Example">
+```python {{ title: 'index.py' }}
+import json
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+def main():
+    load_dotenv()
+
+    # Get API key from environment variable
+    langbase_api_key = os.getenv("LANGBASE_API_KEY")
+
+    # Initialize the client
+    langbase = Langbase(api_key=langbase_api_key)
+
+    # List all threads
+    try:
+        threads = langbase.threads.messages.list(thread_id="thread_123")
+
+        print(json.dumps(threads, indent=2))
+
+    except Exception as e:
+        print(f"Error listing threads: {e}")
+
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

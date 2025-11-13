@@ -1,0 +1,396 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+
+export const metadata = generateMetadata({
+    title: 'Use internet search with AI Agent',
+    description: 'A step-by-step guide to perform an internet search with Exa on Langbase.',
+	section: 'Tools',
+    slug: '/examples/internet-research-tool'
+});
+
+# Use internet search with AI Agent
+
+---
+
+In this guide, you will:
+
+- **Create a pipe**: Create an AI agent pipe using Langbase SDK.
+- **Define a tool**: Define a `searchInternet` tool function.
+- **Run the AI Agent**: Execute the pipe to search the web using the tool function.
+
+---
+
+## Pre-requisites
+
+-  **Langbase API Key**: A [Langbase API key](/api-reference/api-keys) to authenticate your requests with Langbase.
+-  **Exa API Key**: An [Exa API key](https://dashboard.exa.ai/api-keys) to authenticate your requests with Exa.
+
+---
+
+## Step #0: Set up your project
+
+<CodeGroup exampleTitle="Project setup" title="Project setup">
+	```bash
+	mkdir ai-search-agent && cd ai-search-agent
+	```
+</CodeGroup>
+
+### Initialize the project
+
+<CodeGroup exampleTitle="Initialize project" title="Initialize project">
+	```bash {{ title: 'npm' }}
+	npm init -y
+	```
+
+	```bash {{ title: 'pnpm' }}
+	pnpm init
+	```
+
+	```bash {{ title: 'yarn' }}
+	yarn init -y
+	```
+</CodeGroup>
+
+### Install dependencies
+
+<CodeGroup exampleTitle="Install dependencies" title="Install dependencies">
+  ```bash {{ title: 'npm' }}
+  npm i langbase exa-js dotenv
+  ```
+
+  ```bash {{ title: 'pnpm' }}
+  pnpm add langbase exa-js dotenv
+  ```
+
+  ```bash {{ title: 'yarn' }}
+  yarn add langbase exa-js dotenv
+  ```
+</CodeGroup>
+
+### Install dev dependencies
+
+<CodeGroup exampleTitle="Install dev dependencies" title="Install dev dependencies">
+	```bash {{ title: 'npm' }}
+	npm i -D @types/node
+	```
+
+	```bash {{ title: 'pnpm' }}
+	pnpm add -D @types/node
+	```
+
+	```bash {{ title: 'yarn' }}
+	yarn add -D @types/node
+	```
+</CodeGroup>
+
+### Create a `.env` file
+
+Create a `.env` file in the root of your project and add the following environment variables:
+
+```bash
+LANGBASE_API_KEY="YOUR_API_KEY"
+EXA_API_KEY="YOUR_EXA_API_KEY"
+```
+
+Replace `YOUR_API_KEY` and `YOUR_EXA_API_KEY` with your Langbase and Exa API keys, respectively.
+
+---
+
+## Step #1: Create a new pipe
+
+Create a new file named `create-pipe.ts` and add the following code to create a new pipe using [`langbase.pipes.create`](/sdk/pipe/create) function from Langbase SDK:
+
+<CodeGroup exampleTitle="Create a pipe" title="create-pipe.ts">
+	```js
+	import 'dotenv/config';
+	import { Langbase } from 'langbase';
+
+	const langbase = new Langbase({
+		apiKey: process.env.LANGBASE_API_KEY!,
+	});
+
+	(async () => {
+		// Create a pipe
+		await langbase.pipes.create({
+			name: `internet-research-agent`,
+			description: `An AI search agent powered by Langbase and Exa`,
+			messages: [{
+				role: `system`,
+				content: `You are a research assistant. Your job is to take a query, search for relevant content on the web using the provided domain, and then answer users' questions.`,
+			}],
+		});
+	})();
+	```
+</CodeGroup>
+
+---
+
+## Step #2: Add Exa to the pipe
+
+In this step, we will add Exa to our pipe as a tool in `create-pipe.ts` file:
+
+<CodeGroup exampleTitle="Create a pipe" title="create-pipe.ts">
+	```js
+	import 'dotenv/config';
+	import { Langbase } from 'langbase';
+
+	const langbase = new Langbase({
+		apiKey: process.env.LANGBASE_API_KEY!,
+	});
+
+	(async () => {
+		// Exa as a tool
+		const exa = {
+			type: `function`,
+			function: {
+			name: `searchInternet`,
+			description: `Tool for running semantic search using the provided domain on the web using Exa API`,
+			parameters: {
+				type: `object`,
+				required: [`query`, `domain`],
+				properties: {
+				query: {
+					type: `string`,
+					description: `The search query to find relevant content`,
+				},
+				domain: {
+					type: `string`,
+					description: `Domain to search content from`,
+				},
+				numResults: {
+					type: `integer`,
+					description: `Number of results to return (default: 5)`,
+					minimum: 1,
+					maximum: 20,
+				},
+				useAutoprompt: {
+					type: `boolean`,
+					description: `Type of search to perform (default: neural)`,
+					default: false,
+				},
+				},
+			},
+			},
+		};
+
+		// Create a pipe
+		await langbase.pipes.create({
+			name: `internet-research-agent`,
+			description: `An AI search agent powered by Langbase and Exa`,
+			messages: [{
+				role: `system`,
+				content: `You are a research assistant. Your job is take a query, search for relevant content on the web using the provided domain, and then answer user's questions.`,
+			}],
+			tools: [exa],
+		});
+	})();
+	```
+</CodeGroup>
+
+Now run the above file to create `internet-research-agent` pipe using the following command:
+
+```bash
+npx tsx create-pipe.ts
+```
+
+---
+
+## Step #3: Integrate Exa with the pipe
+
+Create a new `exa.ts` file to define the `searchInternet` tool function. The LLM model will use this function to execute a web search using Exa SDK.
+
+<CodeGroup exampleTitle="Create a pipe with Exa" title="exa.ts">
+	```js
+	import 'dotenv/config';
+	import Exa from 'exa-js';
+
+	// Exa search parameters
+	interface ExaSearchParams {
+		query: string;
+		domain: string;
+		numResults?: number;
+		useAutoprompt?: boolean;
+	}
+
+	// Exa search result
+	interface SearchResult {
+		title: string | null;
+		url: string;
+		text: string;
+		publishedDate?: string;
+		highlights?: string[];
+	}
+
+	export async function searchInternet({
+		query,
+		domain,
+		numResults,
+		useAutoprompt,
+	}: ExaSearchParams) {
+		try {
+			const exa = new Exa(process.env.EXA_API_KEY);
+
+			const searchResponse = await exa.searchAndContents(query, {
+				text: true,
+				highlight: true,
+				type: `keyword`,
+				includeDomains: [domain],
+				numResults: numResults || 5,
+				useAutoprompt: useAutoprompt || false,
+			});
+
+			// Transform search results into a formatted string for LLM
+			const content = searchResponse.results.map(
+				(result: SearchResult, index: number) => {
+					// 1. Title
+					let formattedResult = `${index + 1}. ${result.title}\n`;
+
+					// 2. URL
+					formattedResult += `URL: ${result.url}\n`;
+
+					// 3. Published date
+					if (result.publishedDate) {
+						formattedResult += `Published: ${result.publishedDate}\n`;
+					}
+
+					// 4. Content and highlights
+					formattedResult += `Content: ${result.text}\n`;
+					if (result.highlights?.length) {
+						formattedResult += `Relevant excerpts:\n`;
+						result.highlights.forEach((highlight) => {
+							formattedResult += `- ${highlight.trim()}\n`;
+						});
+					}
+
+					// 5. Return the formatted result
+					return formattedResult;
+				}
+			);
+
+			return content.join(`\n\n`);
+		} catch (error: any) {
+			console.error(`Error performing search:`, error.message);
+			return `Error performing search: ${error.message}`;
+		}
+	}
+	```
+</CodeGroup>
+
+---
+
+## Step #4: Run the pipe
+
+Finally, let's create `ai-search-agent.ts` file and add the following code to run `internet-research-agent` pipe:
+
+<CodeGroup exampleTitle="Run the pipe" title="ai-search-agent.ts">
+	```js
+	import {
+		Langbase,
+		Message,
+		Runner,
+		getRunner,
+		getToolsFromStream
+	} from 'langbase';
+	import { searchInternet } from './exa';
+
+	const langbase = new Langbase({
+		apiKey: process.env.LANGBASE_API_KEY!
+	});
+
+	const tools = {
+		searchInternet
+	};
+
+	(async () => {
+		// Run the pipe
+		const { stream, threadId } = await langbase.pipes.run({
+			name: `internet-research-agent`,
+			stream: true,
+			messages: [{
+				role: `user`,
+				content: `Explain the concept of Pipes from Langbase.com`
+			}]
+		});
+
+		const toolCalls = await getToolsFromStream(stream);
+		const hasToolCalls = toolCalls.length > 0;
+		let runner: Runner;
+
+		if (hasToolCalls) {
+			const messages: Message[] = [];
+
+			// Call all the functions in the tool_calls array
+			for (const toolCall of toolCalls) {
+				const toolName = toolCall.function.name;
+				const toolParameters = JSON.parse(toolCall.function.arguments);
+				const toolFunction = tools[toolName];
+
+				// Execute the function
+				const toolResult = await toolFunction(toolParameters);
+
+				messages.push({
+					tool_call_id: toolCall.id, // Required: id of the tool call
+					role: `tool`, // Required: role of the message
+					name: toolName, // Required: name of the tool
+					content: toolResult // Required: response of the tool
+				});
+			}
+
+			const { stream: newStream } = await langbase.pipes.run({
+				messages,
+				threadId: threadId!,
+				name: `internet-research-agent`,
+				stream: true
+			});
+
+			runner = getRunner(newStream);
+		} else {
+			runner = getRunner(stream);
+		}
+
+		runner.on(`content`, content => {
+			process.stdout.write(content);
+		});
+	})();
+	```
+</CodeGroup>
+
+Once done, let's run our AI search agent:
+
+```bash
+npx tsx ai-search-agent.ts
+```
+
+Here is a sample LLM response:
+
+```markdown
+The concept of "Pipes" from Langbase.com revolves around creating custom-built AI agents that serve as APIs. These Pipes allow developers to build AI features and applications quickly, without needing to manage servers or infrastructure. Here are the key aspects of Pipes:
+
+1. **Definition**: Pipes function as a high-level layer on top of Large Language Models (LLMs), enabling the creation of personalized AI assistants tailored to specific queries and prompts.
+
+2. **Core Components**:
+   - **Prompt**: Involves prompt engineering and orchestration.
+   - **Instructions**: Provides instruction training using few-shot learning, personas, and character definitions.
+   - **Personalization**: Integrates knowledge bases and variables while managing safety to mitigate hallucinations in responses.
+   - **Engine**: Supports experiments and evaluations, allowing for API engine integration and governance.
+
+3. **Streaming and Storage**: Pipes can stream responses in real-time and can store messages (prompts and completions) if configured to do so. This feature ensures privacy by limiting the storage of certain messages.
+
+4. **Safety Features**: Includes moderation capabilities for harmful content, particularly for OpenAI models, and defines safety prompts to restrict LLM responses to relevant contexts.
+
+5. **Variables**: Pipes support dynamic prompts using variables, which can be defined and populated during execution, enhancing the flexibility and interactivity of AI responses.
+
+6. **Open Pipes**: Langbase allows users to create "Open Pipes" that can be shared publicly. These pipes can be forked by other users, promoting collaboration and community engagement.
+
+7. **API Integration**: Pipes can connect any LLM to various datasets and workflows, enabling developers to create tailored applications efficiently.
+
+The overall goal of Pipes is to simplify the process of building and deploying AI applications by providing a robust framework that handles various aspects of AI interaction and customization. For more detailed information, you can refer to the official documentation on Langbase's website.
+```
+
+---
+
+## Next Steps
+
+- Build something cool with Langbase.
+- Join our [Discord community](https://langbase.com/discord) for feedback, requests, and support.
+
+---

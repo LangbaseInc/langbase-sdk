@@ -1,0 +1,106 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Web Search',
+    description: `An example of tool on how to perform a web search.`,
+    section: 'Examples',
+    slug: '/examples/tools/web-search'
+});
+
+# Web Search
+
+This example demonstrates how to perform a web search using Langbase web search tool with Exa.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Web Search Example"
+	output={`[{
+	"url": "https://langbase.com/",
+	"content": "The most powerful serverless platform for building AI products. Build agentic AI agents with pipes, memory and tools."
+},
+{
+	"url": "https://langbase.com/about",
+	"content": "The most powerful serverless platform for building AI products. Build agentic AI agents with pipes, memory and tools."
+}]`}
+explanation={`
+This code demonstrates how to perform a web search using the Langbase web search tool with Exa. Here's a step-by-step guide:
+
+1. Search Query:
+   - Specifies the search query to be used for the web search
+
+2. Service and Parameters:
+   - Defines the web search service (Exa) and parameters such as total results and domains to be searched
+   - Specifies the Exa API key for authentication
+
+3. Execution:
+   - The web search request is executed using the Langbase SDK
+   - Outputs the search results to display the relevant information
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Web Search Example" exampleTitle="Web Search Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+// Learn more about Langbase SDK keys: https://langbase.com/docs/api-reference/api-keys
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const results = await langbase.tools.webSearch({
+		service: 'exa',
+		totalResults: 2,
+		query: 'What is Langbase?',
+		domains: ['https://langbase.com'],
+		apiKey: process.env.EXA_API_KEY!, // Find Exa key: https://dashboard.exa.ai/api-keys
+	});
+
+	console.log(results);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Web Search Example" exampleTitle="Web Search Example">
+```python {{ title: 'index.py' }}
+import json
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+load_dotenv()
+
+def main():
+    langbase_api_key = os.getenv("LANGBASE_API_KEY")
+    search_api_key = os.getenv("EXA_API_KEY")
+
+    langbase = Langbase(api_key=langbase_api_key)
+
+
+    search_results = langbase.tools.web_search(
+        query="What is Langbase?",
+        service="exa",
+        total_results=2,
+        domains=["https://langbase.com"],
+        api_key=search_api_key, 
+    )
+
+    print(json.dumps(search_results, indent=2))
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

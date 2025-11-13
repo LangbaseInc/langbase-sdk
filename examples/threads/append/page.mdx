@@ -1,0 +1,148 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+
+export const metadata = generateMetadata({
+    title: 'Append to a Thread',
+    description: `An example of how to append to a thread.`,
+    section: 'Examples',
+    slug: '/examples/threads/append'
+});
+
+
+# Append to a Thread
+
+This example demonstrates how to append to a thread.
+
+---
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Append to a Thread Example"
+	output={`[{
+	id: "1f8807d9-7393-42a9-9f5c-63e02b192bce",
+	created_at: 1743212407,
+	thread_id: "1e3af16c-bfe6-4129-8a2a-4c098fc6933d",
+	content: "hello",
+	role: "user",
+	tool_call_id: null,
+	tool_calls: [],
+	name: null,
+	attachments: [],
+	metadata: {
+	size: "small"
+	}
+},
+{
+	id: "c7912edd-6441-4c45-a268-7ebf4cebdd38",
+	created_at: 1743212462,
+	thread_id: "1e3af16c-bfe6-4129-8a2a-4c098fc6933d",
+	content: "Nice to meet you",
+	role: "assistant",
+	tool_call_id: null,
+	tool_calls: [],
+	name: null,
+	attachments: [],
+	metadata: {
+	size: "small"
+	}
+}]`}
+explanation={`
+This code demonstrates how to append messages to an existing thread in Langbase. Here's a step-by-step guide:
+
+1. Thread Identification:
+   - Specifies the thread ID to which messages will be appended
+
+2. Message Appending:
+   - Appends a new message from the assistant role with specific content and metadata
+
+3. Execution:
+   - The append request is executed using the Langbase SDK
+   - Outputs the response to confirm successful appending
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Append to a Thread Example" exampleTitle="Append to a Thread Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.threads.append({
+		threadId: 'REPLACE_WITH_THREAD_ID',
+		messages: [
+			{
+				role: 'assistant',
+				content: 'Nice to meet you',
+				metadata: {size: 'small'},
+			},
+		],
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Append to a Thread Example" exampleTitle="Append to a Thread Example">
+```python {{ title: 'index.py' }}
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+
+def main():
+    load_dotenv()
+
+    # Get API key from environment variable
+    langbase_api_key = os.getenv("LANGBASE_API_KEY")
+
+    # Initialize the client
+    langbase = Langbase(api_key=langbase_api_key)
+
+    # Thread ID to append messages to
+    thread_id = "thread_123"  # Replace with your actual thread ID
+
+    # Messages to append
+    messages = [
+        {"role": "assistant", "content": "Nice to meet you"},
+    ]
+
+    # Append messages to the thread
+    try:
+        response = langbase.threads.append(thread_id=thread_id, messages=messages)
+
+        print(f"Successfully appended {len(response)} messages to thread '{thread_id}'")
+
+        # Print the appended messages
+        for i, message in enumerate(response, 1):
+            print(f"\nMessage {i}:")
+            print(f"Role: {message.get('role')}")
+            print(f"Content: {message.get('content')}")
+            print(f"Created at: {message.get('created_at')}")
+
+    except Exception as e:
+        print(f"Error appending messages to thread: {e}")
+
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>
+
+
+---

@@ -1,0 +1,377 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+	title: 'Run Pipe Agent with Tools',
+	description: `An example of running a pipe agent with tools.`,
+	section: 'Examples',
+	slug: '/examples/pipe-agent/run-pipe-agent-tools'
+});
+
+# Run Pipe Agent with Tools
+
+This example demonstrates how to run a pipe agent with tools and use function calling capabilities with a Langbase pipe agent.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Run Pipe Agent with Tools Example"
+	output={`
+{
+	"completion": "The current weather in San Francisco, CA is sunny with a temperature of 75°F (approximately 24°C).",
+	"id": "chatcmpl-BKD5Qavj0jtPl7UCd59EGc2acaYyT",
+	"object": "chat.completion",
+	"model": "gpt-4o-mini-2024-07-18",
+	"choices": [
+		{
+			"index": 0,
+			"message": {
+				"role": "assistant",
+				"content": "The current weather in San Francisco, CA is sunny with a temperature of 75°F (approximately 24°C).",
+				"refusal": null,
+				"annotations": []
+			},
+			"logprobs": null,
+			"finish_reason": "stop"
+		}
+	],
+	"usage": {
+		"prompt_tokens": 121,
+		"completion_tokens": 25,
+		"total_tokens": 146,
+		"prompt_tokens_details": {
+			"cached_tokens": 0,
+			"audio_tokens": 0
+		},
+		"completion_tokens_details": {
+			"reasoning_tokens": 0,
+			"audio_tokens": 0,
+			"accepted_prediction_tokens": 0,
+			"rejected_prediction_tokens": 0
+		}
+	},
+	"service_tier": "default",
+	"system_fingerprint": "fp_b376dfbbd4",
+	"threadId": "8e7dab74-8711-4913-ab22-a36ddcf44c53"
+}`}
+explanation={`
+This code illustrates how to run a Pipe agent with tools. Here's a step-by-step guide:
+
+1. Create Summary Agent:
+    - Calls the langbase.pipes.create() to create a 'summary-agent'.
+
+2. Run the Pipe Agent:
+   - Call langbase.pipes.run() with the 'summary-agent' and tools.
+   - The agent uses a tool called weatherToolSchema to fetch weather information.
+
+3. Fetch the tool calls:
+   - Use getToolsFromRun() to extract any tool calls from the agent response.
+   - Store them in the toolCalls variable.
+
+4. Process Tool Calls:
+   - Check if tool calls exist by verifying toolCalls.length > 0.
+   - For each tool call, extract the function name and parameters, run the function, and get the result.
+   - Create a response message with the tool result.
+
+5. Call the Pipe agent with Updated Messages:
+   - If there were tool calls, run the agent pipe again using the same threadId.
+   - Include the tool results as new messages so the agent can use them in its final response.
+
+5. Execution:
+   - If tools were used, print the agent's final response using the updated context.
+   - If not, print the direct response from the original run.
+`}
+>
+
+<LanguageContent language="typescript">
+<CodeGroup title="Run Pipe Agent with Tools Example" exampleTitle="Run Pipe Agent with Tools Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import { Langbase, Message, Tools, getToolsFromRun } from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	await createSummaryAgent();
+
+    const response = await langbase.pipes.run({
+    	stream: false,
+    	name: 'summary-agent',
+    	messages: [
+    		{
+    			role: 'user',
+    			content: "What's the weather in SF?",
+    		},
+    	],
+    	tools: [weatherToolSchema],
+    });
+
+    const toolCalls = await getToolsFromRun(response);
+    const hasToolCalls = toolCalls.length > 0;
+    const threadId = response.threadId;
+
+    if (hasToolCalls) {
+    	// Process each tool call
+    	const toolResultPromises = toolCalls.map(async (toolCall): Promise<Message> => {
+    		const toolName = toolCall.function.name;
+    		const toolParameters = JSON.parse(toolCall.function.arguments);
+    		const toolFunction = tools[toolName as keyof typeof tools];
+
+    		// Call the tool function with the parameters
+    		const toolResponse = await toolFunction(toolParameters);
+
+    		// Return the tool result
+    		return {
+				role: 'tool',
+    			name: toolName,
+    			content: toolResponse,
+    			tool_call_id: toolCall.id,
+    		};
+    	});
+
+    	// Wait for all tool calls to complete
+    	const toolResults = await Promise.all(toolResultPromises);
+
+    	// Call the agent pipe again with the updated messages
+    	const finalResponse = await langbase.pipes.run({
+    		threadId,
+    		stream: false,
+    		name: 'summary-agent',
+    		messages: toolResults,
+    		tools: [weatherToolSchema],
+    	});
+
+    	console.log(JSON.stringify(finalResponse, null, 2));
+    } else {
+    	console.log('Direct response (no tools called):');
+    	console.log(JSON.stringify(response, null, 2));
+    }
+
+}
+
+// Mock implementation of the weather function
+async function getCurrentWeather(args: { location: string }) {
+	return 'Sunny, 75°F';
+}
+
+// Weather tool schema
+const weatherToolSchema: Tools = {
+	type: 'function',
+	function: {
+		name: 'getCurrentWeather',
+		description: 'Get the current weather of a given location',
+		parameters: {
+			type: 'object',
+			required: ['location'],
+			properties: {
+				unit: {
+					enum: ['celsius', 'fahrenheit'],
+					type: 'string',
+				},
+				location: {
+					type: 'string',
+					description: 'The city and state, e.g. San Francisco, CA',
+				},
+			},
+		},
+	},
+};
+
+// Object to hold all tools
+const tools = {
+	getCurrentWeather
+};
+
+/**
+ * Creates a summary agent pipe if it doesn't already exist.
+ *
+ * This function checks if a pipe with the name 'summary-agent' exists in the system.
+ * If the pipe doesn't exist, it creates a new private pipe with a system message
+ * configuring it as a helpful assistant.
+ *
+ * @async
+ * @returns {Promise<void>} A promise that resolves when the operation is complete
+ * @throws {Error} Logs any errors encountered during the creation process
+ */
+async function createSummaryAgent() {
+    try {
+        await langbase.pipes.create({
+            name: 'summary-agent',
+			upsert: true,
+            status: 'private',
+            messages: [
+                {
+                    role: 'system',
+                    content: 'You are a helpful assistant that help users summarize text.',
+                },
+            ],
+        });
+    } catch (error) {
+        console.error('Error creating summary agent:', error);
+    }
+}
+
+main();
+
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Run Pipe Agent Tools Example" exampleTitle="Run Pipe Agent Tools Example">
+```python {{ title: 'index.py' }}
+import os
+import json
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main():
+    create_summary_agent()
+
+    response = langbase.pipes.run(
+        stream=False,
+        name='summary-agent',
+        messages=[
+            {
+                "role": "user",
+                "content": "What's the weather in SF?"
+            },
+        ],
+        tools=[weather_tool_schema],
+    )
+
+    tool_calls = get_tools_from_run(response)
+    has_tool_calls = len(tool_calls) > 0
+    thread_id = response.get('threadId')
+
+    if has_tool_calls:
+        # Get the assistant message with tool calls from the response
+        assistant_message = response['choices'][0]['message']
+        
+        # Process each tool call
+        tool_results = []
+        for tool_call in tool_calls:
+            tool_name = tool_call['function']['name']
+            tool_parameters = json.loads(tool_call['function']['arguments'])
+            tool_function = tools[tool_name]
+
+            # Call the tool function with the parameters
+            tool_response = tool_function(tool_parameters)
+
+            # Create the tool result message
+            tool_result = {
+                "role": "tool",
+                "name": tool_name,
+                "content": tool_response,
+                "tool_call_id": tool_call['id'],
+            }
+            tool_results.append(tool_result)
+
+        # Prepare messages: original user message + assistant message with tool calls + tool results
+        messages_with_tools = [
+            {
+                "role": "user",
+                "content": "What's the weather in SF?"
+            },
+            assistant_message,  # This contains the tool_calls
+            *tool_results  # Add all tool results
+        ]
+
+        # Call the agent pipe again with the complete conversation history
+        final_response = langbase.pipes.run(
+            thread_id=thread_id,
+            stream=False,
+            name='summary-agent',
+            messages=messages_with_tools,
+            tools=[weather_tool_schema],
+        )
+
+        print(json.dumps(final_response, indent=2))
+    else:
+        print('Direct response (no tools called):')
+        print(json.dumps(response, indent=2))
+
+
+# Mock implementation of the weather function
+def get_current_weather(args):
+    return 'Sunny, 75°F'
+
+
+# Weather tool schema
+weather_tool_schema = {
+    "type": "function",
+    "function": {
+        "name": "getCurrentWeather",
+        "description": "Get the current weather of a given location",
+        "parameters": {
+            "type": "object",
+            "required": ["location"],
+            "properties": {
+                "unit": {
+                    "enum": ["celsius", "fahrenheit"],
+                    "type": "string",
+                },
+                "location": {
+                    "type": "string",
+                    "description": "The city and state, e.g. San Francisco, CA",
+                },
+            },
+        },
+    },
+}
+
+# Dictionary to hold all tools
+tools = {
+    "getCurrentWeather": get_current_weather
+}
+
+
+def get_tools_from_run(response):
+    """Extract tool calls from the response."""
+    # This function mimics the getToolsFromRun utility from the JS SDK
+    # You may need to adjust this based on the actual response structure
+    if 'choices' in response and len(response['choices']) > 0:
+        message = response['choices'][0].get('message', {})
+        return message.get('tool_calls', [])
+    return []
+
+
+def create_summary_agent():
+    """
+    Creates a summary agent pipe if it doesn't already exist.
+
+    This function checks if a pipe with the name 'summary-agent' exists in the system.
+    If the pipe doesn't exist, it creates a new private pipe with a system message
+    configuring it as a helpful assistant.
+    """
+    try:
+        langbase.pipes.create(
+            stream=False,
+            name='summary-agent',
+            upsert=True,
+            status='private',
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a helpful assistant that help users summarize text.",
+                },
+            ],
+        )
+    except Exception as error:
+        print(f'Error creating summary agent: {error}')
+
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

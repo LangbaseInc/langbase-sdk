@@ -1,0 +1,105 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'List Documents from a Memory',
+    description: `An example of how to list documents from a memory.`,
+    section: 'Examples',
+    slug: '/examples/memory/list-documents'
+});
+
+# List Documents from a Memory
+
+This example demonstrates how to list documents with name and metadata from a memory.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/memory"
+
+	title="List Documents from a Memory Example"
+	output={`[{
+	name: "readme.md",
+	status: "completed",
+	status_message: null,
+	metadata: {
+        size: 5,
+        type: "text/markdown",
+	},
+	enabled: true,
+	chunk_size: 10000,
+	chunk_overlap: 2048,
+	owner_login: "user-76795",
+}]`}
+explanation={`
+This code illustrates the listing of documents from a memory using Langbase. Here's a step-by-step guide:
+
+1. Document Listing:
+   - Specifies the memory name "memory-sdk"
+   - Retrieves the list of documents along with their metadata
+
+2. Execution:
+   - The documents are listed using the Langbase SDK
+   - Outputs the response to confirm successful retrieval
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="List Documents from a Memory Example" exampleTitle="List Documents from a Memory Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.memories.documents.list({
+		memoryName: 'memory-sdk',
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="List Documents in a Memory Example" exampleTitle="List Documents in a Memory Example">
+```python {{ title: 'index.py' }}
+import json
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+
+def main():
+    load_dotenv()
+
+    # Get API key from environment variable
+    langbase_api_key = os.getenv("LANGBASE_API_KEY")
+
+    # Initialize the client
+    langbase = Langbase(api_key=langbase_api_key)
+
+    # List documents in the memory
+    memory_name = "memory-sdk"
+    try:
+        response = langbase.memories.documents.list(memory_name=memory_name)
+
+        print(f"Documents in memory '{memory_name}':")
+        print(json.dumps(response, indent=2))
+
+    except Exception as e:
+        print(f"Error listing documents: {e}")
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

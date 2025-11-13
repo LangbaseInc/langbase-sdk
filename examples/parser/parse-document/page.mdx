@@ -1,0 +1,99 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Parse a document',
+    description: `An example demonstrating how to parse a document.`,
+    section: 'Examples',
+    slug: '/examples/parser/parse-document'
+});
+
+## Parse a document
+
+This example demonstrates how to parse a document.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Parse a document Example"
+	output={`{
+	"documentName": "langbase.md",
+	"content": "Langbase is the most powerful serverless AI platform for building AI agents with memory. Build, deploy, and scale AI agents with tools and memory (RAG). Simple AI primitives with a world-class developer experience without using any frameworks.",
+}`}
+explanation={`
+This code demonstrates how to parse a document in Langbase. Here's a step-by-step guide:
+
+1. Document Preparation:
+   - Specifies the path and name of the document to be parsed
+
+2. Execution:
+   - The parse request is executed using the Langbase SDK
+   - Outputs the response to display the parsed content
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Parse a document Example" exampleTitle="Parse a document Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const content = "Langbase is the most powerful serverless AI platform for building AI agents with memory. Build, deploy, and scale AI agents with tools and memory (RAG). Simple AI primitives with a world-class developer experience without using any frameworks."
+	const document_bytes = Buffer.from(content, 'utf-8')
+	
+	const results = await langbase.parser({
+		document: document_bytes,
+		documentName: 'langbase.md',
+		contentType: 'text/plain',
+	});
+
+	console.log(results);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Parse a document Example" exampleTitle="Parse a document Example">
+```python {{ title: 'index.py' }}
+import json
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+load_dotenv()
+
+langbase_api_key = os.getenv("LANGBASE_API_KEY")
+
+langbase = Langbase(api_key=langbase_api_key)
+
+
+def main():
+    content = "Langbase is the most powerful serverless AI platform for building AI agents with memory. Build, deploy, and scale AI agents with tools and memory (RAG). Simple AI primitives with a world-class developer experience without using any frameworks."
+    document_bytes = content.encode('utf-8')
+    
+    # Parse the document
+    results = langbase.parser(
+        document=document_bytes,
+        document_name="langbase.md",
+        content_type="text/plain",
+    )
+
+    print(json.dumps(results, indent=2))
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

@@ -1,0 +1,111 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Website Crawler',
+    description: `An example of tool on how to crawl a website.`,
+    section: 'Examples',
+    slug: '/examples/tools/website-crawler'
+});
+
+
+# Website Crawler
+
+This example demonstrates how to crawl a website using Langbase website crawler tool.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Website Crawler Example"
+	output={`[{
+   "url": "https://langbase.com/about",
+   "content": "⌘Langbase –Serverless AI Agents platform# # ⌘Langbase –Serverless AI Agents platformThe most powerful serverless platform for building AI agents. Build. Deploy. Scale."
+},
+{
+   "url": "https://langbase.com",
+   "content": "⌘Langbase –Serverless AI Agents platform# # ⌘Langbase –Serverless AI Agents platformThe most powerful serverless platform for building AI agents. Build. Deploy. Scale."
+}]`}
+explanation={`
+This code demonstrates how to crawl a website using the Langbase website crawler tool. Here's a step-by-step guide:
+
+1. URL Specification:
+   - Specifies the URLs of the websites to be crawled
+
+2. Service and Parameters:
+   - Defines the crawling service (spider.cloud) and parameters such as the maximum number of pages to crawl
+   - Specifies the spider.cloud API key for authentication
+
+3. Execution:
+   - The crawl request is executed using the Langbase SDK
+   - Outputs the crawl results to display the relevant information
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Website Crawler Example" exampleTitle="Website Crawler Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+/**
+ * Crawls specified URLs using spider.cloud service.
+ *
+ * Get your API key from the following link and set it in .env file.
+ *
+ * @link https://spider.cloud/docs/quickstart
+ */
+async function main() {
+	const results = await langbase.tools.crawl({
+		url: ['https://langbase.com', 'https://langbase.com/about'],
+		maxPages: 1,
+		apiKey: process.env.CRAWL_KEY,
+	});
+
+	console.log(results);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Website Crawler Example" exampleTitle="Website Crawler Example">
+```python {{ title: 'index.py' }}
+import os
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main():
+    """
+    Crawls specified URLs using spider.cloud service.
+
+    Get your API key from the following link and set it in .env file.
+
+    @link https://docs.firecrawl.dev/introduction#api-key
+    """
+    results = langbase.tools.crawl(
+        url=['https://langbase.com', 'https://langbase.com/about'],
+        max_pages=1,
+        api_key=os.getenv('CRAWL_KEY')
+    )
+
+    print(results)
+
+if __name__ == '__main__':
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

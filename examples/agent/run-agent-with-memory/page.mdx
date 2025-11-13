@@ -1,0 +1,138 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+
+export const metadata = generateMetadata({
+	title: 'Run Agent with Memory',
+	description: `An example of running an agent using retrieved memory.`,
+	section: 'Examples',
+	slug: '/examples/agent/run-agent-with-memory'
+});
+
+# Run Agent with Memory
+
+This example demonstrates how to retrieve and attach memory to an agent call.
+
+---
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample 
+	api="/docs/api/pipe"
+
+	title="Run Agent with Memory Example"
+	output={`"An AI Engineer is someone who builds and deploys systems powered by artificial intelligence, including LLM-based agents."`}
+	explanation={`
+This example demonstrates how to attach retrieved memory to an agent run:
+
+1. Retrieve Memory:
+    - Use \`langbase.memories.retrieve\` to fetch relevant context.
+    - Define the memory name and query.
+    - Limit results using \`topK\`.
+
+2. Run the Agent with Retrieved Memory:
+    - Inject the memory result as part of the user's input.
+    - Run the agent with the desired model, and conversation input.
+
+3. Get the Response:
+    - Log or display the agent’s response.
+`}>
+<LanguageContent language="typescript">
+<CodeGroup title="Run Agent with Memory Example" exampleTitle="Run Agent with Memory Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import { Langbase } from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	if (!process.env.LANGBASE_API_KEY) {
+		console.error('❌ Missing LANGBASE_API_KEY in environment variables.');
+		process.exit(1);
+	}
+
+	// Step 1: Retrieve memory
+	const memoryResponse = await langbase.memories.retrieve({
+		memory: [
+			{
+				name: 'career-advisor-memory',
+			},
+		],
+		query: 'Who is an AI Engineer?',
+		topK: 2,
+	});
+
+	// Step 2: Run the agent with the retrieved memory
+	const { output } = await langbase.agent.run({
+        model: 'openai:gpt-4.1-mini',
+        apiKey: process.env.LLM_API_KEY!,
+        instructions: 'You are a career advisor who helps users understand AI job roles.',
+        input: [
+            {
+                role: 'user',
+                content: `${memoryResponse}\n\n Now, based on the above, who is an AI Engineer?`,
+            },
+        ],
+    });
+
+	// Step 3: Display output
+	console.log('Agent Response:', output);
+}
+
+main();
+
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Run Agent with Memory Example" exampleTitle="Run Agent with Memory Example">
+```python {{ title: 'index.py' }}
+import os
+from langbase import Langbase
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+async def main():
+    if not os.getenv('LANGBASE_API_KEY'):
+        print('❌ Missing LANGBASE_API_KEY in environment variables.')
+        return
+
+    # Step 1: Retrieve memory
+    memory_response = await langbase.memories.retrieve(
+        memory=[
+            {
+                'name': 'career-advisor-memory',
+            }
+        ],
+        query='Who is an AI Engineer?',
+        top_k=2
+    )
+
+    # Step 2: Run the agent with the retrieved memory
+    response = await langbase.agent.run(
+        model='openai:gpt-4.1-mini',
+        api_key=os.getenv('LLM_API_KEY'),
+        instructions='You are a career advisor who helps users understand AI job roles.',
+        input=[
+            {
+                'role': 'user',
+                'content': f'{memory_response}\n\n Now, based on the above, who is an AI Engineer?',
+            }
+        ]
+    )
+
+    # Step 3: Display output
+    print('Agent Response:', response.output)
+
+if __name__ == '__main__':
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>
+
+
+---

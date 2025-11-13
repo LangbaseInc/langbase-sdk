@@ -1,0 +1,211 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Run Pipe Agent Chat with Pipe API Keys',
+    description: `An example of running a pipe agent chat with pipe API keys.`,
+    section: 'Examples',
+    slug: '/examples/pipe-agent/run-pipe-agent-chat-pipe-api-keys'
+});
+
+# Run Pipe Agent Chat with Pipe API Keys
+
+This example demonstrates how to run a pipe agent chat with pipe API keys.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Run Pipe Agent Chat with Pipe API Keys Example"
+	output={`
+Stream started.
+
+An AI Engineer is a professional who develops and implements artificial intelligence models and systems. They work on creating algorithms, designing machine learning applications, and optimizing AI performance to solve real-world problems.
+
+Stream ended.`}
+explanation={`
+This code illustrates how to run a pipe agent chat with Pipe API keys using Langbase. Follow these steps:
+
+1. Create Summary Agent:
+   - Calls the langbase.pipes.create() to create a 'summary-agent'.
+
+2. Set the Pipe API key:
+   - Sets the Pipe API key in the .env file.
+   - Passes the API key to langbase.pipes.run() via process.env.PIPE_API_KEY
+
+3. Run the Pipe Agent with the User Message:
+   - Call langbase.pipes.run() using the pipe API key.
+   - The agent processes the user message and returns a response.
+
+4. Handle the Stream:
+   - Convert the stream to a stream runner.
+   - Use event listeners to handle the stream events.
+   - Write the content to the console.
+
+4. Complete the Execution:
+   - The Langbase SDK handles the stream.
+`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Run Pipe Agent Chat with Pipe API Keys Example" exampleTitle="Run Pipe Agent Chat with Pipe API Keys Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {getRunner, Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	await createSummaryAgent();
+
+	// Get readable stream
+	if (!process.env.PIPE_API_KEY) {
+		console.log(`PIPE_API_KEY is not set in the environment variables get it from https://langbase.com/pipes`);
+	}
+	else {
+		const {stream, threadId, rawResponse} = await langbase.pipes.run({
+			stream: true,
+			rawResponse: true,
+			apiKey: process.env.PIPE_API_KEY!,
+			messages: [
+			    {
+			        role: 'user',
+					content: 'Who is an AI Engineer?'
+				}
+			]
+		});
+
+		// Convert the stream to a stream runner.
+		const runner = getRunner(stream);
+
+		// Method 1: Using event listeners
+		runner.on('connect', () => {
+			console.log('Stream started.\n');
+		});
+
+		runner.on('content', content => {
+			process.stdout.write(content);
+		});
+
+		runner.on('end', () => {
+			console.log('\nStream ended.');
+		});
+
+		runner.on('error', error => {
+			console.error('Error:', error);
+		});
+	}
+}
+
+/**
+ * Creates a summary agent pipe if it doesn't already exist.
+ *
+ * This function checks if a pipe with the name 'summary-agent' exists in the system.
+ * If the pipe doesn't exist, it creates a new private pipe with a system message
+ * configuring it as a helpful assistant.
+ *
+ * @async
+ * @returns {Promise<void>} A promise that resolves when the operation is complete
+ * @throws {Error} Logs any errors encountered during the creation process
+ */
+async function createSummaryAgent() {
+    try {
+        await langbase.pipes.create({
+            name: 'summary-agent',
+			upsert: true,
+            status: 'private',
+            messages: [
+                {
+                    role: 'system',
+                    content: 'You are a helpful assistant that help users summarize text.',
+                },
+            ],
+        });
+    } catch (error) {
+        console.error('Error creating summary agent:', error);
+    }
+}
+
+main();
+
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Run Pipe Agent Chat with Pipe API Keys Example" exampleTitle="Run Pipe Agent Chat with Pipe API Keys Example">
+```python {{ title: 'index.py' }}
+import os
+from langbase import Langbase, StreamEventType, get_typed_runner
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main():
+    create_summary_agent()
+
+    # Use a pipe API key if available
+    pipe_api_key = os.getenv('PIPE_API_KEY')
+    if not pipe_api_key:
+        print('PIPE_API_KEY is not set in the environment variables get it from https://langbase.com/pipes')
+        return
+
+    response = langbase.pipes.run(
+        stream=True,
+        raw_response=True,
+        api_key=pipe_api_key,
+        messages=[
+            {
+                'role': 'user',
+                'content': 'Who is an AI Engineer?'
+            }
+        ],
+    )
+
+    runner = get_typed_runner(response)
+
+    runner.on(StreamEventType.CONNECT, lambda e: print('Stream started.\n'))
+    runner.on(StreamEventType.CONTENT, lambda e: print(e['content'], end='', flush=True))
+    runner.on(StreamEventType.END, lambda e: print('\nStream ended.'))
+    runner.on(StreamEventType.ERROR, lambda e: print('Error:', e['message']))
+
+    runner.process()
+
+def create_summary_agent():
+    """
+    Creates a summary agent pipe if it doesn't already exist.
+
+    This function checks if a pipe with the name 'summary-agent' exists in the system.
+    If the pipe doesn't exist, it creates a new private pipe with a system message
+    configuring it as a helpful assistant.
+
+    Returns:
+        None
+    """
+    try:
+        langbase.pipes.create(
+            name='summary-agent-ex',
+            upsert=True,
+            status='private',
+            messages=[
+                {
+                    'role': 'system',
+                    'content': 'You are a helpful assistant that help users summarize text.',
+                }
+            ]
+        )
+    except Exception as error:
+        print(f'Error creating summary agent: {error}')
+
+if __name__ == '__main__':
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

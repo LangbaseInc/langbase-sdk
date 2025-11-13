@@ -1,0 +1,136 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+
+export const metadata = generateMetadata({
+    title: 'Generate Image with Together AI',
+    description: `An example demonstrating how to generate images using Together AI Flux models.`,
+    section: 'Examples',
+    slug: '/examples/images/generate-image-together'
+});
+
+
+## Generate Image with Together AI Flux
+
+This example demonstrates how to generate images using Together AI's Flux models through the Langbase Images API.
+
+---
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/images"
+
+	title="Generate Image with Together AI Example"
+	output={`Image generated successfully!
+Image URL: https://api.together.ai/shrt/IDOitKKrtd4BcHud,`}
+explanation={`
+This code demonstrates how to generate an AI image using Together AI's Flux models. Here's a step-by-step guide:
+
+1. Initialize Langbase:
+   - Set up the Langbase client with your API key
+
+2. Configure Image Generation:
+   - Provide a descriptive prompt for the image you want to generate
+   - Specify the Together AI Flux model (e.g., black-forest-labs/FLUX.1-schnell-Free)
+   - Set optional parameters like width, height, steps, and number of images
+   - Pass your Together AI API key
+
+3. Execution:
+   - The image generation request is executed using the Langbase SDK
+   - Returns the generated image URL(s)`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Generate Image with Together AI" exampleTitle="Generate Image with Together AI">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import { Langbase } from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	// Check if API keys are available
+	if (!process.env.LANGBASE_API_KEY) {
+		console.error('❌ LANGBASE_API_KEY is not set in environment variables');
+		return;
+	}
+
+	if (!process.env.TOGETHER_API_KEY) {
+		console.error('❌ TOGETHER_API_KEY is not set in environment variables');
+		console.log('Please add your Together AI API key to the .env file');
+		return;
+	}
+
+	const result = await langbase.images.generate({
+		prompt: "A serene mountain landscape at sunset with a crystal clear lake reflecting the sky",
+		model: "together:black-forest-labs/FLUX.1-schnell-Free",
+		width: 1024,
+		height: 1024,
+		n: 1,
+		apiKey: process.env.TOGETHER_API_KEY!,
+	});
+
+	if (!result?.choices?.[0]?.message?.images?.[0]?.image_url?.url) {
+		console.error('❌ Image generation did not return an image. Full response:', result);
+		return;
+	}
+
+	console.log('✅ Image generated successfully!');
+	console.log('Image URL:', result.choices[0].message.images[0].image_url.url);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Generate Image with Together AI" exampleTitle="Generate Image with Together AI">
+```python {{ title: 'index.py' }}
+import os
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main():
+	# Check if API keys are available
+	if not os.getenv('LANGBASE_API_KEY'):
+		print('❌ LANGBASE_API_KEY is not set in environment variables')
+		return
+
+	if not os.getenv('TOGETHER_API_KEY'):
+		print('❌ TOGETHER_API_KEY is not set in environment variables')
+		print('Please add your Together AI API key to the .env file')
+		return
+
+	result = langbase.images.generate(
+		prompt="A serene mountain landscape at sunset with a crystal clear lake reflecting the sky",
+		model="together:black-forest-labs/FLUX.1-schnell-Free",
+		width=1024,
+		height=1024,
+		n=1,
+		api_key=os.getenv('TOGETHER_API_KEY')
+	)
+
+	if not result.get('choices', [{}])[0].get('message', {}).get('images', [{}])[0].get('image_url', {}).get('url'):
+		print('❌ Image generation did not return an image. Full response:', result)
+		return
+
+	print('✅ Image generated successfully!')
+	print('Image URL:', result['choices'][0]['message']['images'][0]['image_url']['url'])
+
+if __name__ == '__main__':
+	main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>
+
+
+---

@@ -1,0 +1,105 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+
+export const metadata = generateMetadata({
+    title: 'Run Agent',
+    description: `An example of running an agent.`,
+    section: 'Examples',
+    slug: '/examples/agent/run'
+});
+
+
+# Run Agent
+
+This example demonstrates how to run an agent with a user message.
+
+---
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+	isJson
+	title="Run Agent Example"
+	output={`{ "summary": "An AI Engineer is a professional who designs, develops, and implements artificial intelligence systems and applications. They work with machine learning algorithms, data processing, and software development to create intelligent solutions." }`}
+explanation={`
+This code illustrates how to run an agent using Langbase. Here's a step-by-step guide:
+
+1. Run Agent:
+   - Calls the langbase.agent.run() with the 'summary-agent'
+   - The agent processes the instructions and the user message and generates a response
+
+2. Execution:
+   - The Langbase SDK executes the agent
+   - Outputs the response to display the result of the agent's processing`}
+>
+
+<LanguageContent language="typescript">
+<CodeGroup title="Run Agent Example" exampleTitle="Run Agent Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import { Langbase } from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+
+	const response = await langbase.agent.run({
+		stream: false,
+		model: 'openai:gpt-4.1-mini',
+		apiKey: process.env.LLM_API_KEY!,
+        instructions: 'You are a helpful assistant that help users summarize text.',
+		input: [
+			{
+				role: 'user',
+				content: 'Who is an AI Engineer?',
+			},
+		],
+	});
+
+	console.log('response: ', response.output);
+}
+
+main();
+
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Run Agent Example" exampleTitle="Run Agent Example">
+```python {{ title: 'index.py' }}
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+load_dotenv()
+
+def main():
+    langbase_api_key = os.environ.get("LANGBASE_API_KEY")
+    llm_api_key = os.environ.get("LLM_API_KEY")
+
+    langbase = Langbase(api_key=langbase_api_key)
+
+    response = langbase.agent.run(
+        stream=False,
+        model="openai:gpt-4.1-mini",
+        api_key=llm_api_key,
+        instructions="You are a helpful assistant that help users summarize text.",
+        input=[{"role": "user", "content": "Who is an AI Engineer?"}],
+    )
+
+    print("response:", response.get("output"))
+
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>
+
+
+---

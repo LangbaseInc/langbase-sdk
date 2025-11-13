@@ -1,0 +1,111 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+
+export const metadata = generateMetadata({
+    title: 'Create a Thread',
+    description: `An example of how to create a thread.`,
+    section: 'Examples',
+    slug: '/examples/threads/create'
+});
+
+
+# Create a Thread
+
+This example demonstrates how to create a thread.
+
+
+---
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Create a Thread Example"
+	output={`{
+	id: "1e3af16c-bfe6-4129-8a2a-4c098fc6933d",
+	object: "thread",
+	metadata: {
+		company: "langbase",
+	}
+}`}
+explanation={`
+This code demonstrates how to create a new thread in Langbase. Here's a step-by-step guide:
+
+1. Thread Creation:
+   - Provides the initial messages and metadata to create a new thread
+
+2. Message Initialization:
+   - Initializes the thread with a message from the user role with specific content and metadata
+
+3. Execution:
+   - The create request is executed using the Langbase SDK
+   - Outputs the response to confirm successful thread creation
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Create a Thread Example" exampleTitle="Create a Thread Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.threads.create({
+		messages: [{role: 'user', content: 'hello', metadata: {size: 'small'}}],
+		metadata: {company: 'langbase'},
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Create a Thread Example" exampleTitle="Create a Thread Example">
+```python {{ title: 'index.py' }}
+import json
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+
+def main():
+    load_dotenv()
+
+    # Get API key from environment variable
+    langbase_api_key = os.getenv("LANGBASE_API_KEY")
+
+    # Initialize the client
+    langbase = Langbase(api_key=langbase_api_key)
+
+    # Create a thread with metadata and initial messages
+    try:
+        thread = langbase.threads.create(
+            metadata={"company": "langbase"},
+            messages=[{"role": "user", "content": "Hello, how are you?"}],
+        )
+
+        print(json.dumps(thread, indent=2))
+
+    except Exception as e:
+        print(f"Error creating thread: {e}")
+
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>
+
+
+---

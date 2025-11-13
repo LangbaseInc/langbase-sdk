@@ -1,0 +1,129 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+
+export const metadata = generateMetadata({
+    title: 'Run Agent with MCP',
+    description: `An example of running a agent with MCP.`,
+    section: 'Examples',
+    slug: '/examples/agent/run-mcp'
+});
+
+# Run Agent with MCP
+
+This example demonstrates how to run an agent with MCP.
+
+---
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/agent/run"
+
+	title="Run Agent with Deepwiki MCP Server"
+	output={`The 2025-03-26 version of the MCP spec supports two transport protocols: stdio transport: where the client launches the MCP server as a subprocess and communication occurs over standard input/output with JSON-RPC messages.
+    Streamable HTTP transport: where the server handles multiple client connections via a single HTTP endpoint supporting POST and GET methods, optionally using Server-Sent Events (SSE) for streaming messages.
+    Both use JSON-RPC 2.0 for message exchange. Custom transports may also be implemented if they preserve the JSON-RPC message format and lifecycle requirements.
+`}
+explanation={`
+This guide provides a streamlined approach to running an agent with MCP. Here's a simplified breakdown:
+
+1. Start with a User Message:
+   - Set up the initial message to be sent to the agent to get a response from the MCP servers.
+
+2. Execute the Agent:
+   - Use the langbase.agent.run() with the Deepwiki MCP server.
+   - The agent processes the message and returns the response.
+
+3. Complete the Execution:
+   - The Langbase SDK handles the MCP servers.
+   - Display the response to observe the agent's output.
+
+`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Run Agent with Deepwiki MCP Server" exampleTitle="Run Agent with Deepwiki MCP Server">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.agent.run({
+		stream: false,
+		mcp_servers: [
+			{
+				type: 'url',
+				name: 'deepwiki',
+				url: 'https://mcp.deepwiki.com/sse',
+			},
+		],
+		model: 'openai:gpt-4.1-mini',
+		apiKey: process.env.OPENAI_API_KEY!,
+		instructions:
+			'You are a helpful assistant that help users summarize text.',
+		input: [
+			{
+				role: 'user',
+				content:
+					'What transport protocols does the 2025-03-26 version of the MCP spec (modelcontextprotocol/modelcontextprotocol) support?',
+			},
+		],
+	});
+
+	console.log('response: ', response.output);
+}
+
+main();
+
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Run Agent with Deepwiki MCP Server" exampleTitle="Run Agent with Deepwiki MCP Server">
+```python {{ title: 'index.py' }}
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+load_dotenv()
+
+def main():
+    langbase_api_key = os.environ.get("LANGBASE_API_KEY")
+    llm_api_key = os.environ.get("LLM_API_KEY")
+
+    langbase = Langbase(api_key=langbase_api_key)
+
+    response = langbase.agent.run(
+        stream=False,
+        model="openai:gpt-4.1-mini",
+        api_key=llm_api_key,
+        instructions="You are a helpful assistant that help users summarize text.",
+        input=[
+            {
+                "role": "user",
+                "content": "What transport protocols does the 2025-03-26 version of the MCP spec (modelcontextprotocol/modelcontextprotocol) support?",
+            }
+        ],
+        mcp_servers=[
+            {"type": "url", "name": "deepwiki", "url": "https://mcp.deepwiki.com/sse"}
+        ],
+    )
+
+    print("response:", response.get("output"))
+
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>
+
+
+---

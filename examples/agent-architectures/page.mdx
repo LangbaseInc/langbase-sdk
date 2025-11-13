@@ -1,0 +1,2358 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+
+export const metadata = generateMetadata({
+    title: 'AI Agent Architectures | Framework-Free Agent Design Patterns',
+    description: `Comprehensive guide to AI agent architectures without frameworks. Learn to design autonomous agents with LLMs, tools, memory, and workflows using Langbase primitives.`,
+    section: 'Agent Examples',
+    slug: '/examples/agent-architectures'
+});
+
+<LanguageProvider defaultLanguage='typescript'>
+
+# Agent Architectures
+
+At Langbase, we believe you don't need a framework. Build AI agents without any frameworks.
+
+We’ll cover several different agent architectures that leverage Langbase to build, deploy, and scale autonomous agents. Define how your agents use LLMs, tools, memory, and durable workflows to process inputs, make decisions, and achieve goals.
+
+---
+
+### Reference agent architectures
+
+1. [Augmented LLM](#augmented-llm-pipe-agent)
+2. [Prompt chaining](#prompt-chaining-and-composition)
+3. [Agentic Routing](#agent-routing)
+4. [Agent Parallelization](#agent-parallelization)
+5. [Orchestration workers](#agentic-orchestration-workers)
+6. [Evaluator-optimizer](#evaluator-optimizer)
+7. [Augmented LLM with Tools](#augmented-llm-with-tools)
+9. [Memory Agent](#memory-agent)
+
+
+---
+
+## Augmented LLM (Pipe Agent)
+
+<AgentDiagram
+	src="/docs/architecture/pipe.png"
+	caption="Pipe architecture"
+/>
+
+Langbase Augmented LLM (Pipe Agent) is the fundamental component of an agentic system. It is a Large Language Model (LLM) enhanced with augmentations such as retrieval, tools, and memory. Our current models can actively utilize these capabilities—generating their own search queries, selecting appropriate tools, and determining what information to retain using memory.
+
+<RunAgent api="/docs/api/pipe-summary"
+	title="Augmented LLM Example"
+	explanation={`This is a very simple and straightforward implementation of a text summarization agent using Langbase. Here's the breakdown:
+
+1. Agent Setup:
+   - Creates a basic pipe agent named "Summary Agent"
+   - Configures it with a single system message that defines its role as a text summarizer
+
+2. Execution:
+   - Takes a piece of text about the Langbase platform as input
+   - Processes it through the agent
+   - Returns a summarized version in the completion
+
+What makes this interesting is its simplicity - it's a basic example of how to create and use a Langbase agent for a single, focused task. This could serve as a starting point for more complex implementations.`}
+>
+
+<LanguageContent language="typescript">
+```ts
+import dotenv from 'dotenv';
+import { Langbase } from 'langbase';
+
+dotenv.config();
+
+const langbase = new Langbase({
+  apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	// Create a pipe agent
+	const summaryAgent = await langbase.pipes.create({
+		name: "summary-agent",
+		model: "google:gemini-2.5-flash",
+		messages: [
+			{
+				role: "system",
+				content: 'You are a helpful assistant that summarizes text.'
+			}
+		]
+	});
+
+	// Run the pipe agent
+	const inputText = `Langbase is the most powerful serverless platform for building AI agents
+	with memory. Build, scale, and evaluate AI agents with semantic memory (RAG) and
+	world-class developer experience. We process billions of AI message tokens daily.
+	Built for every developer, not just AI/ML experts. Compared to complex AI frameworks,
+	Langbase is simple, serverless, and the first composable AI platform`;
+
+	const { completion } = await langbase.pipes.run({
+		name: summaryAgent.name,
+		stream: false,
+		messages: [
+			{
+				role: "user",
+				content: inputText,
+			}
+		],
+	});
+
+	console.log(completion);
+}
+
+main();
+```
+</LanguageContent>
+
+<LanguageContent language="python">
+```python
+import os
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main():
+    # Create a pipe agent
+    summary_agent = langbase.pipes.create(
+        name="summary-agent",
+        model="google:gemini-2.5-flash",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a helpful assistant that summarizes text."
+            }
+        ],
+        upsert=True,
+    )
+
+    # Run the pipe agent
+    input_text = """Langbase is the most powerful serverless platform for building AI agents
+    with memory. Build, scale, and evaluate AI agents with semantic memory (RAG) and
+    world-class developer experience. We process billions of AI messages tokens daily.
+    Built for every developer, not just AI/ML experts. Compared to complex AI frameworks,
+    Langbase is simple, serverless, and the first composable AI platform"""
+
+    response = langbase.pipes.run(
+        name=summary_agent["name"],
+        stream=False,
+        messages=[
+            {
+                "role": "user",
+                "content": input_text,
+            }
+        ],
+    )
+
+    print(response["completion"])
+
+if __name__ == '__main__':
+    main()
+```
+</LanguageContent>
+
+</RunAgent>
+
+---
+
+## Prompt chaining and composition
+
+<AgentDiagram
+	src="/docs/architecture/prompt-chaining.png"
+	caption="Prompt chaining architecture"
+/>
+
+Prompt chaining splits a task into steps, with each LLM call using the previous step's result. It improves accuracy by simplifying each step, making it ideal for structured tasks like content generation and verification.
+
+<RunAgent
+	api="/docs/api/prompt-chaining"
+	title="Prompt Chaining Example"
+	explanation={`This code implements a sequential product marketing content pipeline that transforms a raw product description into polished marketing copy through three stages:\n\n1. First Stage (Summary Agent):\n   - Takes a raw product description\n   - Condenses it into two concise sentences\n   - Has a quality gate that checks if the summary is detailed enough (at least 10 words)\n\n2. Second Stage (Features Agent):\n   - Takes the summary from stage 1\n   - Extracts and formats key product features as bullet points\n\n3. Final Stage (Marketing Copy Agent):\n   - Takes the bullet points from stage 2\n   - Generates refined marketing copy for the product\n\nAll stages use the Gemini 2.5 Flash model through the Langbase SDK. The example shows it being used with a smartwatch product description.\n\nWhat makes this interesting is its pipeline approach - each stage builds upon the output of the previous stage, with a quality check after the summary stage to ensure the pipeline maintains high standards.`}
+>
+
+<LanguageContent language="typescript">
+```ts {{ title: 'prompt-chaining.ts' }}
+import dotenv from 'dotenv';
+import { Langbase } from 'langbase';
+
+dotenv.config();
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!
+});
+
+async function main(inputText: string) {
+	// Prompt chaining steps
+	const steps = [
+		{
+			name: 'summary-agent',
+			model: 'google:gemini-2.5-flash',
+			description:
+				'summarize the product description into two concise sentences',
+			prompt: `Please summarize the following product description into two concise
+			sentences:\n`
+		},
+		{
+			name: 'features-agent',
+			model: 'google:gemini-2.5-flash',
+			description: 'extract key product features as bullet points',
+			prompt: `Based on the following summary, list the key product features as
+			bullet points:\n`
+		},
+		{
+			name: 'marketing-copy-agent',
+			model: 'google:gemini-2.5-flash',
+			description:
+				'generate a polished marketing copy using the bullet points',
+			prompt: `Using the following bullet points of product features, generate a
+			compelling and refined marketing copy for the product, be precise:\n`
+		}
+	];
+
+	//  Create the pipe agents
+	await Promise.all(
+		steps.map(step =>
+			langbase.pipes.create({
+				name: step.name,
+				model: step.model,
+				messages: [
+					{
+						role: 'system',
+						content: `You are a helpful assistant that can ${step.description}.`
+					}
+				]
+			})
+		)
+	);
+
+	// Initialize the data with the raw input.
+	let data = inputText;
+
+	try {
+		// Process each step in the workflow sequentially.
+		for (const step of steps) {
+			// Call the LLM for the current step.
+			const response = await langbase.pipes.run({
+				stream: false,
+				name: step.name,
+				messages: [{ role: 'user', content: `${step.prompt} ${data}` }]
+			});
+
+			data = response.completion;
+
+			console.log(`Step: ${step.name} \n\n Response: ${data}`);
+
+			// Gate on summary agent output to ensure it is not too brief.
+			// If the summary is less than 10 words, throw an error to stop the workflow.
+			if (step.name === 'summary-agent' && data.split(' ').length < 10) {
+				throw new Error(
+					'Gate triggered for summary agent. The summary is too brief. Exiting workflow.'
+				);
+				return;
+			}
+		}
+	} catch (error) {
+		console.error('Error in main workflow:', error);
+	}
+
+	// The final refined marketing copy
+	console.log('Final Refined Product Marketing Copy:', data);
+}
+
+const inputText = `Our new smartwatch is a versatile device featuring a high-resolution display,
+long-lasting battery life, fitness tracking, and smartphone connectivity. It's designed for
+everyday use and is water-resistant. With cutting-edge sensors and a sleek design, it's
+perfect for tech-savvy individuals.`;
+
+main(inputText);
+```
+</LanguageContent>
+
+<LanguageContent language="python">
+```python {{ title: 'prompt-chaining.py' }}
+import os
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main(input_text):
+    # Prompt chaining steps
+    steps = [
+        {
+            "name": "summary-agent",
+            "model": "google:gemini-2.5-flash",
+            "description": "summarize the product description into two concise sentences",
+            "prompt": "Please summarize the following product description into two concise sentences:\n"
+        },
+        {
+            "name": "features-agent",
+            "model": "google:gemini-2.5-flash",
+            "description": "extract key product features as bullet points",
+            "prompt": "Based on the following summary, list the key product features as bullet points:\n"
+        },
+        {
+            "name": "marketing-copy-agent",
+            "model": "google:gemini-2.5-flash",
+            "description": "generate a polished marketing copy using the bullet points",
+            "prompt": "Using the following bullet points of product features, generate a compelling and refined marketing copy for the product, be precise:\n"
+        }
+    ]
+
+    # Create the pipe agents
+    for step in steps:
+        try:
+            langbase.pipes.create(
+                name=step["name"],
+                model=step["model"],
+                upsert=True,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": f"You are a helpful assistant that can {step['description']}."
+                    }
+                ]
+            )
+        except Exception as e:
+            print(f"Error creating pipe {step['name']}: {e}")
+
+    # Initialize the data with the raw input
+    data = input_text
+
+    try:
+        # Process each step in the workflow sequentially
+        for step in steps:
+            # Call the LLM for the current step
+            response = langbase.pipes.run(
+                stream=False,
+                name=step["name"],
+                messages=[{
+                    "role": "user", 
+                    "content": f"{step['prompt']} {data}"
+                }]
+            )
+
+            data = response["completion"]
+
+            print(f"Step: {step['name']} \n\n Response: {data}")
+
+            # Gate on summary agent output to ensure it is not too brief
+            # If summary is less than 10 words, throw an error to stop the workflow
+            if step["name"] == "summary-agent" and len(data.split()) < 10:
+                raise Exception(
+                    "Gate triggered for summary agent. Summary is too brief. Exiting workflow."
+                )
+
+    except Exception as error:
+        print(f"Error in main workflow: {error}")
+        return
+
+    # The final refined marketing copy
+    print("Final Refined Product Marketing Copy:", data)
+
+
+if __name__ == '__main__':
+    input_text = """Our new smartwatch is a versatile device featuring a high-resolution display,
+    long-lasting battery life,fitness tracking, and smartphone connectivity. It's designed for
+    everyday use and is water-resistant. With cutting-edge sensors and a sleek design, it's
+    perfect for tech-savvy individuals."""
+    
+    main(input_text)
+```
+</LanguageContent>
+</RunAgent>
+
+---
+
+## Agent Routing
+
+<AgentDiagram
+	src="/docs/architecture/routing.png"
+	caption="Routing architecture"
+/>
+
+Routing classifies inputs and directs them to specialized LLMs for better accuracy. It helps optimize performance by handling different tasks separately, like sorting queries or assigning models based on complexity.
+
+<RunAgent api="/docs/api/routing"
+	title="Routing Example"
+	explanation={`This example implements a multi-agent system that routes user queries to specialized AI agents based on the type of task. Here's what it does:
+
+1. Sets up a routing system using the Langbase SDK
+
+2. The main components are:
+   - A router agent that decides which specialized agent should handle the input
+   - Three specialized agents for different tasks:
+     - Summary agent: For text summarization
+     - Reasoning agent: For analysis and explanation
+     - Coding agent: For providing code solutions
+
+3. The workflow is:
+   - User provides input text
+   - Router agent (using Gemini 2.5 Flash) determines which specialized agent should handle it
+   - The request is then forwarded to the appropriate specialized agent
+   - Each specialized agent uses a different AI model:
+     - Summary: Gemini 2.5 Flash
+     - Reasoning: Deepseek LLaMA 70B
+     - Coding: Claude 3.5
+
+4. The example shows it being used with the input "Why are days shorter in winter?" which would likely be routed to the reasoning agent.
+
+This is essentially an AI task dispatcher that ensures queries are handled by the most appropriate specialized model.`}
+>
+
+<LanguageContent language="typescript">
+```ts {{ title: 'routing.ts' }}
+import dotenv from 'dotenv';
+import { Langbase } from 'langbase';
+
+dotenv.config();
+
+// Initialize Langbase with your API key
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!
+});
+
+// Specialized agents configurations
+const agentConfigs = {
+	router: {
+		name: 'router-agent',
+		model: 'google:gemini-2.5-flash',
+		prompt: `You are a router agent. Your job is to read the user's request and decide
+		which specialized agent is best suited to handle it.
+		Below are the agents you can route to:
+			- summary: Summarizes the text
+			- reasoning: Analyzes and provides reasoning for the text
+			- coding: Provides a coding solution for the text
+
+		Only respond with valid JSON that includes a single field "agent" whose value must
+		be one of ["summary", "reasoning", "coding"] based on the user's request.
+		For example: {"agent":"summary"}.
+		No additional text or explanation—just the JSON.
+		`
+	},
+	summary: {
+		name: 'summary-agent',
+		model: 'google:gemini-2.5-flash',
+		prompt: 'Summarize the following text:\n'
+	},
+	reasoning: {
+		name: 'reasoning-agent',
+		model: 'groq:deepseek-r1-distill-llama-70b',
+		prompt: 'Analyze and provide reasoning for:\n'
+	},
+	coding: {
+		name: 'coding-agent',
+		model: 'anthropic:claude-3-5-sonnet-latest',
+		prompt: 'Provide a coding solution for:\n'
+	}
+};
+
+// Create the router and specialized agent pipes
+async function createPipes() {
+	// Create router and all specialized agent
+	await Promise.all(
+		Object.entries(agentConfigs).map(([key, config]) =>
+			langbase.pipes.create({
+				name: config.name,
+				model: config.model,
+				messages: [
+					{
+						role: 'system',
+						content: config.prompt
+					}
+				]
+			})
+		)
+	);
+}
+
+// Router agent
+async function routerAgent(inputText: string) {
+	const response = await langbase.pipes.run({
+		stream: false,
+		name: 'router-agent',
+		messages: [
+			{
+				role: 'user',
+				content: inputText
+			}
+		]
+	});
+
+	// The router's response should look like: {"agent":"summary"} or {"agent":"reasoning"} or {"agent":"coding"}
+	// We parse the completion to extract the agent value
+	return JSON.parse(response.completion);
+}
+
+async function main(inputText: string) {
+	try {
+		// Create pipes first
+		await createPipes();
+
+		// Step A: Determine which agent to route to
+		const route = await routerAgent(inputText);
+		console.log('Router decision:', route);
+
+		// Step B: Call the appropriate agent
+		const agent = agentConfigs[route.agent];
+
+		const response = await langbase.pipes.run({
+			stream: false,
+			name: agent.name,
+			messages: [
+				{ role: 'user', content: `${agent.prompt} ${inputText}` }
+			]
+		});
+
+		// Final output
+		console.log(
+			`Agent: ${agent.name} \n\n Response: ${response.completion}`
+		);
+	} catch (error) {
+		console.error('Error in main workflow:', error);
+	}
+}
+
+// Example usage:
+const inputText = 'Why days are shorter in winter?';
+
+main(inputText);
+```
+</LanguageContent>
+
+<LanguageContent language="python">
+```python {{ title: 'routing.py' }}
+import os
+import json
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Initialize Langbase with your API key
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+# Specialized agents configurations
+agent_configs = {
+    "router": {
+        "name": "router-agent-a",
+        "model": "google:gemini-2.5-flash",
+        "prompt": """You are a router agent. Your job is to read the user's request and decide
+        which specialized agent is best suited to handle it.
+        Below are the agents you can route to:
+            - summary: Summarizes the text
+            - reasoning: Analyzes and provides reasoning for the text
+            - coding: Provides a coding solution for the text
+
+        Only respond with valid JSON that includes a single field "agent" whose value must
+        be one of ["summary", "reasoning", "coding"] based on the user's request.
+        For example: {"agent":"summary"}.
+        No additional text or explanation—just the JSON.
+        """
+    },
+    "summary": {
+        "name": "summary-agent",
+        "model": "google:gemini-2.5-flash",
+        "prompt": "Summarize the following text:\n"
+    },
+    "reasoning": {
+        "name": "reasoning-agent",
+        "model": "google:gemini-2.5-flash",
+        "prompt": "Analyze and provide reasoning for:\n"
+    },
+    "coding": {
+        "name": "coding-agent",
+        "model": "anthropic:claude-3-5-sonnet-latest",
+        "prompt": "Provide a coding solution for:\n"
+    }
+}
+
+
+def create_pipes():
+    """Create the router and specialized agent pipes."""
+    # Create router and all specialized agents
+    for key, config in agent_configs.items():
+        try:
+            langbase.pipes.create(
+                name=config["name"],
+                model=config["model"],
+                upsert=True,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": config["prompt"]
+                    }
+                ]
+            )
+            print(f"✅ Created pipe: {config['name']}")
+        except Exception as e:
+            print(f"❌ Error creating pipe {config['name']}: {e}")
+
+
+def router_agent(input_text):
+    """Router agent to determine which specialized agent to use."""
+    response = langbase.pipes.run(
+        stream=False,
+        name="router-agent-a",
+        messages=[
+            {
+                "role": "user",
+                "content": input_text
+            }
+        ]
+    )
+
+    # The router's response should look like: {"agent":"summary"} or {"agent":"reasoning"} or {"agent":"coding"}
+    # We parse the completion to extract the agent value
+    completion = response["completion"]
+    
+    # Handle JSON wrapped in markdown code blocks
+    if "```json" in completion:
+        # Extract JSON from markdown code block
+        start = completion.find("```json") + 7
+        end = completion.find("```", start)
+        json_str = completion[start:end].strip()
+        return json.loads(json_str)
+    elif "```" in completion:
+        # Extract JSON from generic code block
+        start = completion.find("```") + 3
+        end = completion.find("```", start)
+        json_str = completion[start:end].strip()
+        return json.loads(json_str)
+    else:
+        # Try direct JSON parsing
+        try:
+            return json.loads(completion.strip())
+        except json.JSONDecodeError:
+            # Fallback to reasoning if parsing fails
+            return {"agent": "reasoning"}
+
+
+def main(input_text):
+    try:
+        # Create pipes first
+        create_pipes()
+
+        # Step A: Determine which agent to route to
+        route = router_agent(input_text)
+        print("Router decision:", route)
+
+        # Step B: Call the appropriate agent
+        agent = agent_configs[route["agent"]]
+
+        response = langbase.pipes.run(
+            stream=False,
+            name=agent["name"],
+            messages=[
+                {
+                    "role": "user", 
+                    "content": f"{agent['prompt']} {input_text}"
+                }
+            ]
+        )
+
+        # Final output
+        print(f"Agent: {agent['name']} \n\n Response: {response['completion']}")
+
+    except Exception as error:
+        print(f"Error in main workflow: {error}")
+
+
+if __name__ == '__main__':
+    # Example usage:
+    input_text = "Why days are shorter in winter?"
+    
+    main(input_text)
+```
+</LanguageContent>
+
+</RunAgent>
+
+
+---
+
+## Agent Parallelization
+
+<AgentDiagram
+	src="/docs/architecture/parallelization.png"
+	caption="Parallelization architecture"
+/>
+
+Parallelization runs multiple LLM tasks at the same time to improve speed or accuracy. It works by splitting a task into independent parts (sectioning) or generating multiple responses for comparison (voting).
+
+Voting is a parallelization method where multiple LLM calls generate different responses for the same task. The best result is selected based on agreement, predefined rules, or quality evaluation, improving accuracy and reliability.
+
+<RunAgent api="/docs/api/parallelization"
+	title="Parallelization Example"
+	explanation={`This code implements an email analysis system that processes incoming emails through multiple parallel AI agents to determine if and how they should be handled. Here's the breakdown:
+
+1. Three Specialized Agents running in parallel:
+   - Sentiment Analysis Agent: Determines if the email tone is positive, negative, or neutral
+   - Summary Agent: Creates a concise summary of the email content
+   - Decision Maker Agent: Takes the outputs from the other agents and decides:
+     - If the email needs a response
+     - Whether it's spam
+     - Priority level (low, medium, high, urgent)
+
+2. The workflow:
+   - Takes an email input
+   - Runs sentiment analysis and summary generation in parallel using Promise.all()
+   - Feeds those results to the decision maker agent
+   - Outputs a final decision object with response requirements
+
+3. All agents use OpenAI GPT-4.1 mini model and are structured to return parsed JSON responses
+
+The example shows it being used with a complaint email about a faulty product and poor customer service, which would likely be categorized as high priority and requiring a response.
+
+What makes this interesting is its parallel processing approach for efficiency and the structured decision-making pipeline that helps automate email triage.`}
+>
+
+<LanguageContent language="typescript">
+```ts {{ title: 'parallelization.ts' }}
+import { Langbase } from 'langbase';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!
+});
+
+// Agent configurations
+const agentConfigs = {
+	sentiment: {
+		name: 'email-sentiment',
+		model: 'openai:gpt-4.1-mini',
+		prompt: `
+			You are a helpful assistant that can analyze the sentiment of the email.
+			Only respond with the sentiment, either "positive", "negative" or "neutral".
+			Do not include any markdown formatting, code blocks, or backticks in your response.
+			The response should be a raw JSON object that can be directly parsed.
+			Example response:
+			{
+				"sentiment": "positive"
+			}
+		`
+	},
+	summary: {
+		name: 'email-summary',
+		model: 'openai:gpt-4.1-mini',
+		prompt: `
+			You are a helpful assistant that can summarize the email.
+			Only respond with the summary.
+			Do not include any markdown formatting, code blocks, or backticks in your response.
+			The response should be a raw JSON object that can be directly parsed.
+			Example response:
+			{
+				"summary": "The email is about a product that is not working."
+			}
+		`
+	},
+	decisionMaker: {
+		name: 'email-decision-maker',
+		model: 'openai:gpt-4.1-mini',
+		prompt: `
+			You are a decision maker that analyzes and decides if the given email requires
+			a response or not.
+			Make sure to check if the email is spam or not. If the email is spam, then it
+			does not need a response.
+			If it requires a response, based on the email urgency, decide on the response
+			date. Also, define the response priority.
+
+			Use the following keys and values accordingly
+			- respond: true or false
+			- category: spam or not spam
+			- priority: low, medium, high, urgent
+
+			Do not include any markdown formatting, code blocks, or backticks in your response.
+			The response should be a raw JSON object that can be directly parsed.
+		`
+	}
+};
+
+// Create all pipes
+async function createPipes() {
+	await Promise.all(
+		Object.entries(agentConfigs).map(([key, config]) =>
+			langbase.pipes.create({
+				name: config.name,
+				model: config.model,
+				json: true,
+				messages: [
+					{
+						role: 'system',
+						content: config.prompt
+					}
+				]
+			})
+		)
+	);
+}
+
+async function main(emailInput: string) {
+	try {
+		// Create pipes first
+		await createPipes();
+
+		// Sentiment analysis
+		const emailSentimentAgent = async (email: string) => {
+			const response = await langbase.pipes.run({
+				name: agentConfigs.sentiment.name,
+				stream: false,
+				messages: [
+					{
+						role: 'user',
+						content: email
+					}
+				]
+			});
+			return JSON.parse(response.completion).sentiment;
+		};
+
+		// Summarize email
+		const emailSummaryAgent = async (email: string) => {
+			const response = await langbase.pipes.run({
+				name: agentConfigs.summary.name,
+				stream: false,
+				messages: [
+					{
+						role: 'user',
+						content: email
+					}
+				]
+			});
+			return JSON.parse(response.completion).summary;
+		};
+
+		// Determine if a response is needed
+		const emailDecisionMakerAgent = async (
+			summary: string,
+			sentiment: string
+		) => {
+			const response = await langbase.pipes.run({
+				name: agentConfigs.decisionMaker.name,
+				stream: false,
+				messages: [
+					{
+						role: 'user',
+						content: `Email summary: ${summary}\nEmail sentiment: ${sentiment}`
+					}
+				]
+			});
+			return JSON.parse(response.completion);
+		};
+
+		// Parallelize the requests
+		const [emailSentiment, emailSummary] = await Promise.all([
+			emailSentimentAgent(emailInput),
+			emailSummaryAgent(emailInput)
+		]);
+
+		console.log('Email Sentiment:', emailSentiment);
+		console.log('Email Summary:', emailSummary);
+
+		// aggregator based on the results
+		const emailDecision = await emailDecisionMakerAgent(
+			emailSummary,
+			emailSentiment
+		);
+
+		console.log('should respond:', emailDecision.respond);
+		console.log('category:', emailDecision.category);
+		console.log('priority:', emailDecision.priority);
+
+		return emailDecision;
+	} catch (error) {
+		console.error('Error in main workflow:', error);
+	}
+}
+
+const email = `
+		Hi John,
+		I'm really disappointed with the service I received yesterday. The product
+		was faulty, and customer support was unhelpful. How can I apply for a refund?
+		Thanks,
+		`;
+
+main(email);
+
+```
+</LanguageContent>
+
+<LanguageContent language="python">
+```python {{ title: 'parallelization.py' }}
+import os
+import json
+import asyncio
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+# Agent configurations
+agent_configs = {
+    "sentiment": {
+        "name": "email-sentiment-a",
+        "model": "openai:gpt-4o-mini",
+        "prompt": """
+            You are a helpful assistant that can analyze the sentiment of the email.
+            Only respond with the sentiment, either "positive", "negative" or "neutral".
+            Do not include any markdown formatting, code blocks, or backticks in your response.
+            The response should be a raw JSON object that can be directly parsed.
+            Example response:
+            {
+                "sentiment": "positive"
+            }
+        """
+    },
+    "summary": {
+        "name": "email-summary-a",
+        "model": "openai:gpt-4o-mini",
+        "prompt": """
+            You are a helpful assistant that can summarize the email.
+            Only respond with the summary.
+            Do not include any markdown formatting, code blocks, or backticks in your response.
+            The response should be a raw JSON object that can be directly parsed.
+            Example response:
+            {
+                "summary": "The email is about a product that is not working."
+            }
+        """
+    },
+    "decision_maker": {
+        "name": "email-decision-maker-a",
+        "model": "openai:gpt-4o-mini",
+        "prompt": """
+            You are a decision maker that analyzes and decides if the given email requires
+            a response or not.
+            Make sure to check if the email is spam or not. If the email is spam, then it
+            does not need a response.
+            If it requires a response, based on the email urgency, decide the response
+            date. Also define the response priority.
+
+            Use following keys and values accordingly
+            - respond: true or false
+            - category: spam or not spam
+            - priority: low, medium, high, urgent
+
+            Do not include any markdown formatting, code blocks, or backticks in your response.
+            The response should be a raw JSON object that can be directly parsed.
+        """
+    }
+}
+
+
+def create_pipes():
+    """Create all pipes."""
+    for key, config in agent_configs.items():
+        try:
+            langbase.pipes.create(
+                name=config["name"],
+                model=config["model"],
+                json=True,
+                upsert=True,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": config["prompt"]
+                    }
+                ]
+            )
+            print(f"✅ Created pipe: {config['name']}")
+        except Exception as e:
+            print(f"❌ Error creating pipe {config['name']}: {e}")
+
+
+def email_sentiment_agent(email):
+    """Analyze email sentiment."""
+    response = langbase.pipes.run(
+        name=agent_configs["sentiment"]["name"],
+        stream=False,
+        messages=[
+            {
+                "role": "user",
+                "content": email
+            }
+        ]
+    )
+    try:
+        return json.loads(response["completion"])["sentiment"]
+    except (json.JSONDecodeError, KeyError):
+        return "neutral"  # fallback
+
+
+def email_summary_agent(email):
+    """Summarize email."""
+    response = langbase.pipes.run(
+        name=agent_configs["summary"]["name"],
+        stream=False,
+        messages=[
+            {
+                "role": "user",
+                "content": email
+            }
+        ]
+    )
+    try:
+        return json.loads(response["completion"])["summary"]
+    except (json.JSONDecodeError, KeyError):
+        return "Unable to summarize"  # fallback
+
+
+def email_decision_maker_agent(summary, sentiment):
+    """Determine if a response is needed."""
+    response = langbase.pipes.run(
+        name=agent_configs["decision_maker"]["name"],
+        stream=False,
+        messages=[
+            {
+                "role": "user",
+                "content": f"Email summary: {summary}\nEmail sentiment: {sentiment}"
+            }
+        ]
+    )
+    try:
+        return json.loads(response["completion"])
+    except json.JSONDecodeError:
+        return {"respond": True, "category": "not spam", "priority": "medium"}  # fallback
+
+
+def main(email_input):
+    try:
+        # Create pipes first
+        create_pipes()
+
+        # Process sentiment and summary in parallel (simulated with sequential calls)
+        print("🔍 Analyzing email sentiment and summary...")
+        email_sentiment = email_sentiment_agent(email_input)
+        email_summary = email_summary_agent(email_input)
+
+        print(f"Email Sentiment: {email_sentiment}")
+        print(f"Email Summary: {email_summary}")
+
+        # Aggregator based on the results
+        email_decision = email_decision_maker_agent(email_summary, email_sentiment)
+
+        print(f"Should respond: {email_decision.get('respond', 'unknown')}")
+        print(f"Category: {email_decision.get('category', 'unknown')}")
+        print(f"Priority: {email_decision.get('priority', 'unknown')}")
+
+        return email_decision
+
+    except Exception as error:
+        print(f"Error in main workflow: {error}")
+
+
+if __name__ == '__main__':
+    email = """
+        Hi John,
+        I'm really disappointed with the service I received yesterday. The product
+        was faulty and customer support was unhelpful. How can I apply for a refund?
+        Thanks,
+        """
+    
+    main(email)
+```
+</LanguageContent>
+
+</RunAgent>
+
+---
+
+## Agentic Orchestration-workers
+
+<AgentDiagram
+	src="/docs/architecture/orchestration.png"
+	caption="Orchestration-workers architecture"
+/>
+
+
+The orchestrator-workers workflow has a main LLM (orchestrator) that breaks a task into smaller parts and assigns them to worker LLMs. The orchestrator then gathers their results to complete the task, making it useful for complex and unpredictable jobs.
+
+
+<RunAgent api="/docs/api/orchestration"
+	title="Orchestration-workers Example"
+	explanation={`This code implements a sophisticated task orchestration system with dynamic subtask generation and parallel processing. Here's how it works:
+
+1. Orchestrator Agent (Planning Phase):
+   - Takes a complex task as input
+   - Analyzes the task and breaks it down into smaller, manageable subtasks
+   - Returns both an analysis and a list of subtasks in JSON format
+
+2. Worker Agents (Execution Phase):
+   - Multiple workers run in parallel using Promise.all()
+   - Each worker gets:
+     - The original task for context
+     - Their specific subtask to complete
+   - All workers use Gemini 2.5 Flash model
+
+3. Synthesizer Agent (Integration Phase):
+   - Takes all the worker outputs
+   - Combines them into a cohesive final result
+   - Ensures the pieces flow together naturally
+
+The example shows it being used to create a blog post about remote work, where it might:
+- Break down the task into sections (productivity, work-life balance, environmental impact)
+- Process each section in parallel
+- Combine them into a cohesive blog post
+
+What makes this interesting is its hierarchical approach to task management - using AI to both plan and execute tasks, while maintaining context throughout the process.`}
+>
+
+<LanguageContent language="typescript">
+```ts {{ title: 'orchestration-worker.ts' }}
+import dotenv from 'dotenv';
+import { Langbase } from 'langbase';
+
+dotenv.config();
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!
+});
+
+// Agent configurations
+const agentConfigs = {
+	orchestrator: {
+		name: 'orchestrator',
+		model: 'google:gemini-2.5-flash',
+		prompt: `
+      You are an orchestrator agent. Analyze the user's task and break it into
+      smaller and distinct subtasks. Return your response in JSON format with:
+      - An analysis of the task extracted from the task. No extra steps like
+      proofreading, summarizing, etc.
+      - A list of subtasks, each with a "description" (what needs to be done).
+
+      Do not include any markdown formatting, code blocks, or backticks in your response.
+      The response should be a raw JSON object that can be directly parsed.
+
+      Example response:
+      {
+        "analysis": "The task is to describe the benefits and drawbacks of electric cars",
+        "subtasks": [
+          { "description": "Write about the benefits of electric cars." },
+          { "description": "Write about the drawbacks of electric cars." }
+        ]
+      }
+    `
+	},
+	worker: {
+		name: 'worker-agent',
+		model: 'google:gemini-2.5-flash',
+		prompt: `
+      You are a worker agent working on a specific part of a larger task.
+      You are given a subtask and you need to complete it.
+      You are given the original task and the subtask.
+      You need to complete the subtask.
+    `
+	},
+	synthesizer: {
+		name: 'synthesizer-agent',
+		model: 'google:gemini-2.5-flash',
+		prompt: `You are an expert synthesizer agent. Combine the following results into a
+	cohesive final output.`
+	}
+};
+
+// Create all pipes
+async function createPipes() {
+	await Promise.all(
+		Object.entries(agentConfigs).map(([key, config]) =>
+			langbase.pipes.create({
+				name: config.name,
+				model: config.model,
+				messages: [
+					{
+						role: 'system',
+						content: config.prompt
+					}
+				]
+			})
+		)
+	);
+}
+
+// Main orchestration workflow
+async function orchestratorAgent(task: string) {
+	try {
+		// Create pipes first
+		await createPipes();
+
+		// Step 1: Use the orchestrator LLM to break down the task
+		const orchestrationResults = await langbase.pipes.run({
+			stream: false,
+			name: agentConfigs.orchestrator.name,
+			messages: [
+				{
+					role: 'user',
+					content: `Task: ${task}`
+				}
+			]
+		});
+
+		// Parse the orchestrator's JSON response
+		const { analysis, subtasks } = JSON.parse(
+			orchestrationResults.completion
+		);
+
+		console.log('Task Analysis:', analysis);
+		console.log('Generated Subtasks:', subtasks);
+
+		// Step 2: Process each subtask in parallel using worker LLMs
+		const workerAgentsResults = await Promise.all(
+			subtasks.map(async subtask => {
+				const workerAgentResult = await langbase.pipes.run({
+					stream: false,
+					name: agentConfigs.worker.name,
+					messages: [
+						{
+							role: 'user',
+							content: `
+                The original task is:
+                "${task}"
+
+                Your specific subtask is:
+                "${subtask.description}"
+
+                Provide a concise response for this subtask. Only respond with the
+				response for the subtask.
+              `
+						}
+					]
+				});
+
+				return { subtask, result: workerAgentResult.completion };
+			})
+		);
+
+		// Step 3: Synthesize all results into a final output
+		const synthesizerAgentInput = workerAgentsResults
+			.map(
+				workerResponse =>
+					`Subtask Description: ${workerResponse.subtask.description}\n
+	       Result:\n${workerResponse.result}`
+			)
+			.join('\n\n');
+
+		const synthesizerAgentResult = await langbase.pipes.run({
+			stream: false,
+			name: agentConfigs.synthesizer.name,
+			messages: [
+				{
+					role: 'user',
+					content: `Combine the following results into a complete solution:\n
+		  ${synthesizerAgentInput}`
+				}
+			]
+		});
+
+		console.log(
+			'Final Synthesized Output:\n',
+			synthesizerAgentResult.completion
+		);
+		return synthesizerAgentResult.completion;
+	} catch (error) {
+		console.error('Error in orchestration workflow:', error);
+		throw error;
+	}
+}
+
+// Example usage
+async function main() {
+	const task = `
+    Write a blog post about the benefits of remote work.
+    Include sections on productivity, work-life balance, and environmental impact.
+  `;
+
+	await orchestratorAgent(task);
+}
+
+main();
+```
+</LanguageContent>
+
+<LanguageContent language="python">
+```python {{ title: 'orchestration-worker.py' }}
+import os
+import json
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+# Agent configurations
+agent_configs = {
+    "orchestrator": {
+        "name": "orchestrator-aa",
+        "model": "openai:gpt-4o-mini",
+        "prompt": """
+      You are an orchestrator agent. Analyze the user's task and break it into
+      smaller and distinct subtasks. Return your response in JSON format with:
+      - An analysis of the task extracted from the task. No extra steps like
+      proofreading, summarizing, etc.
+      - A list of subtasks, each with a "description" (what needs to be done).
+
+      Do not include any markdown formatting, code blocks, or backticks in your response.
+      The response should be a raw JSON object that can be directly parsed.
+
+      Example response:
+      {
+        "analysis": "The task is to describe benefits and drawbacks of electric cars",
+        "subtasks": [
+          { "description": "Write about the benefits of electric cars." },
+          { "description": "Write about the drawbacks of electric cars." }
+        ]
+      }
+        """
+    },
+    "worker": {
+        "name": "worker-agent-aa",
+        "model": "openai:gpt-4o-mini",
+        "prompt": """
+      You are a worker agent working on a specific part of a larger task.
+      You are given a subtask and you need to complete it.
+      You are given the original task and the subtask.
+      You need to complete the subtask.
+        """
+    },
+    "synthesizer": {
+        "name": "synthesizer-agent-aa",
+        "model": "openai:gpt-4o-mini",
+        "prompt": """You are an expert synthesizer agent. Combine the following results into a
+    cohesive final output."""
+    }
+}
+
+
+def create_pipes():
+    """Create all pipes."""
+    for key, config in agent_configs.items():
+        try:
+            langbase.pipes.create(
+                name=config["name"],
+                model=config["model"],
+                json=True,
+                upsert=True,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": config["prompt"]
+                    }
+                ]
+            )
+            print(f"✅ Created pipe: {config['name']}")
+        except Exception as e:
+            print(f"❌ Error creating pipe {config['name']}: {e}")
+
+
+def orchestrator_agent(task):
+    """Main orchestration workflow."""
+    try:
+        # Create pipes first
+        create_pipes()
+
+        # Step 1: Use the orchestrator LLM to break down the task
+        orchestration_results = langbase.pipes.run(
+            stream=False,
+            name=agent_configs["orchestrator"]["name"],
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Task: {task}"
+                }
+            ]
+        )
+
+        # Parse the orchestrator's JSON response
+        try:
+            orchestration_data = json.loads(orchestration_results["completion"])
+            analysis = orchestration_data["analysis"]
+            subtasks = orchestration_data["subtasks"]
+        except (json.JSONDecodeError, KeyError):
+            print("❌ Failed to parse orchestrator response, using fallback")
+            analysis = "Task breakdown analysis"
+            subtasks = [{"description": task}]  # fallback to original task
+
+        print("Task Analysis:", analysis)
+        print("Generated Subtasks:", subtasks)
+
+        # Step 2: Process each subtask sequentially using worker LLMs
+        worker_agents_results = []
+        for subtask in subtasks:
+            worker_agent_result = langbase.pipes.run(
+                stream=False,
+                name=agent_configs["worker"]["name"],
+                messages=[
+                    {
+                        "role": "user",
+                        "content": f"""
+                The original task is:
+                "{task}"
+
+                Your specific subtask is:
+                "{subtask['description']}"
+
+                Provide a concise response for this subtask. Only respond with the
+                response for the subtask.
+                        """
+                    }
+                ]
+            )
+
+            worker_agents_results.append({
+                "subtask": subtask,
+                "result": worker_agent_result["completion"]
+            })
+
+        # Step 3: Synthesize all results into a final output
+        synthesizer_agent_input = "\n\n".join([
+            f"Subtask Description: {worker_response['subtask']['description']}\n"
+            f"Result:\n{worker_response['result']}"
+            for worker_response in worker_agents_results
+        ])
+
+        synthesizer_agent_result = langbase.pipes.run(
+            stream=False,
+            name=agent_configs["synthesizer"]["name"],
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Combine the following results into a complete solution:\n{synthesizer_agent_input}"
+                }
+            ]
+        )
+
+        print("Final Synthesized Output:\n", synthesizer_agent_result["completion"])
+        return synthesizer_agent_result["completion"]
+
+    except Exception as error:
+        print(f"Error in orchestration workflow: {error}")
+        raise error
+
+
+def main():
+    task = """
+    Write a blog post about the benefits of remote work.
+    Include sections on productivity, work-life balance, and environmental impact.
+    """
+
+    orchestrator_agent(task)
+
+
+if __name__ == '__main__':
+    main()
+```
+</LanguageContent>
+
+</RunAgent>
+
+---
+
+## Evaluator-optimizer
+
+<AgentDiagram
+	src="/docs/architecture/evaluator.png"
+	caption="Evaluator-optimizer architecture"
+/>
+
+The evaluator-optimizer workflow uses one LLM to generate a response and another to review and improve it. This cycle repeats until the result meets the desired quality, making it useful for tasks that benefit from iterative refinement.
+
+<RunAgent
+  api="/docs/api/evaluator"
+  title="Evaluator-Optimizer Example"
+  explanation={`This code implements an iterative refinement system with a feedback loop between two AI agents to optimize content. Here's how it works:
+
+1. Generator Agent:
+   - Creates or refines product descriptions
+   - Takes into account the original task and any previous feedback
+   - Uses each iteration to improve the content
+
+2. Evaluator Agent:
+   - Reviews the generated content
+   - Either accepts it with "ACCEPTED" or provides specific feedback
+   - Acts as a quality control gate
+
+3. Feedback Loop Process:
+   - Limited to 5 iterations to prevent infinite loops
+   - In each iteration:
+     - Generator creates/refines content based on feedback
+     - Evaluator reviews and either accepts or provides new feedback
+     - Loop continues until either:
+       - Evaluator says "ACCEPTED"
+       - Max iterations (5) are reached
+
+The example shows it being used to create a product description for an eco-friendly water bottle, where it would iteratively refine the description until it meets quality standards.
+
+What makes this interesting is its self-improving approach - using AI to both generate and evaluate content, creating a system that can progressively refine its output based on structured feedback.`}
+>
+
+<LanguageContent language="typescript">
+```ts {{ title: 'evaluator-optimizer.ts' }}
+import dotenv from 'dotenv';
+import { Langbase } from 'langbase';
+
+dotenv.config();
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!
+});
+
+// Agent configurations
+const agentConfigs = {
+	generator: {
+		name: 'generator-agent',
+		model: 'google:gemini-2.5-flash',
+		prompt: `
+      You are a skilled assistant tasked with creating or improving a product description.
+      Your goal is to produce a concise, engaging, and informative description based on
+      the task and feedback provided.
+    `
+	},
+	evaluator: {
+		name: 'evaluator-agent',
+		model: 'google:gemini-2.5-flash',
+		prompt: `
+      You are an evaluator agent tasked with reviewing a product description.
+      If the description matches the requirements and needs no further changes, respond just with "ACCEPTED" and nothing else.
+      ONLY suggest changes if it is not ACCEPTED.
+      If not accepted, provide constructive feedback on how to improve it based on the original task requirements.
+    `
+	}
+};
+
+// Create all pipes
+async function createPipes() {
+	await Promise.all(
+		Object.entries(agentConfigs).map(([key, config]) =>
+			langbase.pipes.create({
+				name: config.name,
+				model: config.model,
+				messages: [
+					{
+						role: 'system',
+						content: config.prompt
+					}
+				]
+			})
+		)
+	);
+}
+
+// Main evaluator-optimizer workflow
+async function evaluatorOptimizerWorkflow(task: string) {
+	try {
+		// Create pipes first
+		await createPipes();
+
+		let solution = ''; // The solution being refined
+		let feedback = ''; // Feedback from the evaluator
+		let iteration = 0;
+		const maxIterations = 5; // Limit to prevent infinite loops
+
+		while (iteration < maxIterations) {
+			console.log(`\n--- Iteration ${iteration + 1} ---`);
+
+			// Step 1: Generator creates or refines the solution
+			const generatorResponse = await langbase.pipes.run({
+				stream: false,
+				name: agentConfigs.generator.name,
+				messages: [
+					{
+						role: 'user',
+						content: `
+              Task: ${task}
+              Previous Feedback (if any): ${feedback}
+              Create or refine the product description accordingly.
+            `
+					}
+				]
+			});
+
+			solution = generatorResponse.completion;
+			console.log('Generated Solution:', solution);
+
+			// Step 2: Evaluator provides feedback
+			const evaluatorResponse = await langbase.pipes.run({
+				stream: false,
+				name: agentConfigs.evaluator.name,
+				messages: [
+					{
+						role: 'user',
+						content: `
+              Original requirements:
+              "${task}"
+
+              Current description:
+              "${solution}"
+
+              Please evaluate it and provide feedback or indicate if it is acceptable.
+            `
+					}
+				]
+			});
+
+			feedback = evaluatorResponse.completion.trim();
+			console.log('Evaluator Feedback:', feedback);
+
+			// Step 3: Check if the solution is accepted
+			if (feedback.toUpperCase() === 'ACCEPTED') {
+				console.log('\nFinal Solution Accepted:', solution);
+				return solution;
+			}
+
+			iteration++;
+		}
+
+		console.log('\nMax iterations reached. Final Solution:', solution);
+		return solution;
+	} catch (error) {
+		console.error('Error in evaluator-optimizer workflow:', error);
+		throw error;
+	}
+}
+
+// Example usage
+async function main() {
+	const task = `
+    Write a product description for an eco-friendly water bottle.
+    The target audience is environmentally conscious millennials.
+    Key features include: plastic-free materials, insulated design,
+    and a lifetime warranty.
+  `;
+
+	await evaluatorOptimizerWorkflow(task);
+}
+
+main();
+```
+</LanguageContent>
+
+<LanguageContent language="python">
+```python {{ title: 'evaluator-optimizer.py' }}
+import os
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+# Agent configurations
+agent_configs = {
+    "generator": {
+        "name": "generator-agent-aa",
+        "model": "openai:gpt-4o-mini",
+        "prompt": """
+      You are a skilled assistant tasked with creating or improving a product description.
+      Your goal is to produce a concise, engaging, and informative description based on
+      the task and feedback provided.
+        """
+    },
+    "evaluator": {
+        "name": "evaluator-agent-aa",
+        "model": "openai:gpt-4o-mini",
+        "prompt": """
+      You are an evaluator agent tasked with reviewing a product description.
+      If the description matches the requirements and needs no further changes, respond just with "ACCEPTED" and nothing else.
+      ONLY suggest changes if it is not ACCEPTED.
+      If not accepted, provide constructive feedback on how to improve it based on the original task requirements.
+        """
+    }
+}
+
+
+def create_pipes():
+    """Create all pipes."""
+    for key, config in agent_configs.items():
+        try:
+            langbase.pipes.create(
+                name=config["name"],
+                model=config["model"],
+                upsert=True,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": config["prompt"]
+                    }
+                ]
+            )
+            print(f"✅ Created pipe: {config['name']}")
+        except Exception as e:
+            print(f"❌ Error creating pipe {config['name']}: {e}")
+
+
+def evaluator_optimizer_workflow(task):
+    """Main evaluator-optimizer workflow."""
+    try:
+        # Create pipes first
+        create_pipes()
+
+        solution = ""  # The solution being refined
+        feedback = ""  # Feedback from the evaluator
+        iteration = 0
+        max_iterations = 5  # Limit to prevent infinite loops
+
+        while iteration < max_iterations:
+            print(f"\n--- Iteration {iteration + 1} ---")
+
+            # Step 1: Generator creates or refines the solution
+            generator_response = langbase.pipes.run(
+                stream=False,
+                name=agent_configs["generator"]["name"],
+                messages=[
+                    {
+                        "role": "user",
+                        "content": f"""
+              Task: {task}
+              Previous Feedback (if any): {feedback}
+              Create or refine the product description accordingly.
+                        """
+                    }
+                ]
+            )
+
+            solution = generator_response["completion"]
+            print("Generated Solution:", solution)
+
+            # Step 2: Evaluator provides feedback
+            evaluator_response = langbase.pipes.run(
+                stream=False,
+                name=agent_configs["evaluator"]["name"],
+                messages=[
+                    {
+                        "role": "user",
+                        "content": f"""
+              Original requirements:
+              "{task}"
+
+              Current description:
+              "{solution}"
+
+              Please evaluate it and provide feedback or indicate if it is acceptable.
+                        """
+                    }
+                ]
+            )
+
+            feedback = evaluator_response["completion"].strip()
+            print("Evaluator Feedback:", feedback)
+
+            # Step 3: Check if solution is accepted
+            if feedback.upper() == "ACCEPTED":
+                print("\nFinal Solution Accepted:", solution)
+                return solution
+
+            iteration += 1
+
+        print("\nMax iterations reached. Final Solution:", solution)
+        return solution
+
+    except Exception as error:
+        print(f"Error in evaluator-optimizer workflow: {error}")
+        raise error
+
+
+def main():
+    task = """
+    Write a product description for an eco-friendly water bottle.
+    The target audience is environmentally conscious millennials.
+    Key features include: plastic-free materials, insulated design,
+    and a lifetime warranty.
+    """
+
+    evaluator_optimizer_workflow(task)
+
+
+if __name__ == '__main__':
+    main()
+```
+</LanguageContent>
+
+
+</RunAgent>
+
+---
+
+## Augmented LLM with Tools
+
+<AgentDiagram
+	src="/docs/architecture/pipe-tools.jpg"
+	caption="Pipe architecture"
+/>
+
+Langbase pipe agent is the fundamental component of an agentic system. It is a Large Language Model (LLM) enhanced with augmentations such as retrieval, tools, and memory. Our current models can actively utilize these capabilities—generating their own search queries, selecting appropriate tools, and determining what information to retain using memory.
+
+<RunAgent api="/docs/api/pipe"
+	title="Pipe Example"
+	explanation={`This code demonstrates how to create an AI agent that can interact with external tools, specifically a weather service. Here's the breakdown:
+
+1. Agent Setup:
+   - Creates a specialized weather pipe agent
+   - Configures it with a system message defining its role for weather queries
+
+2. Tool Definition and Implementation:
+   - Defines a weather tool schema with:
+     - Required parameters (location)
+     - Optional parameters (temperature unit: Celsius/Fahrenheit)
+   - Implements a simple mock weather function that returns hardcoded weather data
+
+3. Execution Flow:
+   - Takes a user query about the weather
+   - Processes it through the AI agent
+   - If the agent decides to use tools:
+     1. Extracts tool calls from the response
+     2. Executes each requested tool function
+     3. Sends tool results back to the agent
+     4. Gets final response incorporating tool data
+   - If no tools needed:
+     - Returns direct completion from the agent
+
+4. Threading Support:
+   - Maintains conversation context through threadId
+   - Allows for multi-turn interactions with the agent
+
+What makes this interesting is its handling of tool calls - it creates a complete loop where the AI can request information from external tools and incorporate that data into its responses.`}
+>
+
+<LanguageContent language="typescript">
+```ts
+import dotenv from 'dotenv';
+import { Langbase, getToolsFromRun, Message, Tools } from "langbase";
+
+dotenv.config();
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	// Create a pipe agent
+	const weatherPipeAgent = await langbase.pipes.create({
+		name: "langbase-weather-pipe-agent",
+		model: "google:gemini-2.5-flash",
+		messages: [
+			{
+				role: "system",
+				content: 'You are a helpful assistant that can get the weather of a given location.',
+			}
+		]
+	});
+
+	// Define a weather tool
+	const weatherTool = {
+		"type": "function",
+		"function": {
+			"name": "get_current_weather",
+			"description": "Get the current weather of a given location",
+			"parameters": {
+				"type": "object",
+				"required": [
+					"location"
+				],
+				"properties": {
+					"unit": {
+						"enum": [
+							"celsius",
+							"fahrenheit"
+						],
+						"type": "string"
+					},
+					"location": {
+						"type": "string",
+						"description": "The city and state, e.g., San Francisco, CA"
+					}
+				}
+			}
+		}
+	}
+
+	function get_current_weather() {
+		return "It's 70 degrees and sunny in SF.";
+	}
+
+	const tools = {
+		get_current_weather,
+	};
+
+	// Run the pipe agent with the tool
+	const response = await langbase.pipes.run({
+		name: weatherPipeAgent.name,
+		messages: [
+			{
+				role: "user",
+				content: 'What is the weather in San Francisco?',
+			}
+		],
+		tools: [weatherTool],
+		stream: false,
+	});
+
+	const toolsFromRun = await getToolsFromRun(response);
+	const hasToolCalls = toolsFromRun.length > 0;
+
+	if (hasToolCalls) {
+		const messages: Message[] = [];
+		// call all the functions in the toolCalls array
+		toolsFromRun.forEach(async toolCall => {
+			const toolName = toolCall.function.name;
+			const toolParameters = JSON.parse(toolCall.function.arguments);
+			const toolFunction = tools[toolName];
+
+			const toolResult = toolFunction(toolParameters); // Call the tool function with the tool parameters
+
+			messages.push({
+				tool_call_id: toolCall.id,
+				role: 'tool',
+				name: toolName,
+				content: toolResult,
+			});
+		});
+
+		const { completion } = await langbase.pipes.run({
+			messages,
+			name: weatherPipeAgent.name,
+			threadId: response.threadId,
+			stream: false,
+		});
+
+		console.log(completion);
+		} else {
+		// No tool calls, just return the completion
+		console.log(response.completion);
+	}
+}
+
+main();
+```
+</LanguageContent>
+
+<LanguageContent language="python">
+```python
+import os
+import json
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+
+def main():
+    # Create a pipe agent
+    weather_pipe_agent = langbase.pipes.create(
+        name="langbase-weather-pipe-agent",
+        model="openai:gpt-4o-mini",
+        upsert=True,
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a helpful assistant that can get the weather of a given location.",
+            }
+        ],
+        stream=False,
+    )
+
+    # Define a weather tool
+    weather_tool = {
+        "type": "function",
+        "function": {
+            "name": "get_current_weather",
+            "description": "Get the current weather of a given location",
+            "parameters": {
+                "type": "object",
+                "required": ["location"],
+                "properties": {
+                    "unit": {
+                        "enum": ["celsius", "fahrenheit"],
+                        "type": "string"
+                    },
+                    "location": {
+                        "type": "string",
+                        "description": "The city and state, e.g. San Francisco, CA"
+                    }
+                }
+            }
+        }
+    }
+
+    def get_current_weather(params=None):
+        return "It's 70 degrees and sunny in SF."
+
+    tools = {
+        "get_current_weather": get_current_weather,
+    }
+
+    # Run the pipe agent with the tool
+    response = langbase.pipes.run(
+        name=weather_pipe_agent["name"],
+        messages=[
+            {
+                "role": "user",
+                "content": "What is the weather in San Francisco?",
+            }
+        ],
+        tools=[weather_tool]
+    )
+
+    # Extract tool calls from response
+    tool_calls = get_tools_from_run(response)
+    has_tool_calls = len(tool_calls) > 0
+
+    if has_tool_calls:
+        print(f"🔧 Found {len(tool_calls)} tool call(s)")
+        
+        # Get the assistant message with tool calls from the response
+        assistant_message = response['choices'][0]['message']
+        
+        tool_results = []
+        # Call all the functions in the tool_calls array
+        for i, tool_call in enumerate(tool_calls, 1):
+            tool_name = tool_call["function"]["name"]
+            tool_parameters = json.loads(tool_call["function"]["arguments"])
+            tool_function = tools[tool_name]
+
+            print(f"\n📞 Tool Call #{i}:")
+            print(f"   Function: {tool_name}")
+            print(f"   Parameters: {tool_parameters}")
+
+            # Call the tool function with the tool parameters
+            tool_result = tool_function(tool_parameters)
+            
+            print(f"   Result: {tool_result}")
+
+            tool_results.append({
+                "tool_call_id": tool_call["id"],
+                "role": "tool",
+                "name": tool_name,
+                "content": tool_result,
+            })
+
+        # Prepare the complete conversation: original user message + assistant message with tool_calls + tool results
+        messages_with_tools = [
+            {
+                "role": "user",
+                "content": "What is the weather in San Francisco?"
+            },
+            assistant_message,  # This contains the tool_calls
+            *tool_results  # Add all tool results
+        ]
+
+        # Run the pipe again with complete conversation history
+        print(f"\n🤖 Getting final response assert {len(tool_results)} tool result(s)...")
+        final_response = langbase.pipes.run(
+            messages=messages_with_tools,
+            name=weather_pipe_agent["name"],
+            thread_id=response["threadId"],
+            stream=False,
+        )
+
+        print(f"\n🌤️  Final Answer: {final_response['completion']}")
+    else:
+        # No tool calls, just return the completion
+        print(response["completion"])
+
+
+def get_tools_from_run(response):
+    """Extract tool calls from the response."""
+    # Handle different possible response structures
+    if "choices" in response and len(response["choices"]) > 0:
+        message = response["choices"][0].get("message", {})
+        return message.get("tool_calls", [])
+    return []
+
+
+if __name__ == '__main__':
+    main()
+```
+</LanguageContent>
+
+
+</RunAgent>
+
+
+## Memory Agent
+
+<AgentDiagram
+	src="/docs/architecture/memory.jpg"
+	caption="Memory Agent Architecture"
+	height={1600}
+	width={1600}
+/>
+
+Langbase [memory agents](https://langbase.com/docs/memory) represent the next frontier in semantic retrieval-augmented generation (RAG) as a serverless and infinitely scalable API designed for developers. 30-50x less expensive than the competition, with industry-leading accuracy in advanced agentic routing, retrieval, and more.
+
+<RunAgent api="/docs/api/memory"
+	title="Memory Agent Example"
+	explanation={`
+This code implements a Retrieval-Augmented Generation (RAG) system using Langbase. It creates an AI assistant that can answer questions about company policies by referencing an employee handbook. Here's the breakdown:
+
+1. Memory Creation:
+   - Establishes a dedicated memory storage space named "employee-handbook-memory"
+   - This serves as the knowledge base for the AI assistant
+
+2. Document Acquisition:
+   - Downloads an employee handbook from a GitHub repository
+   - Saves it locally as a text file for processing
+
+3. Knowledge Ingestion:
+   - Uploads the handbook to the previously created memory
+   - The document is now available for the AI to reference when answering questions
+
+4. AI Assistant Setup:
+   - Creates a specialized pipe named "employee-handbook-pipe"
+   - Links it to the memory containing the employee handbook
+   - Enables the AI to retrieve relevant information when answering questions
+
+5. Question Answering:
+   - Asks a specific question about remote work policies
+   - The AI searches the handbook in memory for relevant information
+   - Returns an answer based on the actual company policies documented in the handbook
+
+This demonstrates a practical application of RAG - enhancing an AI assistant with specific knowledge from documents, allowing it to provide accurate, document-grounded responses rather than generating answers from its general training.`}
+	>
+
+<LanguageContent language="typescript">
+<CodeGroup title="Memory Agent Example" exampleTitle="Memory Agent Example">
+```ts {{ title: 'index.ts' }}
+import { Langbase } from "langbase";
+import dotenv from "dotenv";
+import downloadFile from "./download-file";
+
+dotenv.config();
+
+const langbase = new Langbase({
+  apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+  // Step 1: Create a memory
+  const memory = await langbase.memories.create({
+    name: "employee-handbook-memory",
+    description: "Memory for employee handbook",
+  });
+
+  console.log("Memory created:", memory.name);
+
+  // Step 2: Download the employee handbook file
+  const fileUrl =
+    "https://raw.githubusercontent.com/LangbaseInc/langbase-examples/main/assets/employee-handbook.txt";
+  const fileName = "employee-handbook.txt";
+  const fileContent = await downloadFile(fileUrl);
+
+  // Step 3: Upload the employee handbook to memory
+  await langbase.memories.documents.upload({
+    memoryName: memory.name,
+    contentType: "text/plain",
+    documentName: fileName,
+    document: fileContent,
+  });
+
+  console.log("Employee handbook uploaded to memory");
+
+  // Step 4: Create a pipe
+  const pipe = await langbase.pipes.create({
+    name: "employee-handbook-pipe",
+	model: "google:gemini-2.5-flash",
+    description: "Pipe for querying employee handbook",
+    memory: [{ name: "employee-handbook-memory" }],
+  });
+
+  console.log("Pipe created:", pipe.name);
+
+  // Step 5: Ask a question
+  const question = "What is the company policy on remote work?";
+  const { completion } = await langbase.pipes.run({
+    name: "employee-handbook-pipe",
+    messages: [{ role: "user", content: question }],
+    stream: false,
+  });
+
+  console.log("Question:", question);
+  console.log("Answer:", completion);
+}
+
+main().catch(console.error);
+```
+
+```ts {{ title: 'download-file.ts' }}
+import * as https from "https";
+
+const downloadFile = async (fileUrl: string): Promise<Buffer> => {
+  return new Promise<Buffer>((resolve, reject) => {
+    https.get(fileUrl, (response) => {
+      // Check for redirect or error status codes
+      if (response.statusCode && (response.statusCode < 200 || response.statusCode >= 300)) {
+        reject(new Error(`Failed to download: ${response.statusCode}`));
+        return;
+      }
+
+      const chunks: Buffer[] = [];
+
+      response.on("data", (chunk) => {
+        chunks.push(chunk);
+      });
+
+      response.on("end", () => {
+        const fileBuffer = Buffer.concat(chunks);
+        console.log(`File downloaded successfully (${fileBuffer.length} bytes)`);
+        resolve(fileBuffer);
+      });
+    }).on("error", (err) => {
+      console.error("Error downloading file:", err);
+      reject(err);
+    });
+  });
+};
+
+export default downloadFile;
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Memory Agent Example" exampleTitle="Memory Agent Example">
+```python {{ title: 'index.py' }}
+import os
+import requests
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+
+def download_file(url):
+    """Download file content from URL."""
+    try:
+        print(f"📥 Downloading from: {url}")
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.content
+    except requests.RequestException as e:
+        print(f"❌ Error downloading file: {e}")
+        return None
+
+
+def main():
+    print("📚 Creating employee handbook memory...")
+    
+    # Step 1: Create a memory
+    memory = langbase.memories.create(
+        name="employee-handbook-memory",
+        description="Memory for employee handbook",
+    )
+    
+    print(f"✅ Memory created: {memory['name']}")
+
+    # Step 2: Download the employee handbook file
+    file_url = "https://raw.githubusercontent.com/LangbaseInc/langbase-examples/main/assets/employee-handbook.txt"
+    file_name = "employee-handbook.txt"
+    
+    file_content = download_file(file_url)
+    
+    if not file_content:
+        print("❌ Failed to download file")
+        return
+
+    print(f"✅ Downloaded {len(file_content)} bytes")
+
+    # Step 3: Upload the employee handbook to memory
+    print("📤 Uploading employee handbook to memory...")
+    langbase.memories.documents.upload(
+        memory_name=memory["name"],
+        content_type="text/plain",
+        document_name=file_name,
+        document=file_content,
+    )
+    
+    print("✅ Employee handbook uploaded to memory")
+
+    # Step 4: Create a pipe
+    print("🔧 Creating pipe with memory...")
+    pipe = langbase.pipes.create(
+        name="employee-handbook-pipe",
+        model="google:gemini-2.5-flash",
+        description="Pipe for querying employee handbook",
+        memory=[{"name": "employee-handbook-memory"}],
+        upsert=True
+    )
+    
+    print(f"✅ Pipe created: {pipe['name']}")
+
+    # Step 5: Ask a question
+    question = "What is the company policy on remote work?"
+    print(f"\n❓ Question: {question}")
+    
+    print("🤔 Querying employee handbook...")
+    response = langbase.pipes.run(
+        name="employee-handbook-pipe",
+        messages=[{"role": "user", "content": question}],
+        stream=False,
+    )
+    
+    print(f"\n💡 Answer: {response['completion']}")
+
+
+if __name__ == '__main__':
+    main()
+```
+
+```python {{ title: 'download-file.py' }}
+import requests
+from typing import Optional
+
+
+def download_file(file_url: str) -> Optional[bytes]:
+    try:
+        response = requests.get(file_url, stream=True)
+        
+        # Check for redirect or error status codes
+        if response.status_code < 200 or response.status_code >= 300:
+            raise Exception(f"Failed to download: {response.status_code}")
+        
+        chunks = []
+        
+        # Download in chunks (similar to Node.js streaming)
+        for chunk in response.iter_content(chunk_size=8192):
+            if chunk:  # Filter out keep-alive chunks
+                chunks.append(chunk)
+        
+        # Concatenate all chunks
+        file_buffer = b''.join(chunks)
+        print(f"File downloaded successfully ({len(file_buffer)} bytes)")
+        return file_buffer
+        
+    except requests.RequestException as err:
+        print(f"Error downloading file: {err}")
+        raise err
+    except Exception as err:
+        print(f"Error downloading file: {err}")
+        raise err
+
+
+if __name__ == "__main__":
+    # Example usage
+    url = "https://raw.githubusercontent.com/LangbaseInc/langbase-examples/main/assets/employee-handbook.txt"
+    content = download_file(url)
+    if content:
+        print(f"Downloaded {len(content)} bytes")
+
+```
+</CodeGroup>
+</LanguageContent>
+</RunAgent>
+
+</LanguageProvider>
+
+---

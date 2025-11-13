@@ -1,0 +1,99 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'List Memories',
+    description: `An example of how to list memories.`,
+    section: 'Examples',
+    slug: '/examples/memory/list-memories'
+});
+
+# List Memories
+
+This example demonstrates how to list memories from Langbase.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/memory"
+
+	title="List Memories Example"
+	output={`[{
+	name: "support-agent-memory",
+	description: "Memory storage for the AI support agent",
+	owner_login: "user-76795",
+	embeddingModel: "openai:text-embedding-3-large",
+	url: "https://langbase.com/memorysets/user-76795/support-agent-memory"
+},
+{
+	name: "langbase-docs-memory",
+	description: "",
+	owner_login: "user-76795",
+	embeddingModel: "openai:text-embedding-3-large",
+	url: "https://langbase.com/memorysets/user-76795/langbase-docs-memory"
+}]`}
+explanation={`
+This code illustrates the listing of memories using Langbase. Here's a step-by-step guide:
+
+1. Memory Listing:
+   - Retrieves the list of memories
+
+2. Execution:
+   - The memories are listed using the Langbase SDK
+   - Outputs the response to confirm successful retrieval
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="List Memories Example" exampleTitle="List Memories Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.memories.list();
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="List Memories Example" exampleTitle="List Memories Example">
+```python {{ title: 'index.py' }}
+import json
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+def main():
+    load_dotenv()
+
+    # Get API key from environment variable
+    langbase_api_key = os.getenv("LANGBASE_API_KEY")
+
+    # Initialize the client
+    langbase = Langbase(api_key=langbase_api_key)
+
+    try:
+        response = langbase.memories.list()
+
+        print(json.dumps(response, indent=2))
+
+    except Exception as e:
+        print(f"Error listing memories: {e}")
+
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

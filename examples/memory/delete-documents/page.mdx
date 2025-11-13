@@ -1,0 +1,100 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Delete Documents from a Memory',
+    description: `An example of how to delete documents from a memory.`,
+    section: 'Examples',
+    slug: '/examples/memory/delete-documents'
+});
+
+# Delete Documents from a Memory
+
+This example demonstrates how to delete documents from a memory.
+
+
+## Key Features
+- Delete a specific document from a memory
+- Delete multiple documents from a memory
+- Delete all documents from a memory
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/memory"
+
+	title="Delete Documents from a Memory Example"
+	output={`{ "success": true }`}
+explanation={`
+This code illustrates the deletion of documents from a memory using Langbase. Here's a step-by-step guide:
+
+1. Document Deletion:
+   - Specifies the memory name "memory-sdk"
+   - Identifies the document to be deleted, e.g., "readme.md"
+
+2. Execution:
+   - The document is deleted using the Langbase SDK
+   - Outputs the response to confirm successful deletion`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Delete Documents from a Memory Example" exampleTitle="Delete Documents from a Memory Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.memories.documents.delete({
+		memoryName: 'memory-sdk',
+		documentName: 'readme.md',
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Delete Documents from a Memory Example" exampleTitle="Delete Documents from a Memory Example">
+```python {{ title: 'index.py' }}
+import json
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+def main():
+    load_dotenv()
+
+    # Get API key from environment variable
+    langbase_api_key = os.getenv("LANGBASE_API_KEY")
+
+    # Initialize the client
+    langbase = Langbase(api_key=langbase_api_key)
+
+    try:
+        response = langbase.memories.documents.delete(
+            memory_name="memory-sdk",
+            document_name="readme.md",
+        )
+
+        print(f"Document 'readme.md' deleted successfully from memory 'memory-sdk'")
+        print(json.dumps(response, indent=2))
+
+    except Exception as e:
+        print(f"Error deleting document: {e}")
+
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

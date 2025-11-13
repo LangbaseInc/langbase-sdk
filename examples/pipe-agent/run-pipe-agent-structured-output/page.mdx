@@ -1,0 +1,259 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+	title: 'Run Pipe Agent with Structured Output',
+	description: `An example of running a pipe agent with structured output.`,
+	section: 'Examples',
+	slug: '/examples/pipe-agent/run-pipe-agent-structured-output'
+});
+
+# Run Pipe Agent with Structured Output
+
+This example demonstrates how to run a pipe agent with structured output.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Run Pipe Agent with Structured Output Example"
+	output={`
+{
+    steps: [
+        {
+            explanation: "We start with the given equation.",
+            output: "8x + 22 = -23",
+        }, 
+        {
+            explanation: "Subtract 22 from both sides to isolate the term with x.",
+            output: "8x + 22 - 22 = -23 - 22",
+        }, 
+        {
+            explanation: "After simplifying, we have 8x equal to -45.",
+            output: "8x = -45",
+        }, 
+        {
+            explanation: "Divide both sides by 8 to solve for x.",
+            output: "8x/8 = -45/8",
+        }, 
+        {
+            explanation: "Simplifying the division gives x equal to -45/8.",
+            output: "x = -45/8",
+        }
+    ],
+    final_answer: "x = -45/8",
+}`}
+explanation={`
+This code illustrates how to run a Pipe agent with structured output. Here's a step-by-step guide:
+
+1. Create the Pipe Agent:
+    - Calls the langbase.pipes.create() to create a 'math-tutor-agent'.
+    - Set the model to 'openai:gpt-4o'
+    - Set the response_format to the JSON schema.
+    - Set the system message to 'You are a helpful math tutor. Guide the user through the solution step by step.'
+
+2. Run the Pipe Agent:
+    - Call langbase.pipes.run() with the 'math-tutor-agent'
+    - The pipe agent will return a structured output.
+
+3. Parse the response:
+    - Parse the response using Zod and validate the response is correct.
+    - Display the response to the user.
+
+4. Execution:
+    - The Langbase SDK executes the agent and returns a structured output.
+`}>
+
+<LanguageContent language="typescript">
+<CodeGroup title="Run Pipe Agent with Structured Output Example" exampleTitle="Run Pipe Agent with Structured Output Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+import {z} from 'zod';
+import {zodToJsonSchema} from 'zod-to-json-schema';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+// Define the Strucutred Output JSON schema with Zod
+const MathReasoningSchema = z.object({
+	steps: z.array(
+		z.object({
+			explanation: z.string(),
+			output: z.string(),
+		}),
+	),
+	final_answer: z.string(),
+});
+
+const jsonSchema = zodToJsonSchema(MathReasoningSchema, {target: 'openAi'});
+
+async function main() {
+	if (!process.env.LANGBASE_API_KEY) {
+		console.error('❌ Missing LANGBASE_API_KEY in environment variables.');
+		process.exit(1);
+	}
+
+	await createMathTutorPipe();
+	await runMathTutorPipe('How can I solve 8x + 22 = -23?');
+}
+
+/**
+ * Create the pipe agent with the name 'math-tutor-agent'
+ * Set the model to 'openai:gpt-4o'
+ * Set the response_format to the JSON schema.
+ * Set the system message to 'You are a helpful math tutor. Guide the user through the solution step by step.'
+ */
+
+async function createMathTutorPipe() {
+    await langbase.pipes.create({
+		name: 'math-tutor-agent',
+		model: 'openai:gpt-4o',
+		upsert: true,
+		messages: [
+			{
+				role: 'system',
+				content: 'You are a helpful math tutor. Guide the user through the solution step by step.'
+			},
+		],
+		json: true,
+		response_format: {
+			type: 'json_schema',
+			json_schema: {
+				name: 'math_reasoning',
+				schema: jsonSchema,
+			},
+		},
+	});
+}
+
+/**
+ * Run the pipe agent with the name 'math-tutor-agent'
+ * Send the user message to the pipe agent.
+ * Parse the response using Zod and validate the response is correct.
+ * Display the response to the user.
+**/
+
+async function runMathTutorPipe(question: string) {
+	const {completion} = await langbase.pipes.run({
+		stream: false,
+		name: 'math-tutor-agent',
+		messages: [
+		    {
+				role: 'user', 
+				content: question
+			}
+		],
+	});
+
+	// Parse and validate the response using Zod
+	const solution = MathReasoningSchema.parse(JSON.parse(completion));
+
+	console.log('✅ Structured Output Response:', solution);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Run Pipe Agent with Structured Output Example" exampleTitle="Run Pipe Agent with Structured Output Example">
+```python {{ title: 'index.py' }}
+import pprint
+import json
+import os
+
+from dotenv import load_dotenv
+
+from langbase import Langbase
+
+load_dotenv()
+
+
+def main():
+    # Check for required environment variables
+    langbase_api_key = os.environ.get("LANGBASE_API_KEY")
+    llm_api_key = os.environ.get("LLM_API_KEY")
+
+    if not langbase_api_key:
+        print("❌ Missing LANGBASE_API_KEY in environment variables.")
+        exit(1)
+
+    if not llm_api_key:
+        print("❌ Missing LLM_API_KEY in environment variables.")
+        exit(1)
+
+    # Initialize Langbase client
+    langbase = Langbase(api_key=langbase_api_key)
+
+    # Define the structured output JSON schema
+    math_reasoning_schema = {
+        "type": "object",
+        "properties": {
+            "steps": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "explanation": {"type": "string"},
+                        "output": {"type": "string"},
+                    },
+                    "required": ["explanation", "output"],
+                },
+            },
+            "final_answer": {"type": "string"},
+        },
+        "required": ["steps", "final_answer"],
+    }
+    
+    math_agent = langbase.pipes.create(
+        name="math-agent",
+        model="openai:gpt-4o",
+        upsert=True,
+        description="You are a helpful math tutor. Guide the user through the solution step by step.",
+        json=True,
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "math_reasoning",
+                "schema": math_reasoning_schema,
+            },
+        }
+    )
+    
+    response = langbase.pipes.run(
+        name="math-agent",
+        messages=[{"role": "user", "content": "How can I solve 8x + 22 = -23?"}],
+        stream=False,
+    )
+    
+    # Parse and display the structured response
+    print("✅ Structured Output Response:")
+    try:
+        # Get the completion from the response
+        completion = response.get("completion", "")
+        
+        # Try to parse as JSON if it's a string
+        if isinstance(completion, str):
+            solution = json.loads(completion)
+        else:
+            solution = completion
+            
+        print(json.dumps(solution, indent=2))
+    except json.JSONDecodeError as e:
+        print(f"❌ Error parsing JSON response: {e}")
+        print(f"Raw completion: {response.get('completion')}")
+    except Exception as e:
+        print(f"❌ Error processing response: {e}")
+        print(f"Full response: {response}")
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+</RunExample>
+
+
+</LanguageProvider>

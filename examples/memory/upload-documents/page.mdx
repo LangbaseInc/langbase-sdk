@@ -1,0 +1,125 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Upload Documents to Memory | RAG Document Management Example',
+    description: `Learn how to upload documents to Langbase Memory for RAG systems. Code example for document ingestion, embedding generation, and knowledge base creation.`,
+    section: 'Examples',
+    slug: '/examples/memory/upload-documents'
+});
+
+# Upload Documents to a Memory
+
+This example demonstrates how to upload documents to a memory.
+
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/memory"
+
+	title="Upload Documents to a Memory Example"
+	output={`{
+		ok: true,
+		status: 200,
+		statusText: "OK",
+		headers: {
+			"content-type": "text/plain; charset=utf-8",
+			"transfer-encoding": "chunked",
+			"connection": "keep-alive",
+		},
+		redirected: false,
+		bodyUsed: false,
+	}`}
+explanation={`
+This code demonstrates how to upload documents to a memory using Langbase, tailored to our specific use case. Here's a step-by-step guide:
+
+1. Document Preparation:
+   - Specifies the memory name "memory-sdk"
+   - Prepares the document to be uploaded, in this case, a TypeScript file
+
+2. Execution:
+   - The upload request is executed using the Langbase SDK with the specified memory and document
+   - Confirms the successful upload of the document to the specified memory
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Upload Documents to a Memory Example" exampleTitle="Upload Documents to a Memory Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+import fs from 'fs';
+import path from 'path';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const src = path.join(
+		process.cwd(),
+		'examples',
+		'memory',
+		'memory.docs.upload.ts',
+	);
+
+	const response = await langbase.memories.documents.upload({
+		document: fs.readFileSync(src),
+		memoryName: 'memory-sdk',
+		documentName: 'memory.docs.upload.ts',
+		contentType: 'text/plain',
+		meta: {
+			extension: 'ts',
+			description: 'This is a test file',
+		},
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Upload Documents to a Memory Example" exampleTitle="Upload Documents to a Memory Example">
+```python {{ title: 'index.py' }}
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+def main():
+    load_dotenv()
+
+    # Get API key from environment variable
+    langbase_api_key = os.getenv("LANGBASE_API_KEY")
+
+    # Initialize the client
+    langbase = Langbase(api_key=langbase_api_key)
+
+    # Memory name to upload documents to
+    memory_name = "product-knowledge"  # Replace with your memory name
+    try:
+        content = "Langbase is a powerful platform for building AI applications with composable AI."
+        response = langbase.memories.documents.upload(
+            memory_name=memory_name,
+            document_name="readme.md",
+            document=content.encode("utf-8"),  # Convert string to bytes
+            content_type="text/plain",
+            meta={"extension": "md", "description": "This is a test file"},
+        )
+        print("Document uploaded successfully!")
+        print(f"Status: {response.status_code}")
+
+    except Exception as e:
+        print(f"Error uploading documents: {e}")
+
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+</RunExample>
+</LanguageProvider>

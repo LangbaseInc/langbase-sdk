@@ -1,0 +1,115 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+
+export const metadata = generateMetadata({
+    title: 'Generate Embeddings',
+    description: `An example demonstrating how to generate embeddings from chunks.`,
+    section: 'Examples',
+    slug: '/examples/embed/generate-embeddings'
+});
+
+
+## Generate Embeddings from chunks
+
+This example demonstrates how to generate embeddings for a given text.
+
+---
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Generate Embeddings Example"
+	output={`[
+	[
+		-0.051607393, -0.0351734, -0.06450924, -0.027093882, 0.008677022, 0.03193736,
+		0.024302006, 0.08016066, 0.011008873, 0.1034686, 0.037182704, 0.020071892, -0.056810435,
+		-0.011093475, 0.021890841, 0.038790148, -0.050507564, -0.0072863717, 0.023286778,
+		-0.096615806, -0.0040344717, -0.10803712, -0.005826982, 0.023329081, 0.0051157945,
+		-0.03409472, 0.10592206, 0.01652917, -0.11379007, 0.009618223, 0.15575281, 0.024534663,
+		0.0020608588, -0.02958965, -0.045304522, -0.13079514, 0.11201342, -0.033925515,
+		-0.050084554, 0.018073164, 0.03510995, 0.028024508, -0.14999986, -0.0184856, 0.046362054,
+		-0.009977782, -0.009909043, -0.11353627, -0.057444952, -0.04767339, -0.018675955,
+		-0.09805405, 0.11505911, -0.004864631, 0.0070537156, -0.010099398, 0.10033831,
+		0.07931464, 0.09712342, -0.022694563, -0.055033788, 0.015513944, -0.060702138,
+		0.015884079, -0.006339884, 0.020716984, 0.041899282, 0.023773242, -0.016698375,
+		0.03326985, -0.014752523, -0.030224167, 0.0051448764, -0.029822305, 0.07491532,
+		0.053257138, 0.04966154, 0.0777918, 0.0011315555, -0.0019656813, 0.05812177, 0.027580345,
+		0.016296515, 0.037098102, 0.14864622, -0.0022115565, 0.057529554, -0.16776633,
+		0.077580296, -0.06374782, -0.0111252, 0.04703887, -0.051691998, 0.017745329, -0.023773242,
+		0.03824023, -0.06332481, -0.012394235, -0.029928058, 0.07478842,
+		... 156 more items
+	]
+]`}
+explanation={`
+This code demonstrates how to generate embeddings for a given text in Langbase. Here's a step-by-step guide:
+
+1. Text Preparation:
+   - Specifies the text chunks for which embeddings need to be generated
+
+2. Execution:
+   - The embedding request is executed using the Langbase SDK
+   - Outputs the response to display the generated embeddings`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Generate Embeddings Example" exampleTitle="Generate Embeddings Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+/**
+ * Generates embeddings for the given text chunks.
+ */
+async function main() {
+	const response = await langbase.embed({
+		chunks: [
+			'Langbase is the most powerful serverless platform for building AI agents with memory. Build, scale, and evaluate AI agents with semantic memory (RAG) and world-class developer experience. We process billions of AI messages/tokens daily. Built for every developer, not just AI/ML experts.',
+		],
+		embeddingModel: 'openai:text-embedding-3-large',
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Generate Embeddings Example" exampleTitle="Generate Embeddings Example">
+```python {{ title: 'index.py' }}
+import os
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main():
+    response = langbase.embed(
+        chunks=[
+            'Langbase is the most powerful serverless platform for building AI agents with memory. Build, scale, and evaluate AI agents with semantic memory (RAG) and world-class developer experience. We process billions of AI messages/tokens daily. Built for every developer, not just AI/ML experts.'
+        ],
+        embedding_model='openai:text-embedding-3-large'
+    )
+
+    print(response)
+
+if __name__ == '__main__':
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>
+
+
+---

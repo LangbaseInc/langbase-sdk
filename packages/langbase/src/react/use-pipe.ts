@@ -1,4 +1,4 @@
-import {Message, Role, RunResponse} from '@/langbase/langbase';
+import {Message, Role, RunResponse} from '@/langbase';
 import {getRunner, Runner} from '@/lib/helpers';
 import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {z} from 'zod';

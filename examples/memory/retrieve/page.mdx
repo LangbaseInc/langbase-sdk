@@ -1,0 +1,116 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+
+export const metadata = generateMetadata({
+    title: 'Retrieve from a Memory',
+    description: `An example of how to retrieve from a memory.`,
+    section: 'Examples',
+    slug: '/examples/memory/retrieve'
+});
+
+# Retrieve from a Memory
+
+This example demonstrates how to retrieve from a memory.
+
+---
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/memory"
+
+	title="Retrieve from a Memory Example"
+	output={`[
+    {
+      text: "Langbase is a platform for building and deploying AI agents.",
+      similarity: 0.5548995999999995,
+      meta: {
+        docName: "readme.md",
+        documentName: "readme.md",
+      }
+  },
+  {
+    text: "Langbase have pipe agent, memory, and many other features",
+    similarity: 0.5548995999999995,
+    meta: {
+       docName: "readme.md",
+       documentName: "readme.md",
+    }
+  }
+]`}
+explanation={`
+This code illustrates how to retrieve information from a memory using Langbase. Here's a step-by-step guide:
+
+1. Memory Retrieval:
+   - Specifies the memory name "memory-sdk"
+   - Defines the query to retrieve relevant information
+
+2. Execution:
+   - The query is executed using the Langbase SDK
+   - Retrieves the top 2 relevant results from the specified memory
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Retrieve from a Memory Example" exampleTitle="Retrieve from a Memory Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.memories.retrieve({
+		memory: [
+			{
+				name: 'memory-sdk',
+			},
+		],
+		query: 'What is Langbase?',
+		topK: 2,
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Retrieve from a Memory Example" exampleTitle="Retrieve from a Memory Example">
+```python {{ title: 'index.py' }}
+import os
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main():
+    response = langbase.memories.retrieve(
+        memory=[
+            {
+                'name': 'memory-sdk',
+            }
+        ],
+        query='What is Langbase?',
+        top_k=2
+    )
+
+    print(response)
+
+if __name__ == '__main__':
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>
+
+
+---

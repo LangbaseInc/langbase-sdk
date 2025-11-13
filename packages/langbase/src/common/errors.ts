@@ -1,4 +1,4 @@
-import {Headers} from './../../types'; // Ensure this import is correct
+import {Headers} from '../../types'; // Ensure this import is correct
 
 export class APIError extends Error {
 	readonly status: number | undefined;

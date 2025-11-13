@@ -1,0 +1,92 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Update Pipe Agent',
+    description: `An example of updating a pipe agent.`,
+    section: 'Examples',
+    slug: '/examples/pipe-agent/update-pipe-agent'
+});
+
+# Update Pipe Agent
+
+This example demonstrates how to update a pipe agent.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+	isJson
+	title="Update Pipe Agent Example"
+	output={`{
+	name: "summary",
+	description: "This is a pipe updated with the SDK",
+	status: "public",
+	type: "generate"
+}`}
+explanation={`
+This guide is tailored to demonstrate how to effectively update a pipe agent.
+
+1. Update the Pipe Agent:
+   - Call langbase.pipes.update() with the 'summary-agent' and the updated details.
+   - The agent will be updated with the new details.
+
+2. Complete the Execution:
+   - The Langbase SDK handles the update.
+   - Display the updated details to observe the agent's updated configuration.
+
+`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Update Pipe Agent Example" exampleTitle="Update Pipe Agent Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+function main() {
+	const response = await langbase.pipes.update({
+		name: 'summary-agent',
+		description: 'This is a pipe updated with the SDK',
+		model: 'google:gemini-1.5-flash-8b-latest',
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Update Pipe Agent Example" exampleTitle="Update Pipe Agent Example">
+```python {{ title: 'index.py' }}
+import os
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main():
+    response = langbase.pipes.update(
+        name='summary-agent',
+        description='This is a pipe updated with the SDK',
+        model='google:gemini-1.5-flash-8b-latest'
+    )
+
+    print(response)
+
+if __name__ == '__main__':
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

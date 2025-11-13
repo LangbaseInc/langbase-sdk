@@ -12,7 +12,20 @@
       "Bash(pnpm test:node:*)",
       "Bash(pnpm --filter langbase test:node:*)",
       "Bash(pnpm --filter langbase test:node:pipes:*)",
-      "Bash(pnpm --filter langbase test:node:chunker:*)"
+      "Bash(pnpm --filter langbase test:node:chunker:*)",
+      "Bash(sed:*)",
+      "Bash(mv:*)",
+      "Bash(for file in packages/langbase/src/langbase/*/*.test.ts)",
+      "Bash(do sed -i '' \"s|from ''./langbase''|from ''../langbase''|g\" \"$file\")",
+      "Bash(done)",
+      "Bash(pnpm test:node:pipes:*)",
+      "Bash(tree:*)",
+      "Bash(npx tsc:*)",
+      "Bash(cp:*)",
+      "Bash(pnpm:*)",
+      "Bash(find:*)",
+      "WebFetch(domain:langbase.com)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

@@ -1,0 +1,164 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Memory Retrieve with multiple Filters',
+    description: `An example of how to retrieve memories with multiple filters.`,
+    section: 'Examples',
+    slug: '/examples/memory/retrieve-filters-advanced'
+});
+
+# Retrieve Memories using multiple filters
+
+This example demonstrates how to retrieve memories from Langbase with multiple filters.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/memory"
+
+	title="Retrieve from a Memory Example"
+	output={`[
+  {
+    text: "Langbase is a platform for building and deploying AI agents. Chunk is a primitive in Langbase.",
+    similarity: 0.50209558,
+    meta: {
+      docName: "readme.md",
+      documentName: "readme.md",
+      category: "docs",
+      primitive: "Chunk",
+      company: "Langbase",
+    }
+  },
+  {
+    text: "Langbase is a platform for building and deploying AI agents. Threads is a primitive in Langbase.",
+    similarity: 0.50209558,
+    meta: {
+      docName: "readme.md",
+      documentName: "readme.md",
+      category: "docs",
+      primitive: "Threads",
+      company: "Langbase",
+    }
+  },
+  {
+    text: "Langbase have pipe agent, memory, and many other features",
+    similarity: 0.50209558,
+    meta: {
+      docName: "readme.md",
+      documentName: "readme.md",
+      category: "docs",
+      primitive: "Pipe Agent",
+      company: "Langbase",
+    }
+  }
+]`}
+explanation={`
+This code illustrates how to retrieve filtered information from a memory using Langbase. Here's a step-by-step guide:
+
+1. Memory Retrieval with Filters:
+   - Specifies the memory name "memory-sdk"
+   - Defines the filters to narrow down the search results
+   - Defines the query to retrieve relevant information
+
+2. Execution:
+   - The query is executed using the Langbase SDK with the specified filters
+   - Retrieves the top 5 relevant results from the specified memory
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Retrieve from a Memory Example" exampleTitle="Retrieve from a Memory Example">
+```ts {{ title: 'index.ts' }}
+/**
+ * Advanced example to demonstrate how to retrieve memories with filters.
+ *
+ * - And: This filter is used to retrieve memories that match all the filters.
+ * - Or: This filter is used to retrieve memories that match any of the filters.
+ * - In: This filter is used to retrieve memories that match any of the value/values in the array.
+ * - Eq: This filter is used to retrieve memories that match the exact value.
+ *
+ * In this example, we retrieve memories with the following filters:
+ * - company: Langbase
+ * - category: docs or examples
+ * - primitive: Chunk or Threads
+ *
+ * We expect to get all chunks of memory from the Langbase Docs memory
+ * that have the company Langbase, the category docs or examples, and the primitive can be Chunk or Threads.
+ *
+*/
+
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.memories.retrieve({
+		memory: [
+			{
+				name: "memory-sdk",
+				filters: [
+					"And", [
+						["company", "Eq", "Langbase"],
+						["Or", [
+							["category", "Eq", "docs"],
+							["category", "Eq", "examples"]
+						]],
+						["primitive", "In", ["Chunk", "Threads"]]
+					]
+				]
+			}
+		],
+		query: "What are primitives in Langbase?",
+		topK: 3
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Retrieve from a Memory Example" exampleTitle="Retrieve from a Memory Example">
+```python {{ title: 'index.py' }}
+import os
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main():
+    response = langbase.memories.retrieve(
+        memory=[
+            {
+                'name': 'memory-sdk',
+            }
+        ],
+        query='What are primitives in Langbase?',
+        top_k=2,
+        filters=[
+            "And", [
+                ["company", "Eq", "Langbase"],
+                ["category", "Eq", "docs"],
+                ["primitive", "In", ["Chunk", "Threads"]]
+            ]
+        ]
+    )
+
+    print(response)
+
+if __name__ == '__main__':
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

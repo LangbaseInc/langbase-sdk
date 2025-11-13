@@ -1,0 +1,197 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+
+export const metadata = generateMetadata({
+	title: 'Run Agent with Structured Output',
+	description: `An example of running an agent with structured output.`,
+	section: 'Examples',
+	slug: '/examples/agent/run-agent-structured-output'
+});
+
+# Run Agent with Structured Output
+
+This example demonstrates how to run an agent with structured output.
+
+---
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Run Agent with Structured Output Example"
+	output={`
+{
+    steps: [
+        {
+            explanation: "We start with the given equation.",
+            output: "8x + 22 = -23",
+        },
+        {
+            explanation: "Subtract 22 from both sides to isolate the term with x.",
+            output: "8x + 22 - 22 = -23 - 22",
+        },
+        {
+            explanation: "After simplifying, we have 8x equal to -45.",
+            output: "8x = -45",
+        },
+        {
+            explanation: "Divide both sides by 8 to solve for x.",
+            output: "8x/8 = -45/8",
+        },
+        {
+            explanation: "Simplifying the division gives x equal to -45/8.",
+            output: "x = -45/8",
+        }
+    ],
+    final_answer: "x = -45/8",
+}`}
+explanation={`
+This guide is designed to demonstrate how to effectively use a Langbase agent with structured output. Follow these steps to utilize structured output:
+
+1. Define Structured Output:
+    - Create the structure of the output using Zod.
+    - Convert the Zod schema to a JSON schema.
+
+2. Run the Agent with Structured Output:
+
+    - Set the model to 'openai:gpt-4.1'
+    - Set the response_format to the JSON schema.
+    - Send the user message to the agent.
+    - Call langbase.agent.run() with the 'math-tutor-agent'
+    - The agent will return a structured output.
+
+4. Get the response:
+    - Parse the response using Zod and validate the response is correct.
+    - Display the response to the user.
+`}>
+
+<LanguageContent language="typescript">
+<CodeGroup title="Run Agent with Structured Output Example" exampleTitle="Run Agent with Structured Output Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+import {z} from 'zod';
+import {zodToJsonSchema} from 'zod-to-json-schema';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+// Define the Strucutred Output JSON schema with Zod
+const MathReasoningSchema = z.object({
+	steps: z.array(
+		z.object({
+			explanation: z.string(),
+			output: z.string(),
+		}),
+	),
+	final_answer: z.string(),
+});
+
+const jsonSchema = zodToJsonSchema(MathReasoningSchema, {target: 'openAi'});
+
+async function main() {
+	if (!process.env.LANGBASE_API_KEY) {
+		console.error('❌ Missing LANGBASE_API_KEY in environment variables.');
+		process.exit(1);
+	}
+
+	const {output} = await langbase.agent.run({
+		model: 'openai:gpt-4.1',
+		apiKey: process.env.LLM_API_KEY!,
+		instructions: 'You are a helpful math tutor. Guide the user through the solution step by step.',
+		input: [
+			{
+				role: 'user',
+				content: 'How can I solve 8x + 22 = -23?',
+			},
+		],
+		json: true,
+		response_format: {
+			type: 'json_schema',
+			json_schema: {
+				name: 'math_reasoning',
+				schema: jsonSchema,
+			},
+		},
+	});
+
+	// Parse and validate the response using Zod
+	const solution = MathReasoningSchema.parse(JSON.parse(output));
+	console.log('✅ Structured Output Response:', solution);
+
+}
+
+main();
+
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Run Agent with Structured Output Example" exampleTitle="Run Agent with Structured Output Example">
+```python {{ title: 'index.py' }}
+import json
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+load_dotenv()
+
+def main():
+    langbase_api_key = os.environ.get("LANGBASE_API_KEY")
+    llm_api_key = os.environ.get("LLM_API_KEY")
+
+    langbase = Langbase(api_key=langbase_api_key)
+
+    math_reasoning_schema = {
+        "type": "object",
+        "properties": {
+            "steps": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "explanation": {"type": "string"},
+                        "output": {"type": "string"},
+                    },
+                    "required": ["explanation", "output"],
+                },
+            },
+            "final_answer": {"type": "string"},
+        },
+        "required": ["steps", "final_answer"],
+    }
+
+    # Run the agent with structured output
+    response = langbase.agent.run(
+        model="openai:gpt-4.1",
+        api_key=llm_api_key,
+        instructions="You are a helpful math tutor. Guide the user through the solution step by step.",
+        input=[{"role": "user", "content": "How can I solve 8x + 22 = -23?"}],
+        response_format={
+            "type": "json_schema",
+            "json_schema": {"name": "math_reasoning", "schema": math_reasoning_schema},
+        },
+    )
+
+    # Parse and display the structured response
+    try:
+        solution = json.loads(response.get("output", "{}"))
+        print("✅ Structured Output Response:")
+        print(json.dumps(solution, indent=2))
+    except json.JSONDecodeError as e:
+        print(f"❌ Error parsing JSON response: {e}")
+        print(f"Raw response: {response.get('output')}")
+
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>
+
+
+---

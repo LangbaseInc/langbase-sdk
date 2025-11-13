@@ -1,0 +1,216 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Summarization workflow',
+    description: `An example demonstrating how to build a text summarization workflow.`,
+    section: 'Examples',
+    slug: '/examples/workflow/summarization'
+});
+
+# Summarization workflow
+
+This example demonstrates how to create a workflow that summarizes text input with parallel processing.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/workflow"
+
+	title="Summarization workflow example"
+	output={`{
+  "response": "Langbase is a serverless AI platform for building and deploying AI agents with memory capabilities. It provides three main products: AI Pipes (serverless agents with tools), AI Memory (serverless RAG), and AI Studio (developer platform). The platform boasts being 30-50x less expensive than competitors while supporting 250+ LLM models."
+}`}
+explanation={`
+This code illustrates how to create a basic workflow with retries. Here's a step-by-step guide:
+
+1. Workflow Setup:
+   - Creates a new Workflow instance with debug mode enabled
+
+2. Single Agent Step:
+   - Configures a single workflow step with retry capability
+   - Uses a simple backoff strategy to handle potential failures
+
+3. Error Handling:
+   - Implements proper error catching and logging
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Simple Agent Workflow Example" exampleTitle="Simple Agent Workflow Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import { Langbase } from 'langbase';
+
+async function processText({ input }: { input: string }) {
+  // Initialize Langbase
+  const langbase = new Langbase({
+    apiKey: process.env.LANGBASE_API_KEY!,
+  });
+
+  // Create workflow with debug mode
+  const workflow = langbase.workflow({
+    debug: true
+  });
+
+  const { step } = workflow;
+
+  try {
+    // Define a single step with retries
+    const response = await step({
+      id: 'process_text',
+      retries: {
+        limit: 2,
+        delay: 1000,
+        backoff: 'exponential'
+      },
+      run: async () => {
+        const { output } = await langbase.agent.run({
+          model: 'openai:gpt-4o',
+          instructions: `Summarize the following text in a
+          single paragraph. Be concise but capture the key information.`,
+          apiKey: process.env.LLM_API_KEY!,
+          input: [{ role: 'user', content: input }],
+          stream: false
+        });
+
+        return output;
+      }
+    });
+
+    // Return the result
+    return {
+      response
+    };
+  } catch (error) {
+    console.error('Workflow step failed:', error);
+    throw error;
+  } finally {
+    // Optional: Use to enable tracing
+    await workflow.end();
+  }
+}
+
+async function main() {
+  const sampleText = `
+    Langbase is the most powerful serverless AI platform for building AI agents with memory.
+    Build, deploy, and scale AI agents with tools and memory (RAG). Simple AI primitives
+    with a world-class developer experience without using any frameworks.
+
+    Compared to complex AI frameworks, Langbase is serverless and the first composable
+    AI platform. Build AI agents without any bloated frameworks. You write the logic,
+    we handle the logistics.
+
+    Langbase offers AI Pipes (serverless agents with tools), AI Memory (serverless RAG),
+    and AI Studio (developer platform). The platform is 30-50x less expensive than
+    competitors, supports 250+ LLM models, and enables collaboration among team members.
+  `;
+
+  const results = await processText({ input: sampleText });
+  console.log(JSON.stringify(results, null, 2));
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Simple Agent Workflow Example" exampleTitle="Simple Agent Workflow Example">
+```python {{ title: 'index.py' }}
+import asyncio
+import json
+import os
+
+from dotenv import load_dotenv
+
+from langbase import Langbase, Workflow
+
+load_dotenv()
+
+
+async def process_text(input_text: str):
+    """
+    Process text input by summarizing it with retry logic and debug mode.
+
+    Args:
+        input_text: The text to be summarized
+
+    Returns:
+        Dictionary containing the response
+    """
+    # Check for required environment variables
+    langbase_api_key = os.environ.get("LANGBASE_API_KEY")
+    llm_api_key = os.environ.get("LLM_API_KEY")
+
+    if not langbase_api_key:
+        print("❌ Missing LANGBASE_API_KEY in environment variables.")
+        print("Please set: LANGBASE_API_KEY='your_langbase_api_key' in .env file")
+        exit(1)
+
+    if not llm_api_key:
+        print("❌ Missing LLM_API_KEY in environment variables.")
+        print("Please set: LLM_API_KEY='your_llm_api_key' in .env file")
+        exit(1)
+
+    # Initialize Langbase
+    langbase = Langbase(api_key=langbase_api_key)
+
+    # Create workflow with debug mode
+    workflow = Workflow(debug=True)
+
+    try:
+        # Define a single step with retries
+        async def process_text_step():
+            response = langbase.agent.run(
+                model="openai:gpt-4o",
+                instructions="""Summarize the following text in a
+                single paragraph. Be concise but capture the key information.""",
+                api_key=llm_api_key,
+                input=[{"role": "user", "content": input_text}],
+                stream=False,
+            )
+            return response.get("output")
+
+        response = await workflow.step(
+            {
+                "id": "process_text",
+                "retries": {"limit": 2, "delay": 1000, "backoff": "exponential"},
+                "run": process_text_step,
+            }
+        )
+
+        # Return the result
+        return {"response": response}
+
+    except Exception as error:
+        print(f"Workflow step failed: {error}")
+        raise error
+
+
+async def main():
+    sample_text = """
+    Langbase is the most powerful serverless AI platform for building AI agents with memory.
+    Build, deploy, and scale AI agents with tools and memory (RAG). Simple AI primitives
+    with a world-class developer experience without using any frameworks.
+
+    Compared to complex AI frameworks, Langbase is serverless and the first composable
+    AI platform. Build AI agents without any bloated frameworks. You write the logic,
+    we handle the logistics.
+
+    Langbase offers AI Pipes (serverless agents with tools), AI Memory (serverless RAG),
+    and AI Studio (developer platform). The platform is 30-50x less expensive than
+    competitors, supports 250+ LLM models, and enables collaboration among team members.
+    """
+
+    results = await process_text(sample_text)
+    print(json.dumps(results, indent=2, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

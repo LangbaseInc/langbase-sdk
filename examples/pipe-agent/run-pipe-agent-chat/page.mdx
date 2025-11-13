@@ -1,0 +1,195 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Run Pipe Agent Chat',
+    description: `An example of running a pipe agent chat.`,
+    section: 'Examples',
+    slug: '/examples/pipe-agent/run-pipe-agent-chat'
+});
+
+# Run Pipe Agent Chat
+
+This example demonstrates how to maintain a conversational thread with a Langbase pipe agent.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Run Pipe Agent Chat Example"
+	output={`That's great! What kind of business is Langbase involved in? Are you looking for assistance with branding, marketing, or something else related to your company?
+Your company is called Langbase. If you need help with anything related to it, feel free to ask!`}
+explanation={`
+This code illustrates how to maintain a conversational thread with a Langbase pipe agent. Here's a step-by-step guide:
+
+1. Initial User Message:
+   - Defines the first user message that will be sent to the pipe agent
+
+2. Run Pipe Agent with Initial Message:
+   - Calls the langbase.pipes.run() with the 'summary-agent'
+   - The agent processes the initial user message and generates a response
+
+3. Follow-up User Message:
+   - Defines a follow-up user message that continues the conversation
+
+4. Run Pipe Agent with Follow-up Message:
+   - Calls the langbase.pipes.run() with the 'summary-agent' and the threadId from the initial response
+   - The agent processes the follow-up user message within the same conversation thread and generates a response
+
+5. Execution:
+   - The Langbase SDK executes the agent for both messages
+   - Outputs the responses to display the results of the agent's processing
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Run Pipe Agent Chat Example" exampleTitle="Run Pipe Agent Chat Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	await createSummaryAgent();
+	// Message 1: Tell something to the LLM.
+	const response1 = await langbase.pipes.run({
+		stream: false,
+		name: 'summary-agent',
+		messages: [{role: 'user', content: 'My company is called Langbase'}],
+	});
+
+	console.log(response1.completion);
+
+	// Message 2: Ask something about the first message.
+	// Continue the conversation in the same thread by sending
+	// `threadId` from the second message onwards.
+	const response2 = await langbase.pipes.run({
+		stream: false,
+		name: 'summary-agent',
+		threadId: response1.threadId!,
+		messages: [{role: 'user', content: 'Tell me the name of my company?'}],
+	});
+
+	console.log(response2.completion);
+	// You'll see any LLM will know the company is `Langbase`
+	// since it's the same chat thread. This is how you can
+	// continue a conversation in the same thread.
+
+}
+
+
+/**
+ * Creates a summary agent pipe if it doesn't already exist.
+ *
+ * This function checks if a pipe with the name 'summary-agent' exists in the system.
+ * If the pipe doesn't exist, it creates a new private pipe with a system message
+ * configuring it as a helpful assistant.
+ *
+ * @async
+ * @returns {Promise<void>} A promise that resolves when the operation is complete
+ * @throws {Error} Logs any errors encountered during the creation process
+ */
+async function createSummaryAgent() {
+    try {
+        await langbase.pipes.create({
+            name: 'summary-agent',
+			upsert: true,
+            status: 'private',
+            messages: [
+                {
+                    role: 'system',
+                    content: 'You are a helpful assistant that help users summarize text.',
+                },
+            ],
+        });
+    } catch (error) {
+        console.error('Error creating summary agent:', error);
+    }
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Run Pipe Agent Chat Example" exampleTitle="Run Pipe Agent Chat Example">
+```python {{ title: 'index.py' }}
+import os
+from langbase import Langbase
+import json
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main():
+    create_summary_agent()
+
+    # First message
+    response1 = langbase.pipes.run(
+        stream=False,
+        name='summary-agent',
+        messages=[
+            {
+                'role': 'user',
+                'content': 'My company is called Langbase',
+            }
+        ]
+    )
+
+    print('First response: ', response1['completion'])
+
+    # Second message with thread continuation
+    response2 = langbase.pipes.run(
+        stream=False,
+        name='summary-agent',
+        thread_id=response1['threadId'],  # Continue the same conversation
+        messages=[
+            {
+                'role': 'user',
+                'content': 'Tell me the name of my company?',
+            }
+        ]
+    )
+
+    print('Second response: ', response2['completion'])
+
+def create_summary_agent():
+    """
+    Creates a summary agent pipe if it doesn't already exist.
+
+    This function checks if a pipe with the name 'summary-agent' exists in the system.
+    If the pipe doesn't exist, it creates a new private pipe with a system message
+    configuring it as a helpful assistant.
+
+    Returns:
+        None
+    """
+    try:
+        langbase.pipes.create(
+            name='summary-agent',
+            upsert=True,
+            status='private',
+            messages=[
+                {
+                    'role': 'system',
+                    'content': 'You are a helpful assistant that help users summarize text.',
+                }
+            ]
+        )
+    except Exception as error:
+        print(f'Error creating summary agent: {error}')
+
+if __name__ == '__main__':
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

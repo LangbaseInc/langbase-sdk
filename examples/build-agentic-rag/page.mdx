@@ -1,0 +1,637 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+
+export const metadata = generateMetadata({
+    title: 'Agentic RAG with TypeScript | Advanced Memory Agent Tutorial',
+    description: `Build advanced agentic RAG systems with TypeScript using Langbase Memory agents. Learn to create intelligent retrieval systems with custom embeddings and document processing.`,
+    section: 'Agent Examples',
+    slug: '/examples/build-agentic-rag'
+});
+
+# Build RAG AI Agents with TypeScript
+
+### A step-by-step guide to building an agentic RAG system with TypeScript using Langbase SDK.
+
+---
+
+In this guide, you will build an agentic RAG system. You will:
+
+- Create an agentic AI memory
+- Use custom embedding models
+- Add documents to AI memory
+- Perform RAG retrieval against a query
+- Generate comprehensive responses using LLMs
+
+---
+
+You will build a basic Node.js app in TypeScript that uses the Langbase SDK to create an agentic RAG system.
+
+Let's get started.
+
+---
+
+## Step #0: Setup your project
+
+Create a new directory for your project and navigate to it.
+
+<CodeGroup exampleTitle="Project setup" title="Project setup">
+	```bash
+	mkdir agentic-rag && cd agentic-rag
+	```
+</CodeGroup>
+
+### Initialize the project
+
+Initialize Node.js project and create different TypeScript files.
+
+<CodeGroup exampleTitle="Initialize project" title="Initialize project">
+```bash {{ title: 'npm' }}
+npm init -y && touch index.ts agents.ts create-memory.ts upload-docs.ts create-pipe.ts
+```
+
+```bash {{ title: 'pnpm' }}
+pnpm init && touch index.ts agents.ts create-memory.ts upload-docs.ts create-pipe.ts
+```
+
+```bash {{ title: 'yarn' }}
+yarn init -y && touch index.ts agents.ts create-memory.ts upload-docs.ts create-pipe.ts
+```
+</CodeGroup>
+
+### Install dependencies
+
+You will use the [Langbase SDK](/sdk) to create memory agents and `dotenv` to manage environment variables. So, let's install these dependencies.
+
+<CodeGroup exampleTitle="Install dependencies" title="Install dependencies">
+```bash {{ title: 'npm' }}
+npm i langbase dotenv
+```
+
+```bash {{ title: 'pnpm' }}
+pnpm add langbase dotenv
+```
+
+```bash {{ title: 'yarn' }}
+yarn add langbase dotenv
+```
+</CodeGroup>
+
+## Step #1: Get Langbase API Key
+
+Every request you send to Langbase needs an [API key](/api-reference/api-keys). This guide assumes you already have one. In case, you do not have an API key, please check the instructions below.
+
+<Spoiler title="Get your Langbase API key: User or Org">
+You can generate API keys from the [Langbase Studio](https://studio.langbase.com) by following these steps:
+
+1. Switch to your user or org account.
+2. From the sidebar, click on the `API keys`.
+3. From here you can create a new API key or manage existing ones.
+
+For more details follow the [Langbase API keys](/api-reference/api-keys) documentation.
+
+</Spoiler>
+
+Create an `.env` file in the root of your project and add your Langbase API key.
+
+```bash {{ title: '.env' }}
+LANGBASE_API_KEY=xxxxxxxxx
+```
+
+Replace xxxxxxxxx with your Langbase API key.
+
+## Step #3: Add LLM API keys
+
+If you have set up LLM API keys in your profile, the AI memory and agent pipe will automatically use them. Otherwise navigate to [LLM API keys](https://langbase.com/settings/keys#keyset) page and add keys for different providers like OpenAI, Anthropic, etc.
+
+<Spoiler title="Add LLM API keys to your account">
+You can add LLM API keys in your account using [Langbase Studio](https://studio.langbase.com) by following these steps:
+
+1. Switch to your user or org account.
+2. From the sidebar, click on the `API keys` and scroll down to the LLM API keys section.
+3. From here you can add LLM API keys for different providers like OpenAI, TogetherAI, Anthropic, etc.
+
+</Spoiler>
+
+## Step #4: Create an agentic AI memory
+
+In this step, you will create an AI memory using the Langbase SDK. Go ahead and add the following code to the `create-memory.ts` file.
+
+<CodeGroup exampleTitle="Email sentiment agent" title="Email sentiment agent">
+```ts {{ title: 'create-memory.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const memory = await langbase.memories.create({
+		name: 'knowledge-base',
+		description: 'An AI memory for agentic memory workshop',
+		embedding_model: 'openai:text-embedding-3-large'
+	});
+
+	console.log('AI Memory:', memory);
+}
+
+main();
+```
+</CodeGroup>
+
+Let's take a look at what is happening in this code:
+
+- Import the `dotenv` package to load environment variables.
+- Import the `Langbase` class from the `langbase` package.
+- Create a new instance of the `Langbase` class with your API key.
+- Use the `memories.create` method to create a new AI memory.
+- Set the name and description of the memory.
+- Use the `openai:text-embedding-3-large` model for embedding.
+- Log the created memory to the console.
+
+Let's create the agentic memory by running the `create-memory.ts` file.
+
+<CodeGroup exampleTitle="Create agentic memory" title="Create agentic memory">
+	```bash {{ title: 'npm' }}
+	npx tsx create-memory.ts
+	```
+
+	```bash {{ title: 'pnpm' }}
+	pnpm dlx tsx create-memory.ts
+	```
+</CodeGroup>
+
+This will create an AI memory and log the memory details to the console.
+
+## Step #5: Add documents to AI memory
+
+In this step, you will add documents to the AI memory you created in the previous step. Click on the following buttons to download sample documents.
+
+Once the sample docs are downloaded, create a `docs` directory in your project and move the downloaded documents to this directory.
+
+<DownloadSampleDoc
+	href="/docs/agent-architectures.txt"
+	btnText="Download agentic architecture"
+	secondary={{
+		href: "/docs/langbase-faq.txt",
+		btnText: "Download Langbase FAQs"
+	}}
+/>
+
+Now go ahead and add the following code to the `upload-docs.ts` file.
+
+<CodeGroup exampleTitle="Upload documents" title="Upload documents">
+```ts {{ title: 'upload-docs.ts' }}
+import 'dotenv/config';
+import { Langbase } from 'langbase';
+import { readFile } from 'fs/promises';
+import path from 'path';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const cwd = process.cwd();
+	const memoryName = 'knowledge-base';
+
+	// Upload agent architecture document
+	const agentArchitecture = await readFile(path.join(cwd, 'docs', 'agent-architectures.txt'));
+	const agentResult = await langbase.memories.documents.upload({
+		memoryName,
+		contentType: 'text/plain',
+		documentName: 'agent-architectures.txt',
+		document: agentArchitecture,
+		meta: { category: 'Examples', topic: 'Agent architecture' },
+	});
+
+	console.log(agentResult.ok ? '✓ Agent doc uploaded' : '✗ Agent doc failed');
+
+	// Upload FAQ document
+	const langbaseFaq = await readFile(path.join(cwd, 'docs', 'langbase-faq.txt'));
+	const faqResult = await langbase.memories.documents.upload({
+		memoryName,
+		contentType: 'text/plain',
+		documentName: 'langbase-faq.txt',
+		document: langbaseFaq,
+		meta: { category: 'Support', topic: 'Langbase FAQs' },
+	});
+
+	console.log(faqResult.ok ? '✓ FAQ doc uploaded' : '✗ FAQ doc failed');
+}
+
+main();
+```
+</CodeGroup>
+
+Let's break down the above code:
+
+- Import the `readFile` function from the `fs/promises` module to read files asynchronously.
+- Import the `path` module to work with file paths.
+- Use the `memories.documents.upload` method to upload documents to the AI memory.
+- Log the result of the document upload to the console.
+- Upload the `agent-architectures.txt` and `langbase-faq.txt` documents to the AI memory.
+
+Run the `upload-docs.ts` file to upload the documents to the AI memory.
+
+<CodeGroup exampleTitle="Upload documents" title="Upload documents">
+	```bash {{ title: 'npm' }}
+	npx tsx upload-docs.ts
+	```
+
+	```bash {{ title: 'pnpm' }}
+	pnpm dlx tsx upload-docs.ts
+	```
+</CodeGroup>
+
+This will upload the documents to the AI memory.
+
+## Step #6: Perform RAG retrieval
+
+In this step, you will perform RAG retrieval against a query. Add the following code to the `agents.ts` file.
+
+<CodeGroup exampleTitle="RAG retrieval" title="RAG retrieval">
+```ts {{ title: 'agents.ts' }}
+import 'dotenv/config';
+import { Langbase } from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+export async function runMemoryAgent(query: string) {
+	const chunks = await langbase.memories.retrieve({
+		query,
+		topK: 4,
+		memory: [
+			{
+				name: 'knowledge-base',
+			},
+		],
+	});
+
+	return chunks;
+}
+```
+</CodeGroup>
+
+Let's break down the above code:
+
+- Import the `Langbase` class from the `langbase` package.
+- Create a function `runMemoryAgent` that takes a query as input.
+- Use the `memories.retrieve` method to perform RAG retrieval against the query.
+- Retrieve top 4 chunks from the agentic AI memory.
+- Return the retrieved chunks.
+
+Now let's add the following code to the `index.ts` file to run the memory agent.
+
+<CodeGroup exampleTitle="Run memory agent" title="Run memory agent">
+```ts {{ title: 'index.ts' }}
+import { runMemoryAgent } from './agents';
+
+async function main() {
+	const chunks = await runMemoryAgent('What is agent parallelization?');
+	console.log('Memory chunk:', chunks);
+}
+
+main();
+```
+</CodeGroup>
+
+Now run the `index.ts` file to perform RAG retrieval against the query.
+
+<CodeGroup exampleTitle="Run memory agent" title="Run memory agent">
+	```bash {{ title: 'npm' }}
+	npx tsx index.ts
+	```
+
+	```bash {{ title: 'pnpm' }}
+	pnpm dlx tsx index.ts
+	```
+</CodeGroup>
+
+You will see the retrieved memory chunks in the console.
+
+```js {{ title: 'Memory agent output' }}
+[
+  {
+    text: '---\n' +
+      '\n' +
+      '## Agent Parallelization\n' +
+      '\n' +
+      'Parallelization runs multiple LLM tasks at the same time to improve speed or accuracy. It works by splitting a task into independent parts (sectioning) or generating multiple responses for comparison (voting).\n' +
+      '\n' +
+      'Voting is a parallelization method where multiple LLM calls generate different responses for the same task. The best result is selected based on agreement, predefined rules, or quality evaluation, improving accuracy and reliability.\n' +
+      '\n' +
+      "`This code implements an email analysis system that processes incoming emails through multiple parallel AI agents to determine if and how they should be handled. Here's the breakdown:",
+    similarity: 0.7146744132041931,
+    meta: {
+      docName: 'agent-architectures.txt',
+      documentName: 'agent-architectures.txt',
+      category: 'Examples',
+      topic: 'Agent architecture'
+    }
+  },
+  {
+    text: 'async function main(inputText: string) {\n' +
+      '\ttry {\n' +
+      '\t\t// Create pipes first\n' +
+      '\t\tawait createPipes();\n' +
+      '\n' +
+      '\t\t// Step A: Determine which agent to route to\n' +
+      '\t\tconst route = await routerAgent(inputText);\n' +
+      "\t\tconsole.log('Router decision:', route);\n" +
+      '\n' +
+      '\t\t// Step B: Call the appropriate agent\n' +
+      '\t\tconst agent = agentConfigs[route.agent];\n' +
+      '\n' +
+      '\t\tconst response = await langbase.pipes.run({\n' +
+      '\t\t\tstream: false,\n' +
+      '\t\t\tname: agent.name,\n' +
+      '\t\t\tmessages: [\n' +
+      "\t\t\t\t{ role: 'user', content: `${agent.prompt} ${inputText}` }\n" +
+      '\t\t\t]\n' +
+      '\t\t});\n' +
+      '\n' +
+      '\t\t// Final output\n' +
+      '\t\tconsole.log(\n' +
+      '\t\t\t`Agent: ${agent.name} \\n\\n Response: ${response.completion}`\n' +
+      '\t\t);\n' +
+      '\t} catch (error) {\n' +
+      "\t\tconsole.error('Error in main workflow:', error);\n" +
+      '\t}\n' +
+      '}\n' +
+      '\n' +
+      '// Example usage:\n' +
+      "const inputText = 'Why days are shorter in winter?';\n" +
+      '\n' +
+      'main(inputText);\n' +
+      '```\n' +
+      '\n' +
+      '\n' +
+      '---\n' +
+      '\n' +
+      '## Agent Parallelization\n' +
+      '\n' +
+      'Parallelization runs multiple LLM tasks at the same time to improve speed or accuracy. It works by splitting a task into independent parts (sectioning) or generating multiple responses for comparison (voting).',
+    similarity: 0.5911030173301697,
+    meta: {
+      docName: 'agent-architectures.txt',
+      documentName: 'agent-architectures.txt',
+      category: 'Examples',
+      topic: 'Agent architecture'
+    }
+  },
+  {
+    text: "`This code implements a sophisticated task orchestration system with dynamic subtask generation and parallel processing. Here's how it works:\n" +
+      '\n' +
+      '1. Orchestrator Agent (Planning Phase):\n' +
+      '   - Takes a complex task as input\n' +
+      '   - Analyzes the task and breaks it down into smaller, manageable subtasks\n' +
+      '   - Returns both an analysis and a list of subtasks in JSON format\n' +
+      '\n' +
+      '2. Worker Agents (Execution Phase):\n' +
+      '   - Multiple workers run in parallel using Promise.all()\n' +
+      '   - Each worker gets:\n' +
+      '     - The original task for context\n' +
+      '     - Their specific subtask to complete\n' +
+      '   - All workers use Gemini 2.0 Flash model\n' +
+      '\n' +
+      '3. Synthesizer Agent (Integration Phase):\n' +
+      '   - Takes all the worker outputs\n' +
+      '   - Combines them into a cohesive final result\n' +
+      '   - Ensures the pieces flow together naturally',
+    similarity: 0.5393730401992798,
+    meta: {
+      docName: 'agent-architectures.txt',
+      documentName: 'agent-architectures.txt',
+      category: 'Examples',
+      topic: 'Agent architecture'
+    }
+  },
+  {
+    text: "`This code implements an email analysis system that processes incoming emails through multiple parallel AI agents to determine if and how they should be handled. Here's the breakdown:\n" +
+      '\n' +
+      '1. Three Specialized Agents running in parallel:\n' +
+      '   - Sentiment Analysis Agent: Determines if the email tone is positive, negative, or neutral\n' +
+      '   - Summary Agent: Creates a concise summary of the email content\n' +
+      '   - Decision Maker Agent: Takes the outputs from the other agents and decides:\n' +
+      '     - If the email needs a response\n' +
+      "     - Whether it's spam\n" +
+      '     - Priority level (low, medium, high, urgent)\n' +
+      '\n' +
+      '2. The workflow:\n' +
+      '   - Takes an email input\n' +
+      '   - Runs sentiment analysis and summary generation in parallel using Promise.all()\n' +
+      '   - Feeds those results to the decision maker agent\n' +
+      '   - Outputs a final decision object with response requirements\n' +
+      '\n' +
+      '3. All agents use Gemini 2.0 Flash model and are structured to return parsed JSON responses',
+    similarity: 0.49115753173828125,
+    meta: {
+      docName: 'agent-architectures.txt',
+      documentName: 'agent-architectures.txt',
+      category: 'Examples',
+      topic: 'Agent architecture'
+    }
+  }
+]
+```
+
+## Step #7: Create support pipe agent
+
+In this step, you will create a support agent using the Langbase SDK. Go ahead and add the following code to the `create-pipe.ts` file.
+
+<CodeGroup exampleTitle="Create pipe agent" title="Create pipe agent">
+```ts {{ title: 'create-pipe.ts' }}
+import 'dotenv/config';
+import { Langbase } from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const supportAgent = await langbase.pipes.create({
+		name: `ai-support-agent`,
+		description: `An AI agent to support users with their queries.`,
+		messages: [
+			{
+				role: `system`,
+				content: `You're a helpful AI assistant.
+				You will assist users with their queries.
+				Always ensure that you provide accurate and to the point information.`,
+			},
+		],
+	});
+
+	console.log('Support agent:', supportAgent);
+}
+
+main();
+```
+</CodeGroup>
+
+Let's go through the above code:
+
+- Initialize the Langbase SDK with your API key.
+- Use the `pipes.create` method to create a new pipe agent.
+- Log the created pipe agent to the console.
+
+Now run the `create-pipe.ts` file to create the pipe agent.
+
+<CodeGroup exampleTitle="Create pipe agent" title="Create pipe agent">
+	```bash {{ title: 'npm' }}
+	npx tsx create-pipe.ts
+	```
+
+	```bash {{ title: 'pnpm' }}
+	pnpm dlx tsx create-pipe.ts
+	```
+</CodeGroup>
+
+This will create a support agent and log the agent details to the console.
+
+## Step #8: Generate RAG responses
+
+In this step, you will generate comprehensive responses using LLMs. Add the following code to the `agents.ts` file.
+
+<CodeGroup exampleTitle="Generate responses" title="Generate responses">
+```ts {{ title: 'agents.ts' }}
+import 'dotenv/config';
+import { Langbase, MemoryRetrieveResponse } from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+export async function runAiSupportAgent({
+	chunks,
+	query,
+}: {
+	chunks: MemoryRetrieveResponse[];
+	query: string;
+}) {
+	const systemPrompt = await getSystemPrompt(chunks);
+
+	const { completion } = await langbase.pipes.run({
+		stream: false,
+		name: 'ai-support-agent',
+		messages: [
+			{
+				role: 'system',
+				content: systemPrompt,
+			},
+			{
+				role: 'user',
+				content: query,
+			},
+		],
+	});
+
+	return completion;
+}
+
+async function getSystemPrompt(chunks: MemoryRetrieveResponse[]) {
+	let chunksText = '';
+	for (const chunk of chunks) {
+		chunksText += chunk.text + '\n';
+	}
+
+	const systemPrompt = `
+	You're a helpful AI assistant.
+	You will assist users with their queries.
+
+	Always ensure that you provide accurate and to the point information.
+	Below is some CONTEXT for you to answer the questions. ONLY answer from the CONTEXT. CONTEXT consists of multiple information chunks. Each chunk has a source mentioned at the end.
+
+For each piece of response you provide, cite the source in brackets like so: [1].
+
+At the end of the answer, always list each source with its corresponding number and provide the document name. like so [1] Filename.doc. If there is a URL, make it hyperlink on the name.
+
+ If you don't know the answer, say so. Ask for more context if needed.
+	${chunksText}`;
+
+	return systemPrompt;
+}
+
+export async function runMemoryAgent(query: string) {
+	const chunks = await langbase.memories.retrieve({
+		query,
+		topK: 4,
+		memory: [
+			{
+				name: 'knowledge-base',
+			},
+		],
+	});
+
+	return chunks;
+}
+```
+</CodeGroup>
+
+Let's break down the above code:
+
+- Create a function `runAiSupportAgent` that takes chunks and query as input.
+- Use the `pipes.run` method to generate responses using the LLM.
+- Create a function `getSystemPrompt` to generate a system prompt for the LLM.
+- Combine the retrieved chunks to create a system prompt.
+- Return the generated completion.
+
+Lets run the support agent with AI memory chunks. Add the following code to the `index.ts` file.
+
+<CodeGroup exampleTitle="Run support agent" title="Run support agent">
+```ts {{ title: 'index.ts' }}
+import { runMemoryAgent, runAiSupportAgent } from './agents';
+
+async function main() {
+	const query = 'What is agent parallelization?';
+	const chunks = await runMemoryAgent(query);
+
+	const completion = await runAiSupportAgent({
+		chunks,
+		query,
+	});
+
+	console.log('Completion:', completion);
+}
+
+main();
+```
+</CodeGroup>
+
+Let's run the `index.ts` file to generate responses using the LLM.
+
+<CodeGroup exampleTitle="Run support agent" title="Run support agent">
+	```bash {{ title: 'npm' }}
+	npx tsx index.ts
+	```
+
+	```bash {{ title: 'pnpm' }}
+	pnpm dlx tsx index.ts
+	```
+</CodeGroup>
+
+You will see the generated completion in the console.
+
+```md {{ title: 'Support agent output' }}
+Completion: Agent parallelization is a process that runs multiple LLM (Language Model) tasks simultaneously to enhance speed or accuracy. This technique can be implemented in two main ways:
+
+1. **Sectioning**: A task is divided into independent parts that can be processed concurrently.
+2. **Voting**: Multiple LLM calls generate different responses for the same task, and the best result is selected based on agreement, predefined rules, or quality evaluation. This approach improves accuracy and reliability by comparing various outputs.
+
+In practice, agent parallelization involves orchestrating multiple specialized agents to handle different aspects of a task, allowing for efficient processing and improved outcomes.
+
+If you need more detailed examples or further clarification, feel free to ask!
+```
+
+This is how you can build an agentic RAG system with TypeScript using the Langbase SDK.
+
+---
+
+## Next Steps
+
+-   Build something cool with Langbase [APIs](/api-reference) and [SDK](/sdk).
+-   Join our [Discord community](https://langbase.com/discord) for feedback, requests, and support.
+
+---

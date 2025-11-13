@@ -1,0 +1,124 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+
+export const metadata = generateMetadata({
+    title: 'Generate Image with OpenAI',
+    description: `An example demonstrating how to generate images using OpenAI DALL-E models.`,
+    section: 'Examples',
+    slug: '/examples/images/generate-image-openai'
+});
+
+
+## Generate Image with OpenAI DALL-E
+
+This example demonstrates how to generate images using OpenAI's DALL-E model through the Langbase Images API.
+
+---
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/images"
+
+	title="Generate Image with OpenAI Example"
+	output={`Image generated successfully!
+Image URL: data:image/png;base64,`}
+explanation={`
+This code demonstrates how to generate an AI image using OpenAI's DALL-E model. Here's a step-by-step guide:
+
+1. Initialize Langbase:
+   - Set up the Langbase client with your API key
+
+2. Configure Image Generation:
+   - Provide a descriptive prompt for the image you want to generate
+   - Specify the OpenAI model (gpt-image-1, dall-e-3, or dall-e-2)
+   - Set optional parameters like width and height
+   - Pass your OpenAI API key
+
+3. Execution:
+   - The image generation request is executed using the Langbase SDK
+   - Returns the generated image URL`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Generate Image with OpenAI" exampleTitle="Generate Image with OpenAI">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import { Langbase } from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	// Check if API keys are available
+	if (!process.env.LANGBASE_API_KEY) {
+		console.error('❌ LANGBASE_API_KEY is not set in environment variables');
+		return;
+	}
+
+	if (!process.env.OPENAI_API_KEY) {
+		console.error('❌ OPENAI_API_KEY is not set in environment variables');
+		console.log('Please add your OpenAI API key to the .env file');
+		return;
+	}
+
+	const result = await langbase.images.generate({
+		prompt: "A futuristic cityscape with flying cars and neon lights, cyberpunk style, highly detailed, 8k resolution",
+		model: "openai:gpt-image-1",
+		size: "1024x1024",
+		apiKey: process.env.OPENAI_API_KEY!
+	});
+
+	console.log('✅ Image generated successfully!');
+	console.log('Image URL:', result.choices[0].message.images[0].image_url.url);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Generate Image with OpenAI" exampleTitle="Generate Image with OpenAI">
+```python {{ title: 'index.py' }}
+import os
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main():
+	# Check if API keys are available
+	if not os.getenv('LANGBASE_API_KEY'):
+		print('❌ LANGBASE_API_KEY is not set in environment variables')
+		return
+
+	if not os.getenv('OPENAI_API_KEY'):
+		print('❌ OPENAI_API_KEY is not set in environment variables')
+		print('Please add your OpenAI API key to the .env file')
+		return
+
+	result = langbase.images.generate(
+		prompt="A futuristic cityscape with flying cars and neon lights, cyberpunk style, highly detailed, 8k resolution",
+		model="openai:gpt-image-1",
+		width=1024,
+		height=1024,
+		api_key=os.getenv('OPENAI_API_KEY')
+	)
+
+	print('✅ Image generated successfully!')
+	print('Image URL:', result['choices'][0]['message']['images'][0]['image_url']['url'])
+
+if __name__ == '__main__':
+	main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>
+
+
+---

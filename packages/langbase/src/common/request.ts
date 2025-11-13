@@ -1,5 +1,5 @@
 import {GENERATION_ENDPOINTS} from '@/data/constants';
-import {Headers} from './../../types';
+import {Headers} from '../../types';
 import {APIConnectionError, APIError} from './errors';
 import {Stream} from './stream';
 
@@ -39,6 +39,14 @@ export class Request {
 
 	constructor(config: RequestConfig) {
 		this.config = config;
+	}
+
+	get baseUrl(): string {
+		return this.config.baseUrl;
+	}
+
+	get apiKey(): string {
+		return this.config.apiKey;
 	}
 
 	// Main send function

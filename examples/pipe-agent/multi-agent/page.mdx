@@ -1,0 +1,290 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Multi Agent',
+    description: `An example of a multi agent.`,
+    section: 'Examples',
+    slug: '/examples/pipe-agent/multi-agent'
+});
+
+# Multi Agent
+
+This example demonstrates how to create an multi agentic workflow chaining multiple agents where one agent's output feeds into another.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Multi Agent Example"
+	output={`{
+  "summary": "Artificial intelligence (AI) is the intelligence shown by machines, contrasting with the natural intelligence of humans. AI research focuses on intelligent agents, which are systems that perceive their environment and act to maximize their chances of achieving goals."
+}
+{
+  "questions": [
+    "What is artificial intelligence (AI) and how does it differ from natural human intelligence?",
+    "What are intelligent agents in the context of AI research?",
+    "How do intelligent agents operate to achieve their goals?"
+  ]
+}`}
+explanation={`
+### Components
+- **summary-agent**: An agent that summarizes text
+- **generate-questions-agent**: An agent that generates questions from summaries
+
+This code illustrates how to create a multi-agent workflow using Langbase SDK. Here's a step-by-step guide:
+
+1. Summarize Text:
+   - Calls the langbase.pipes.run() with the "summary-agent" agent
+   - The agent generates a summary of the provided text
+
+2. Generate Questions:
+   - Calls the langbase.pipes.run() with the "generate-questions-agent" agent
+   - The agent generates questions based on the summary provided by the first agent
+
+3. Execution:
+   - The Langbase SDK executes the agents in sequence
+   - Outputs the responses to display the summary and the generated questions`}
+>
+
+<LanguageContent language="typescript">
+<CodeGroup title="List Pipe Agents Example" exampleTitle="List Pipe Agents Example">
+```ts {{ title: 'index.ts' }}
+// Basic example to demonstrate how to feed the output of an agent as an input to another agent.
+
+import dotenv from "dotenv";
+import { Langbase } from "langbase";
+
+dotenv.config();
+
+const langbase = new Langbase({
+    apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+    await createSummaryAgent();
+
+    // First agent: Summarize text
+    const summarizeAgent = async (text: string) => {
+        const response = await langbase.pipes.run({
+            stream: false,
+            name: "summary-agent",
+			json: true,
+            messages: [
+                {
+                    role: "user",
+                    content: `Summarize the following text: ${text}`
+                }
+            ]
+        });
+        return response.completion;
+    };
+
+    await createGenerateQuestionsAgent();
+    // Second agent: Generate questions
+    const questionsAgent = async (summary: string) => {
+        const response = await langbase.pipes.run({
+            stream: false,
+            name: "generate-questions-agent",
+            messages: [
+                {
+                    role: "user",
+                    content: `Generate 3 questions based on this summary: ${summary}`
+                }
+            ]
+        });
+        return response.completion;
+    };
+
+    // Router agent: Orchestrate the flow
+    const workflow = async (inputText: string) => {
+        const summary = await summarizeAgent(inputText);
+        const questions = await questionsAgent(summary);
+        return { summary, questions };
+    };
+
+    // Example usage
+    const inputText = "Artificial intelligence (AI) is intelligence demonstrated by machines, as opposed to natural intelligence displayed by humans. AI research has been defined as the field of study of intelligent agents, which refers to any system that perceives its environment and takes actions that maximize its chance of achieving its goals.";
+
+    const result = await workflow(inputText);
+    console.log(result.summary);
+    console.log(result.questions);
+}
+
+/**
+ * Creates a summary agent pipe if it doesn't already exist.
+ *
+ * This function checks if a pipe with the name 'summary-agent' exists in the system.
+ * If the pipe doesn't exist, it creates a new private pipe with a system message
+ * configuring it as a helpful assistant.
+ *
+ * @async
+ * @returns {Promise<void>} A promise that resolves when the operation is complete
+ * @throws {Error} Logs any errors encountered during the creation process
+ */
+async function createSummaryAgent() {
+    try {
+        await langbase.pipes.create({
+            name: 'summary-agent',
+			upsert: true,
+            status: 'private',
+			json: true,
+            messages: [
+                {
+                	role: 'system',
+                    content: 'You are a helpful assistant that help users summarize text.',
+                },
+            ],
+        });
+    } catch (error) {
+        console.error('Error creating summary agent:', error);
+    }
+}
+
+
+/**
+ * Creates a questions agent pipe if it doesn't already exist.
+ *
+ * This function checks if a pipe with the name 'questions-agent' exists in the system.
+ * If the pipe doesn't exist, it creates a new private pipe with a system message
+ * configuring it as a helpful assistant.
+ *
+ * @async
+ * @returns {Promise<void>} A promise that resolves when the operation is complete
+ * @throws {Error} Logs any errors encountered during the creation process
+ */
+
+async function createGenerateQuestionsAgent() {
+	try {
+	    await langbase.pipes.create({
+			name: 'generate-questions-agent',
+			upsert: true,
+			status: 'private',
+			json: true,
+			messages: [
+				{
+					role: 'system',
+					content: 'You are a helpful assistant that help user to generate questions based on the text.',
+				}
+			]
+		});
+	} catch (error) {
+		console.error('Error creating questions agent:', error);
+	}
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Multi Agent Example" exampleTitle="Multi Agent Example">
+```python {{ title: 'index.py' }}
+import os
+import json
+from dotenv import load_dotenv
+
+from langbase import Langbase
+
+
+load_dotenv()
+
+# Initialize the client
+langbase = Langbase(api_key=os.getenv("LANGBASE_API_KEY"))
+
+
+def create_summary_agent() -> None:
+    """Create or upsert the summary agent pipe."""
+    try:
+        langbase.pipes.create(
+            name="summary-agent",
+            description="Summarize input text clearly and concisely",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a helpful assistant that helps users summarize text.",
+                }
+            ],
+            upsert=True,
+        )
+    except Exception as e:
+        print(f"Error creating summary agent: {e}")
+
+
+def create_generate_questions_agent() -> None:
+    """Create or upsert the question generator agent pipe."""
+    try:
+        langbase.pipes.create(
+            name="generate-questions-agent",
+            description="Generate questions based on a given summary",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a helpful assistant that generates questions from summaries.",
+                }
+            ],
+            upsert=True,
+        )
+    except Exception as e:
+        print(f"Error creating questions agent: {e}")
+
+
+def summarize_agent(text: str) -> str:
+    """Run the summary-agent on provided text and return its completion."""
+    response = langbase.pipes.run(
+        name="summary-agent",
+        messages=[
+            {"role": "user", "content": f"Summarize the following text: {text}"}
+        ],
+        stream=False,
+    )
+    return response.get("completion", "")
+
+
+def questions_agent(summary: str) -> str:
+    """Run the generate-questions-agent on the summary and return its completion."""
+    response = langbase.pipes.run(
+        name="generate-questions-agent",
+        messages=[
+            {
+                "role": "user",
+                "content": f"Generate 3 questions based on this summary: {summary}",
+            }
+        ],
+        stream=False,
+    )
+    return response.get("completion", "")
+
+
+def workflow(input_text: str) -> dict:
+    """Orchestrate the two agents: summarize, then generate questions."""
+    summary = summarize_agent(input_text)
+    questions = questions_agent(summary)
+    return {"summary": summary, "questions": questions}
+
+
+def main():
+    # Ensure both agents exist
+    create_summary_agent()
+    create_generate_questions_agent()
+
+    input_text = (
+        "Artificial intelligence (AI) is intelligence demonstrated by machines, as opposed "
+        "to natural intelligence displayed by humans. AI research has been defined as the "
+        "field of study of intelligent agents, which refers to any system that perceives its "
+        "environment and takes actions that maximize its chance of achieving its goals."
+    )
+
+    result = workflow(input_text)
+    print(result["summary"])  # Summary text
+    print(result["questions"])  # Generated questions
+
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+</RunExample>
+
+</LanguageProvider>

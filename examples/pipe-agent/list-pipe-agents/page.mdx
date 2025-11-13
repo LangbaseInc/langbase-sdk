@@ -1,0 +1,119 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'List Pipe Agents',
+    description: `An example of listing pipe agents.`,
+    section: 'Examples',
+    slug: '/examples/pipe-agent/list-pipe-agents'
+});
+
+# List Pipe Agents
+
+This example demonstrates how to list all the pipe agents.
+
+<LanguageProvider defaultLanguage='typescript'>
+<RunExample
+
+	api="/docs/api/pipe"
+	title="List Pipe Agents Example"
+	output={`[
+    {
+        name: 'ai-support-agent',
+        description: 'An AI agent to support users with their queries.',
+        status: 'public',
+        model: "openai:gpt-4o-mini",
+        stream: false,
+        json: false,
+        store: true,
+        top_p: 0.75,
+        max_tokens: 4096,
+        temperature: 0.2,
+        presence_penalty: 0.5,
+        frequency_penalty: 0.5,
+        stop: [],
+        tool_choice: 'auto',
+        parallel_tool_calls: true,
+        messages: [],
+        variables: [],
+        tools: [],
+        memory: []
+    },
+    {
+        name: 'demo-few-shot',
+        owner_login: 'your-login',
+        description: 'Few-shot train any LLM',
+        status: 'private',
+        model: 'openai:gpt-4o-mini',
+        stream: true,
+        json: false,
+        store: true,
+        top_p: 1,
+        max_tokens: 1000,
+        temperature: 0.7,
+        presence_penalty: 1,
+        frequency_penalty: 1,
+        stop: [],
+        tool_choice: 'auto',
+        parallel_tool_calls: true,
+        messages: [],
+        variables: [],
+        tools: [],
+        memory: []
+    }
+]`}
+	explanation={`This code illustrates how to list all the pipe agents using Langbase. Here's a step-by-step guide:
+
+1. Listing Pipe Agents:
+   - Calls the langbase.pipes.list() method to fetch all pipe agents
+
+2. Execution:
+   - The Langbase SDK returns a list of available pipe agents.
+   - The response is logged to the console for display.
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="List Pipe Agents Example" exampleTitle="List Pipe Agents Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.pipes.list();
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="List Pipe Agents Example" exampleTitle="List Pipe Agents Example">
+```python {{ title: 'index.py' }}
+import os
+import json
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main():
+    response = langbase.pipes.list()
+    print(json.dumps(response, indent=2))
+
+if __name__ == '__main__':
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

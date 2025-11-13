@@ -1,0 +1,127 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+
+export const metadata = generateMetadata({
+	title: 'Run Agent with Vision',
+	description: `An example of using Langbase agent with vision capabilities to analyze images.`,
+	section: 'Examples',
+	slug: '/examples/agent/run-agent-with-vision'
+});
+
+
+# Run Agent with Vision
+
+This example demonstrates how to run a Langbase agent that can analyze visual content using image inputs. The agent uses a vision-capable model to understand and respond to user prompts involving images — such as extracting text from a photo.
+
+---
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample 
+	api="/docs/api/pipe"
+
+	title="Run Agent with Vision Example"
+	output={`The text from the image is: 'The quick brown fox jumps over the lazy dog.' +
+    '0123456789\n' +
+    'The quick brown fox jumps over the lazy dog.\n'`}
+	explanation={`
+This example demonstrates how to use a Langbase agent to interpret images using OpenAI's GPT-4o vision model:
+
+1. Use a Vision-Capable Model:
+    - Set the model to \`openai:gpt-4o-mini\` or another that supports images.
+
+2. Structure the User Input:
+    - Combine text and image in a single user message.
+    - Format the input using \`content: [ { type: 'text' }, { type: 'image_url' } ]\`.
+
+3. Run the Agent:
+    - Pass the input to \`langbase.agent.run()\` as usual.
+    - The model will interpret both the text and image together.
+
+4. Get the Response:
+    - The agent will respond with extracted text or visual insights based on the image.
+`}>
+<LanguageContent language="typescript">
+<CodeGroup title="Run Agent with Vision Example" exampleTitle="Run Agent with Vision Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import { Langbase } from 'langbase';
+
+const langbase = new Langbase({
+    apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+    const response = await langbase.agent.run({
+        model: 'openai:gpt-4o-mini',
+        input: [
+            {
+                role: 'user',
+                content: [
+                    {
+                        type: 'text',
+                        text: 'Extract the text from this image',
+                    },
+                    {
+                        type: 'image_url',
+                        image_url: {
+                            url: 'https://upload.wikimedia.org/wikipedia/commons/a/a7/Handwriting.png',
+                        },
+                    },
+                ],
+            },
+        ],
+        apiKey: process.env.LLM_API_KEY!,
+        stream: false,
+    });
+
+    console.log('Vision Agent Response:', response);
+}
+
+main();
+
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Run Agent with Vision Example" exampleTitle="Run Agent with Vision Example">
+```python {{ title: 'index.py' }}
+import os
+from langbase import Langbase
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+async def main():
+    response = await langbase.agent.run(
+        model='openai:gpt-4o-mini',
+        input=[
+            {
+                'role': 'user',
+                'content': [
+                    {
+                        'type': 'text',
+                        'text': 'Extract the text from this image',
+                    },
+                    {
+                        'type': 'image_url',
+                        'image_url': {
+                            'url': 'https://upload.wikimedia.org/wikipedia/commons/a/a7/Handwriting.png',
+                        },
+                    },
+                ],
+            },
+        ],
+        api_key=os.getenv('LLM_API_KEY'),
+        stream=False,
+    )
+
+    print('Vision Agent Response:', response)
+
+if __name__ == '__main__':
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

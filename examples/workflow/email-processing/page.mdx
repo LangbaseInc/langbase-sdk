@@ -1,0 +1,349 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+	title: 'Create an email processing workflow',
+	description: `An example demonstrating how to build a workflow that processes emails.`,
+	section: 'Examples',
+	slug: '/examples/workflow/email-processing'
+});
+
+## Create an email processing workflow
+
+This example demonstrates how to create a workflow that analyzes an email and generates a response when needed.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/workflow"
+
+	title="Email Processing Workflow Example"
+	output={`{
+  "summary": "The sender is interested in learning more about the product for their
+  company of about 50 people. They are requesting pricing information, particularly for
+  the enterprise tier, and would like to schedule a demo next week.",
+  "sentiment": "positive",
+  "responseNeeded": true,
+  "response": "Subject: RE: Pricing Information and Demo Request
+
+  Hello Jamie,
+
+  Thank you for your interest in our platform! I'd be happy to provide you with
+  information about our pricing tiers and arrange a demo for your team.
+
+  For an enterprise-level organization with 50 users, our Enterprise tier would indeed
+  be the most suitable option. This package includes:
+
+  - Unlimited access for all team members
+  - Advanced security features
+  - Dedicated account manager
+  - Custom integrations
+  - Priority support
+
+  I've attached our complete pricing brochure with detailed information about all our
+  plans. For your team size, we offer custom pricing with volume discounts.
+
+  Regarding the demo, I'd be delighted to schedule one for next week. Could you please
+  let me know what days and times work best for you and your team? Our demos typically
+  take about 45 minutes and include time for questions.
+
+  If you have any specific features or use cases you'd like us to focus on during the demo,
+  please let me know so I can tailor the presentation to your needs.
+
+  Looking forward to hearing from you and showing you how our platform can benefit your
+  growing company.
+
+  Best regards,
+
+  [Your Name]
+  [Your Position]
+  [Contact Information]"
+}
+`}
+explanation={`
+This code illustrates how to build an email processing workflow. Here's a step-by-step guide:
+
+1. Workflow Setup:
+
+    - Create a multi-step email processing workflow
+
+2. Email Analysis:
+
+    - Summarizes the content of the email
+    - Analyzes the sentiment of the message
+    - Determines if a response is needed
+
+3. Response Generation:
+    - If a response is needed, generates an appropriate reply
+    - Tailors the response based on the email content and sentiment
+      `}
+  >
+
+<LanguageContent language="typescript">
+<CodeGroup title="Email Processing Workflow Example" exampleTitle="Email Processing Workflow Example">
+```ts {{ title: 'index.ts' }}
+import "dotenv/config";
+import { Langbase } from "langbase";
+
+async function processEmail({ emailContent }: { emailContent: string }) {
+  // Initialize Langbase
+  const langbase = new Langbase({
+    apiKey: process.env.LANGBASE_API_KEY!,
+  });
+
+  // Create a new workflow
+  const workflow = langbase.workflow();
+
+  const { step } = workflow;
+
+  try {
+    // Steps 1 & 2: Run summary and sentiment analysis in parallel
+    const [summary, sentiment] = await Promise.all([
+      step({
+        id: "summarize_email", // The id for the step
+        run: async () => {
+          const { output } = await langbase.agent.run({
+            model: "openai:gpt-4.1-mini",
+            instructions: `Create a concise summary of this email. Focus on the main points,
+          requests, and any action items mentioned.`,
+            apiKey: process.env.LLM_API_KEY!,
+            input: [{ role: "user", content: emailContent }],
+            stream: false,
+          });
+
+          return output;
+        },
+      }),
+
+      step({
+        id: "analyze_sentiment",
+        run: async () => {
+          const { output } = await langbase.agent.run({
+            model: "openai:gpt-4.1-mini",
+            instructions: `Analyze the sentiment of this email. Provide a brief analysis
+            that includes the overall tone (positive, neutral, or negative) and any notable
+            emotional elements.`,
+            apiKey: process.env.LLM_API_KEY!,
+            input: [{ role: "user", content: emailContent }],
+            stream: false,
+          });
+
+          return output;
+        },
+      }),
+    ]);
+
+    // Step 3: Determine if response is needed (using the results from previous steps)
+    const responseNeeded = await step({
+      id: "determine_response_needed",
+      run: async () => {
+        const { output } = await langbase.agent.run({
+          model: "openai:gpt-4.1-mini",
+          instructions: `Based on the email summary and sentiment analysis, determine if a
+          response is needed. Answer with 'yes' if a response is required, or 'no' if no
+          response is needed. Consider factors like: Does the email contain a question?
+          Is there an explicit request? Is it urgent?`,
+          apiKey: process.env.LLM_API_KEY!,
+          input: [
+            {
+              role: "user",
+              content: `Email: ${emailContent}\n\nSummary: ${summary}\n\nSentiment: ${sentiment}\n\nDoes this email
+              require a response?`,
+            },
+          ],
+          stream: false,
+        });
+
+        return output.toLowerCase().includes("yes");
+      },
+    });
+
+    // Step 4: Generate response if needed
+    let response = null;
+    if (responseNeeded) {
+      response = await step({
+        id: "generate_response",
+        run: async () => {
+          const { output } = await langbase.agent.run({
+            model: "openai:gpt-4.1-mini",
+            instructions: `Generate a professional email response. Address all questions
+            and requests from the original email. Be helpful, clear, and maintain a
+            professional tone that matches the original email sentiment.`,
+            apiKey: process.env.LLM_API_KEY!,
+            input: [
+              {
+                role: "user",
+                content: `Original Email: ${emailContent}\n\nSummary: ${summary}\n\n
+                Sentiment Analysis: ${sentiment}\n\nPlease draft a response email.`,
+              },
+            ],
+            stream: false,
+          });
+
+          return output;
+        },
+      });
+    }
+
+    // Return the results
+    return {
+      summary,
+      sentiment,
+      responseNeeded,
+      response,
+    };
+  } catch (error) {
+    console.error("Email processing workflow failed:", error);
+    throw error;
+  } finally {
+    // Optional: Use to enable tracing
+    await workflow.end();
+  }
+}
+
+async function main() {
+  const sampleEmail = `
+Subject: Pricing Information and Demo Request
+
+    Hello,
+
+    I came across your platform and I'm interested in learning more about your product
+    for our growing company. Could you please send me some information on your pricing tiers?
+
+    We're particularly interested in the enterprise tier as we now have a team of about
+    50 people who would need access. Would it be possible to schedule a demo sometime next week?
+
+    Thanks in advance for your help!
+
+    Best regards,
+    Jamie
+
+`;
+
+  const results = await processEmail({ emailContent: sampleEmail });
+  console.log(JSON.stringify(results, null, 2));
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Email Processing Workflow Example" exampleTitle="Email Processing Workflow Example">
+```python {{ title: 'index.py' }}
+import os
+import json
+from langbase import Langbase, Workflow
+
+async def process_email(email_data: dict):
+    # Initialize Langbase
+    langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+    # Create a new workflow
+    workflow = Workflow()
+
+    try:
+        # Steps 1 & 2: Run summary and sentiment analysis in parallel
+        async def summarize_email():
+            response = await langbase.agent.run(
+                model='openai:gpt-4.1-mini',
+                instructions='Create a concise summary of this email. Focus on the main points, requests, and any action items mentioned.',
+                api_key=os.getenv('LLM_API_KEY'),
+                input=[{'role': 'user', 'content': email_data['emailContent']}],
+                stream=False
+            )
+            return response.output
+
+        async def analyze_sentiment():
+            response = await langbase.agent.run(
+                model='openai:gpt-4.1-mini',
+                instructions='Analyze the sentiment of this email. Provide a brief analysis that includes the overall tone (positive, neutral, or negative) and any notable emotional elements.',
+                api_key=os.getenv('LLM_API_KEY'),
+                input=[{'role': 'user', 'content': email_data['emailContent']}],
+                stream=False
+            )
+            return response.output
+
+        summary, sentiment = await asyncio.gather(
+            workflow.step(id='summarize_email', run=summarize_email),
+            workflow.step(id='analyze_sentiment', run=analyze_sentiment)
+        )
+
+        # Step 3: Determine if response is needed
+        async def determine_response_needed():
+            response = await langbase.agent.run(
+                model='openai:gpt-4.1-mini',
+                instructions='Based on the email summary and sentiment analysis, determine if a response is needed. Answer with \'yes\' if a response is required, or \'no\' if no response is needed. Consider factors like: Does the email contain a question? Is there an explicit request? Is it urgent?',
+                api_key=os.getenv('LLM_API_KEY'),
+                input=[{
+                    'role': 'user',
+                    'content': f'Email: {email_data["emailContent"]}\n\nSummary: {summary}\n\nSentiment: {sentiment}\n\nDoes this email require a response?'
+                }],
+                stream=False
+            )
+            return 'yes' in response.output.lower()
+
+        response_needed = await workflow.step(
+            id='determine_response_needed',
+            run=determine_response_needed
+        )
+
+        # Step 4: Generate response if needed
+        response = None
+        if response_needed:
+            async def generate_response():
+                response = await langbase.agent.run(
+                    model='openai:gpt-4.1-mini',
+                    instructions='Generate a professional email response. Address all questions and requests from the original email. Be helpful, clear, and maintain a professional tone that matches the original email sentiment.',
+                    api_key=os.getenv('LLM_API_KEY'),
+                    input=[{
+                        'role': 'user',
+                        'content': f'Original Email: {email_data["emailContent"]}\n\nSummary: {summary}\n\nSentiment Analysis: {sentiment}\n\nPlease draft a response email.'
+                    }],
+                    stream=False
+                )
+                return response.output
+
+            response = await workflow.step(
+                id='generate_response',
+                run=generate_response
+            )
+
+        # Return the results
+        return {
+            'summary': summary,
+            'sentiment': sentiment,
+            'responseNeeded': response_needed,
+            'response': response
+        }
+    except Exception as error:
+        print(f'Email processing workflow failed: {error}')
+        raise error
+
+async def main():
+    sample_email = """
+Subject: Pricing Information and Demo Request
+
+    Hello,
+
+    I came across your platform and I'm interested in learning more about your product
+    for our growing company. Could you please send me some information on your pricing tiers?
+
+    We're particularly interested in the enterprise tier as we now have a team of about
+    50 people who would need access. Would it be possible to schedule a demo sometime next week?
+
+    Thanks in advance for your help!
+
+    Best regards,
+    Jamie
+"""
+
+    results = await process_email({'emailContent': sample_email})
+    print(json.dumps(results, indent=2))
+
+if __name__ == '__main__':
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+</RunExample>
+</LanguageProvider>

@@ -1,0 +1,95 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+
+export const metadata = generateMetadata({
+    title: 'Chunk text',
+    description: `An example demonstrating how to chunk text.`,
+    section: 'Examples',
+    slug: '/examples/chunker/chunk-text'
+});
+
+
+## Chunk Text
+
+This example demonstrates how to chunk text.
+
+---
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Chunk Text Example"
+	output={`[
+	"Langbase is the most powerful serverless AI platform for building AI agents with memory.Build, deploy, and scale AI agents with tools and memory (RAG). Simple AI primitives with a world-class developer experience without using any frameworks.Compared to complex AI frameworks, Langbase is serverless and the first composable AI platform.Build AI agents without any bloated frameworks. You write the logic, we handle the logistics.Start by building simple AI agents (pipes)Then train serverless semantic Memory agents (RAG) to get accurate and trusted resultsLangbase provides several options to get started:AI Studio: Build, collaborate, and deploy AI Agents with tools and Memory (RAG).Langbase SDK: Easiest wasy to build AI Agents with TypeScript. (recommended)HTTP API: Build AI agents with any language (Python, Go, PHP, etc.).Products\tDescription AI Pipes(Serverless Agents)",
+	"HTTP API: Build AI agents with any language (Python, Go, PHP, etc.).Products\tDescription AI Pipes(Serverless Agents)Pipes are serverless AI agents with agentic tools. Work with any language or framework. Pipe is a serverless AI agent. It has agentic memory and tools. Deploy thousands of serverless agent pipes as easily as a website. Build and scale AI experiences powered by industry-leading 250+ LLM models and tools. Learn more about AI Pipes. AI Memory(Serverless RAG)Langbase memory agents are the next frontier in semantic retrieval-augmented generation (RAG) as a serverless and infinitely scalable API designed for developers. 30-50x less expensive than compeition, with industry-leading accuracy in advanced agentic routing and intelligent reranking.",
+	"Memory is multi-tanent by design. Have tens of millions of memory RAG stores. Per user or per use-case memory RAGs. Memory is a powerful tool for developers to build AI features and products. Learn more about AI Memory agents. AI Studio(Dev Platform)Langbase Studio is your playground to build, collaborate, and deploy AI. It allows you to experiment with your pipes in real-time, with real data, store messages, version your prompts, and truly helps you take your idea from building prototypes to deployed in production with LLMOps on usage, cost, and quality. Access Langbase Studio.A complete AI developers platform.- Collaborate: Invite all team members to collaborate on the pipe. Build AI together.- Developers & Stakeholders: All your R&D team, engineering, product, GTM (marketing and sales), literally all your stakeholders can collaborate on the same pipe. It's like a powerful version of GitHub x Google Docs for AI. A complete AI developers platform.Join today",
+	"Join today. Langbase is free for anyone to get started. We process billions of AI messages tokens daily, used by thousands of developers. Tweet us  what will you ship with Langbase? It all started with a developer thinking  GPT is amazing, I want it everywhere, that's what  Langbase does for me."
+]`}
+explanation={`
+This code demonstrates how to chunk text in Langbase. Here's a step-by-step guide:
+   - The chunk request is executed using the Langbase SDK
+   - Outputs the response to display the chunked content
+`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Chunk Text Example" exampleTitle="Chunk Text Example">
+```ts {{ title: 'index.ts' }}
+import {Langbase} from 'langbase';
+import 'dotenv/config';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const content = `Langbase is the most powerful serverless AI platform for building AI agents with memory. Build, deploy, and scale AI agents with tools and memory (RAG). Simple AI primitives with a world-class developer experience without using any frameworks.`;
+
+	const results = await langbase.chunker({
+		content,
+		chunkMaxLength: 1024,
+		chunkOverlap: 256,
+	});
+
+	console.log(results);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Chunk Text Example" exampleTitle="Chunk Text Example">
+```python {{ title: 'index.py' }}
+import os
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main():
+    content = "Langbase is the most powerful serverless AI platform for building AI agents with memory. Build, deploy, and scale AI agents with tools and memory (RAG). Simple AI primitives with a world-class developer experience without using any frameworks."
+
+    results = langbase.chunker(
+        content=content,
+        chunk_max_length=1024,
+        chunk_overlap=256
+    )
+
+    print(results)
+
+if __name__ == '__main__':
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>
+
+
+---

@@ -1,0 +1,98 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Retry Embedding',
+    description: `An example of how to retry embedding.`,
+    section: 'Examples',
+    slug: '/examples/memory/retry-embedding'
+});
+
+# Retry Embedding
+
+This example demonstrates how to retry embedding generation for a document in Langbase memory.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/memory"
+
+	title="Retry Embedding Example"
+	output={`{ "success": true }`}
+explanation={`
+This code demonstrates how to retry embedding generation for a document in Langbase memory, tailored to our specific use case. Here's a step-by-step guide:
+
+1. Embedding Retry:
+   - Specifies the memory name "memory-sdk"
+   - Specifies the document name "memory.upload.doc.ts" for which embedding generation needs to be retried
+
+2. Execution:
+   - The retry request is executed using the Langbase SDK with the specified memory and document names
+   - Handles the response to confirm the retry operation
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Retry Embedding Example" exampleTitle="Retry Embedding Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.memories.documents.embeddings.retry({
+		memoryName: 'memory-sdk',
+		documentName: 'readme.md',
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Retry Embedding Example" exampleTitle="Retry Embedding Example">
+```python {{ title: 'index.py' }}
+import json
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+def main():
+    load_dotenv()
+
+    # Get API key from environment variable
+    langbase_api_key = os.getenv("LANGBASE_API_KEY")
+
+    # Initialize the client
+    langbase = Langbase(api_key=langbase_api_key)
+
+    # Memory name to retry embedding for
+    memory_name = "memory-sdk"
+    document_name = "readme.md"
+
+    # Retry embedding for failed documents
+    try:
+        response = langbase.memories.documents.embeddings.retry(
+            memory_name=memory_name, document_name=document_name
+        )
+
+        print(f"Retry embedding initiated for memory '{memory_name}'")
+        print(json.dumps(response, indent=2))
+
+    except Exception as e:
+        print(f"Error retrying embedding: {e}")
+
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+</RunExample>
+</LanguageProvider>

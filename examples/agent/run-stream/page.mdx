@@ -1,0 +1,149 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+
+export const metadata = generateMetadata({
+    title: 'Run Agent Streaming',
+    description: `An example of running a agent with streaming.`,
+    section: 'Examples',
+    slug: '/examples/agent/run-stream'
+});
+
+# Run Agent Streaming
+
+This example demonstrates how to run an agent with streaming response.
+
+---
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Run Agent Streaming Example"
+	output={`
+Stream started.
+
+An AI engineer is a professional who specializes in the development and implementation of artificial intelligence (AI) systems and applications. They work at the intersection of software engineering, data science, and machine learning, using their skills to create algorithms and models that enable machines to perform tasks that typically require human intelligence.
+AI engineers typically have a background in computer science, data science, mathematics, or related fields, often holding at least a bachelor's degree, with many having master's degrees or PhDs in specialized areas.
+Overall, AI engineers play a critical role in advancing the capabilities of AI technologies and applying them to real-world challenges across various industries.
+
+Stream ended.
+`}
+explanation={`
+This guide provides a streamlined approach to running an agent with streaming responses. Here's a simplified breakdown:
+
+1. Start with a User Message:
+   - Set up the initial message to be sent to the agent.
+
+2. Execute the Agent:
+   - Use the langbase.agent.run() with the 'summary-agent'.
+   - The agent processes the message and streams the response.
+
+3. Handle the Stream:
+   - Convert the stream to a stream runner.
+   - Use event listeners to handle the stream events.
+   - Write the content to the console.
+
+4. Complete the Execution:
+   - The Langbase SDK handles the stream.
+   - Display the streaming responses to observe the agent's output.
+
+`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Run Agent Streaming Example" exampleTitle="Run Agent Streaming Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {getRunner, Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+
+	// Get readable stream
+	const {stream} = await langbase.agent.run({
+		stream: true,
+		apiKey: process.env.OPENAI_API_KEY!,
+		model: 'openai:gpt-4.1-mini',
+        instructions: 'You are a helpful assistant that help users summarize text.',
+		input: [
+			{
+				role: 'user',
+				content:  'Who is an AI Engineer?'
+			}
+		]
+	});
+
+
+	// Convert the stream to a stream runner.
+	const runner = getRunner(stream);
+
+	// Method 1: Using event listeners
+	runner.on('connect', () => {
+		console.log('Stream started.\n');
+	});
+
+	runner.on('content', content => {
+		process.stdout.write(content);
+	});
+
+	runner.on('end', () => {
+		console.log('\nStream ended.');
+	});
+
+	runner.on('error', error => {
+		console.error('Error:', error);
+	});
+}
+
+main();
+
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Run Agent Streaming Example" exampleTitle="Run Agent Streaming Example">
+```python {{ title: 'index.py' }}
+import os
+from dotenv import load_dotenv
+from langbase import Langbase, get_runner
+
+load_dotenv()
+
+def main():
+    langbase_api_key = os.environ.get("LANGBASE_API_KEY")
+    api_key = os.environ.get("LLM_API_KEY")
+
+    langbase = Langbase(api_key=langbase_api_key)
+
+    response = langbase.agent.run(
+        stream=True,
+        model="openai:gpt-4.1-mini",
+        instructions="You are a helpful assistant that help users summarize text.",
+        input=[{"role": "user", "content": "Who is an AI Engineer?"}],
+        api_key=api_key,
+    )
+
+    runner = get_runner(response)
+    print("Stream started.\n")
+
+    for content in runner.text_generator():
+        print(content, end="", flush=True)
+
+    print("\nStream ended.")
+
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>
+
+
+---

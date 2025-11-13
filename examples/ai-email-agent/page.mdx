@@ -1,0 +1,657 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+
+export const metadata = generateMetadata({
+    title: 'AI Email Agent - Guides',
+    description: `A step-by-step guide to build an AI email agent using Langbase agent pipes.`,
+    section: 'Agent Examples',
+    slug: '/examples/ai-email-agent'
+});
+
+# Build AI Email Agents: Composable Multi-agent
+
+### A step-by-step guide to build a composable multi agent architecture using Langbase SDK.
+
+---
+
+In this guide, you will build an AI email agent that uses multiple Langbase agent pipes to:
+
+-   **Summarize** an email
+-   **Analyze** sentiment of the email
+-   **Decide** whether the email needs a response or not
+-   **Pick** the tone of the response email
+-   **Generate** a response email
+
+<CTAButtons
+	example
+	className="my-8"
+	primary={{
+		href: 'https://ai-email-agent.langbase.dev',
+		text: 'Live demo'
+	}}
+	secondary={{
+		href: 'https://github.com/LangbaseInc/langbase-examples/tree/main/examples/email-agent-node',
+		text: 'Source code (Node.js)'
+	}}
+	others={
+		[
+			{
+				href: 'https://github.com/LangbaseInc/langbase-examples/tree/main/examples/ai-email-agent',
+				text: 'Source code (Next.js)'
+			},
+			{
+				href: 'https://github.com/LangbaseInc/langbase-examples/tree/main/examples/email-agent-python',
+				text: 'Source code (Python)'
+			}
+		]
+	}
+/>
+
+---
+
+You will build a basic Node.js application that will use the [Langbase SDK](/sdk) to connect to the AI agent pipes and generate responses using **parallelization** and **prompt-chaining** agent architectures.
+
+<DesktopOnly>
+
+## Flow reference architecture
+
+There are two flows in the email agent, i.e., **User Email Flow** and **Spam Email Flow**.
+
+The **User Email Flow** is a normal email flow where the user sends an email, and the AI agent analyzes the email sentiment, summarizes the email content, decides the email needs a response, picks the tone of the response email, and generates the response email.
+
+The **Spam Email Flow** is a spam email flow where the AI agent analyzes the email sentiment, summarizes the email content, and decides that the email does not need a response.
+
+**Demo workflow: Click [Send spam email] or [Send valid email] to see how it works:**
+
+<Flows />
+
+</DesktopOnly>
+
+Let's get started!
+
+---
+
+## Step #0: Setup your project
+
+Create a new directory for your project and navigate to it.
+
+<CodeGroup exampleTitle="Project setup" title="Project setup">
+	```bash
+	mkdir ai-email-agent && cd ai-email-agent
+	```
+</CodeGroup>
+
+### Initialize the project
+
+Initialize Node.js project and create an `index.ts` file.
+
+<CodeGroup exampleTitle="Initialize project" title="Initialize project">
+```bash {{ title: 'npm' }}
+npm init -y && touch index.ts && touch agents.ts
+```
+
+```bash {{ title: 'pnpm' }}
+pnpm init && touch index.ts && touch agents.ts
+```
+
+```bash {{ title: 'yarn' }}
+yarn init -y && touch index.ts && touch agents.ts
+```
+
+</CodeGroup>
+
+### Install dependencies
+
+You will use the [Langbase SDK](/sdk) to connect to the AI agent pipes and `dotenv` to manage environment variables. So, let's install these dependencies.
+
+<CodeGroup exampleTitle="Install dependencies" title="Install dependencies">
+```bash {{ title: 'npm' }}
+npm i langbase dotenv
+```
+
+```bash {{ title: 'pnpm' }}
+pnpm add langbase dotenv
+```
+
+```bash {{ title: 'yarn' }}
+yarn add langbase dotenv
+```
+</CodeGroup>
+
+## Step #1: Get Langbase API Key
+
+Every request you send to Langbase needs an [API key](/api-reference/api-keys). This guide assumes you already have one. In case, you do not have an API key, please check the instructions below.
+
+<Spoiler title="Get your Langbase API key: User or Org">
+You can generate API keys from the [Langbase Studio](https://studio.langbase.com) by following these steps:
+
+1. Switch to your user or org account.
+2. From the sidebar, click on the `API keys`.
+3. From here you can create a new API key or manage existing ones.
+
+For more details, follow the [Langbase API keys](/api-reference/api-keys) documentation.
+
+</Spoiler>
+
+Create an `.env` file in the root of your project and add your Langbase API key.
+
+```bash {{ title: '.env' }}
+LANGBASE_API_KEY=xxxxxxxxx
+```
+
+Replace xxxxxxxxx with your Langbase API key.
+
+## Step #3: Add LLM API keys
+
+If you have set up LLM API keys in your profile, the Pipe will automatically use them. If not, navigate to [LLM API keys](https://langbase.com/settings/keys#keyset) page and add keys for different providers like OpenAI, TogetherAI, Anthropic, etc.
+
+<Spoiler title="Add LLM API keys to your account">
+You can add LLM API keys in your account using [Langbase Studio](https://studio.langbase.com) by following these steps:
+
+1. Switch to your user or org account.
+2. From the sidebar, click on the `API keys` and scroll down to the LLM API keys section.
+3. From here you can add LLM API keys for different providers like OpenAI, TogetherAI, Anthropic, etc.
+
+</Spoiler>
+
+## Step #4: Fork the AI agent pipes
+
+Fork the following agent pipes needed for the AI email agent in Langbase dashboard:
+
+1. [Email Sentiment][email-sentiment] → An agent pipe to analyze the sentiment of the incoming email
+2. [Summarizer][summarizer] → Summarizes the content of the email and makes it less wordy for you
+3. [Decision Maker][decision-maker] → Decides if the email needs a response, the category and priority of the response
+4. [Pick Email Writer][pick-email-writer] → An AI agent pipe that picks the tone for writing the response to the email
+5. [Email Writer][email-writer] → An agent pipe that will write a response email
+
+## Step #4: Sentiment Analysis
+
+In our first step, you will **analyze** the **email sentiment** using the Langbase AI agent pipe. Go ahead and add the following code to your `agents.ts` file:
+
+<CodeGroup exampleTitle="Email sentiment agent" title="Email sentiment agent">
+```ts {{ title: 'agents.ts' }}
+import { Langbase } from 'langbase';
+import 'dotenv/config'
+
+const langbase = new Langbase({ apiKey: process.env.LANGBASE_API_KEY! });
+
+// Sentiment analysis
+export const emailSentimentAgent = async (emailContent: string) => {
+	const response = await langbase.pipes.run({
+		stream: false,
+		json: true,
+		name: 'email-sentiment',
+		messages: [
+			{
+				role: 'system',
+				content: `You are a sentiment analyzer.
+					You will analyze user email sentiment.
+					Respond in JSON with "sentiment" key
+					Pick from happy | frustrated | neutral | sad`
+			},
+			{
+				role: 'user',
+				content: emailContent
+			}
+		]
+	});
+
+	const completion = JSON.parse(response.completion);
+	return completion.sentiment;
+};
+```
+</CodeGroup>
+
+Let's take a look at what is happening in this code:
+
+- Initialize the [Langbase SDK](/sdk) with the API key from the environment variables.
+- Define `emailSentimentAgent` function that takes an email and returns its **sentiment analysis**.
+- Set the `json` parameter to `true` to get the response in JSON format.
+- Set the `stream` parameter to `false` because the content generation will be processed internally.
+
+<Note sub="AI user experience" classNameDescription="gap-0 mt-3">
+
+Stream the response:
+- When it's displayed **directly** to users in the UI.
+- This creates a **better user experience** by showing the AI's response being generated in real-time.
+
+Do not stream:
+- When the AI response is being **processed internally** (e.g., for data analysis, content moderation, or generating metadata).
+- Set stream to false in these cases since real-time display isn't needed.
+
+</Note>
+
+## Step #5: Summarize Email
+
+Now let's write a function in the same `agents.ts` file to **summarize** the email content.
+
+<CodeGroup exampleTitle="Email summary agent" title="Email summary agent">
+
+```ts {{ title: 'agents.ts' }}
+// Summarize email
+export const emailSummaryAgent = async (emailContent: string) => {
+	const response = await langbase.pipes.run({
+		json: true,
+		stream: false,
+		name: 'summarizer',
+		messages: [
+			{
+				role: 'system',
+				content: `You are a content summarizer. You will summarize content
+				without loosing context into less wordy to the point version.`
+			},
+			{
+				role: 'user',
+				content: emailContent
+			}
+		]
+	});
+
+	const completion = JSON.parse(response.completion);
+	return completion.summary;
+};
+```
+</CodeGroup>
+
+Let's break down the above code:
+
+-  Define a function `emailSummaryAgent` that takes an email and returns its **summarized content**.
+- Set the `json` parameter to `true` to get the response in JSON format.
+- Set the `stream` parameter to `false` because the content generation will be processed internally.
+
+## Step #6: Decision Maker
+
+You are building a **ReAct based architecture** which means the sytem first reason over the info it has and then decide to act.
+
+In this example, results of the email sentiment and summary are passed to the decision-making agent pipe to **decide** whether to respond to the email or not.
+
+![ReAct architecture](/docs/react-architecture-2.jpg)
+
+Go ahead and add the following code to your `agents.ts` file:
+
+<CodeGroup exampleTitle="Should respond to email agent" title="Should respond to email agent">
+```ts {{ title: 'agents.ts' }}
+// Determine if a response is needed
+export const shouldRespondToEmailAgent = async (summary: string, sentiment: string) => {
+	const response = await langbase.pipes.run({
+		json: true,
+		stream: false,
+		name: 'decision-maker',
+		messages: [
+			{
+				role: 'system',
+				content: `You are a decision maker that analyzes and decides if the given email requires a response or not.
+					Make sure to check if the email is spam or not. If the email is spam, then it does not need a response.
+					If it requires a response, based on the email urgency, decide the response date. Also define the response priority.
+
+					Use following keys and values accordingly
+					- respond: true | false
+					- category: primary | spam
+					- priority: urgent | high | medium | low`
+			},
+			{
+				role: 'user',
+				content: `Email Summary: ${summary}
+						Email sentiment: ${sentiment}`
+			}
+		],
+	});
+
+	const completion = JSON.parse(response.completion);
+	return completion.respond;
+};
+```
+</CodeGroup>
+
+Let's go through the above code.
+
+- Define a function `shouldRespondToEmailAgent` that takes the summarized content and sentiment of the email and returns a decision.
+- Set the `json` parameter to `true` to get the response in JSON format.
+- Set the `stream` parameter to `false` because the content generation will be processed internally.
+
+## Step #7: Pick Email Writer
+
+In cases where the email needs a response, you will use the **Pick Email Writer** agent pipe to pick the tone of the email response.
+
+<CodeGroup exampleTitle="Pick email writer agent" title="Pick email writer agent">
+```ts {{ title: 'agents.ts' }}
+//  Pick an email writer
+export const pickEmailWriterAgent = async (summary: string, sentiment: string) => {
+	const response = await langbase.pipes.run({
+		json: true,
+		stream: false,
+		name: 'pick-email-writer',
+		messages: [
+			{
+				role: 'system',
+				content:
+					`You are an email tone picker that analyzes the input
+					and picks up the response email tone.
+					Pick from: professional | formal | informal | casual | friendly`
+			},
+			{
+				role: 'user',
+				content: `Email Summary: ${summary}
+						Email sentiment: ${sentiment}`
+			}
+		],
+
+	});
+
+	const completion = JSON.parse(response.completion);
+	return completion.tone;
+};
+```
+</CodeGroup>
+
+Here's what you have done in this step:
+
+-   Created a function `pickEmailWriterAgent` that uses the **summarized email** and **sentiment** to pick one of the following tones for response:
+    -   Professional
+    -   Formal
+    -   Informal
+    -   Casual
+    -   Friendly
+- Set the `json` parameter to `true` to get the response in JSON format.
+- Set the `stream` parameter to `false` because the content generation will be processed internally.
+
+## Step #8: Write Email Response
+
+Finally, you will use the **Email Writer** agent pipe to generate the response email based on the tone picked in the previous step.
+
+<CodeGroup exampleTitle="Write email response agent" title="Write email response agent">
+```ts {{ title: 'agents.ts' }}
+// Generate an email reply
+export const emailResponseAgent = async (writer: string, summary: string) => {
+	const { stream } = await langbase.pipes.run({
+		stream: true,
+		name: 'email-writer',
+		messages: [
+			{
+				role: 'system',
+				content: `You are an email writer that writes a concise
+				to the point well written email as a reply to a user email.`,
+			},
+			{
+				role: 'user',
+				content: `Write a response using the following information:
+						 Email tone: ${writer}
+						 User email: ${summary}`,
+			},
+		],
+	});
+	return stream;
+};
+```
+</CodeGroup>
+
+Let's take a look at the above code:
+
+-   Created a function `emailResponseAgent` that takes the **tone** and **summarized email** and returns the **response email**.
+-   Set the `stream` parameter to `true` to get the response in stream format as you will be writing the response to the console.
+
+## Step #9: Final composable multi-agent workflow
+
+Now that you have all these agents, you can combine these in multi agent workflow so they can help us
+
+1. **analyze** the email
+2. **summarize** the email
+3. **decide** if it needs a response
+4. **pick** the tone of the response
+5. **generate** the response email if needed.
+
+In `index.ts` file, let's import all our agents and define a `workflow` that to run with user email and spam email.
+
+<CodeGroup exampleTitle="Agent workflow" title="Agent workflow">
+```ts {{ title: 'index.ts' }}
+import { getRunner } from 'langbase';
+import {
+	emailResponseAgent,
+	emailSentimentAgent,
+	emailSummaryAgent,
+	pickEmailWriterAgent,
+	shouldRespondToEmailAgent,
+} from './agents';
+import { stdout } from 'process';
+
+const workflow = async (emailContent: string) => {
+	console.log('Email:', emailContent);
+
+	// parallelly run the agent pipes
+	const [emailSentiment, emailSummary] = await Promise.all([
+		emailSentimentAgent(emailContent),
+		emailSummaryAgent(emailContent),
+	]);
+	console.log('Sentiment:', emailSentiment);
+	console.log('Summary:', emailSummary);
+
+	const respond = await shouldRespondToEmailAgent(emailSummary, emailSentiment);
+	console.log('Respond:', respond);
+
+	if (!respond) {
+		return 'No response needed for this email.';
+	}
+
+	const writer = await pickEmailWriterAgent(emailSummary, emailSentiment);
+	console.log('Writer:', writer);
+
+	const emailStream = await emailResponseAgent(writer, emailSummary);
+
+	const runner = getRunner(emailStream);
+	runner.on('content', (content: string) => {
+		stdout.write(content);
+	});
+};
+
+const userEmail = `I'm really disappointed with the service I received yesterday. The product was faulty and customer support was unhelpful.`;
+const spamEmail = `Congratulations! You have been selected as the winner of a $100 million lottery!`;
+
+workflow(userEmail);
+```
+
+```ts {{title: './agents.ts'}}
+import { Langbase } from 'langbase';
+import 'dotenv/config'
+
+const langbase = new Langbase({ apiKey: process.env.LANGBASE_API_KEY! });
+
+// Sentiment analysis
+export const emailSentimentAgent = async (emailContent: string) => {
+	const response = await langbase.pipes.run({
+		json: true,
+		stream: false,
+		name: 'email-sentiment',
+		messages: [
+			{
+				role: 'system',
+				content: `You are a sentiment analyzer.
+					You will analyze user email sentiment.
+					Respond in JSON with "sentiment" key
+					Pick from happy | frustrated | neutral | sad`
+			},
+			{
+				role: 'user',
+				content: emailContent
+			}
+		]
+	});
+
+	const completion = JSON.parse(response.completion);
+	return completion.sentiment;
+};
+
+// Summarize email
+export const emailSummaryAgent = async (emailContent: string) => {
+	const response = await langbase.pipes.run({
+		json: true,
+		stream: false,
+		name: 'summarizer',
+		messages: [
+			{
+				role: 'system',
+				content: `You are a content summarizer. You will summarize content
+				without loosing context into less wordy to the point version.`
+			},
+			{
+				role: 'user',
+				content: emailContent
+			}
+		]
+	});
+
+	const completion = JSON.parse(response.completion);
+	return completion.summary;
+};
+
+// Determine if a response is needed
+export const shouldRespondToEmailAgent = async (summary: string, sentiment: string) => {
+	const response = await langbase.pipes.run({
+		json: true,
+		stream: false,
+		name: 'decision-maker',
+		messages: [
+			{
+				role: 'system',
+				content: `You are a decision maker that analyzes and decides if the given email requires a response or not.
+					Make sure to check if the email is spam or not. If the email is spam, then it does not need a response.
+					If it requires a response, based on the email urgency, decide the response date. Also define the response priority.
+
+					Use following keys and values accordingly
+					- respond: true | false
+					- category: primary | spam
+					- priority: urgent | high | medium | low`
+			},
+			{
+				role: 'user',
+				content: `Email summary: ${summary}
+						Email Sentiment: ${sentiment}`
+			}
+		],
+	});
+
+	const completion = JSON.parse(response.completion);
+	return completion.respond;
+};
+
+//  Pick an email writer
+export const pickEmailWriterAgent = async (summary: string, sentiment: string) => {
+	const response = await langbase.pipes.run({
+		json: true,
+		stream: false,
+		name: 'pick-email-writer',
+		messages: [
+			{
+				role: 'system',
+				content:
+					`You are an email tone picker that analyzes the input
+					and picks up the response email tone.
+					Pick from: professional | formal | informal | casual | friendly`
+			},
+			{
+				role: 'user',
+				content: `Email summary: ${summary}
+						Email sentiment: ${sentiment}`
+			}
+		],
+
+	});
+
+	const completion = JSON.parse(response.completion);
+	return completion.tone;
+};
+
+// Generate an email reply
+export const emailResponseAgent = async (writer: string, summary: string) => {
+	const { stream } = await langbase.pipes.run({
+		json: true,
+		stream: true,
+		name: 'email-writer',
+		messages: [
+			{
+				role: 'system',
+				content: `You are an email writer that writes a concise
+				to the point well written email as a reply to a user email.`,
+			},
+			{
+				role: 'user',
+				content: `Write a response using the following information:
+						 Email tone: ${writer}
+						 User email: ${summary}`,
+			},
+		],
+	});
+	return stream;
+};
+```
+</CodeGroup>
+
+Here's what you have done in this step:
+
+- Define a `workflow` function that takes an email content and runs the email sentiment, summary, decision-making, email writer, and email response agents.
+- You have used the `getRunner` function to get the stream of the email response and write it to the console.
+- You have also defined the `emailSentimentAgent`, `emailSummaryAgent`, `shouldRespondToEmailAgent`, `pickEmailWriterAgent`, and `emailResponseAgent` functions to run the respective agents.
+
+
+## Step #10: Run the workflow
+
+Run the email agent workflow by running the following command in terminal:
+
+<CodeGroup exampleTitle="Initialize project" title="Initialize project">
+	```bash {{ title: 'npx' }}
+	npx tsx index.ts
+	```
+
+    ```bash {{ title: 'pnpm' }}
+    pnpm dlx tsx index.ts
+    ```
+
+</CodeGroup>
+
+You should see the following output in the console:
+
+```md {{ title: 'Email Agent output' }}
+Email: I'm really disappointed with the service I received yesterday. The product was faulty and customer support was unhelpful.
+Sentiment: frustrated
+Summary: Disappointed with faulty product and unhelpful customer support.
+Respond: true
+Writer: formal
+Subject: Re: Concern Regarding Faulty Product and Support Experience
+
+Dear [User's Name],
+
+Thank you for reaching out to us regarding your experience with our product and customer support. I sincerely apologize for the inconvenience you've encountered.
+
+We strive to provide high-quality products and exceptional service, and it is disappointing to hear that we did not meet those standards in your case. Please rest assured that your feedback is taken seriously, and we are committed to resolving this matter promptly.
+
+To assist you further, could you please provide details about the specific issues you're facing? This will enable us to address your concerns more effectively.
+
+Thank you for bringing this to our attention, and I look forward to assisting you.
+
+Best regards,
+
+[Your Name]
+[Your Position]
+[Company Name]
+[Contact Information]
+```
+
+This is how you can build an AI email agent using Langbase agent pipes.
+
+---
+
+## Next Steps
+
+-   Build something cool with Langbase [APIs](/api-reference) and [SDK](/sdk).
+-   Join our [Discord community](https://langbase.com/discord) for feedback, requests, and support.
+
+---
+
+
+[cover]: https://raw.githubusercontent.com/LangbaseInc/docs-images/main/examples/ai-email-agent/ai-email-agent.jpg
+[email-agent]: https://ai-email-agent.langbase.dev/
+[gh-repo]: https://github.com/LangbaseInc/langbase-examples/blob/main/examples/email-agent-node
+[local]: http://localhost:3000
+[email-sentiment]: https://langbase.com/examples/email-sentiment
+[summarizer]: https://langbase.com/examples/summarizer
+[decision-maker]: https://langbase.com/examples/decision-maker
+[pick-email-writer]: https://langbase.com/examples/pick-email-writer
+[email-writer]: https://langbase.com/examples/email-writer

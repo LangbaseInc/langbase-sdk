@@ -1,0 +1,106 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+
+export const metadata = generateMetadata({
+    title: 'Get a Thread',
+    description: `An example of how to get a thread.`,
+    section: 'Examples',
+    slug: '/examples/threads/get'
+});
+
+
+# Get a Thread
+
+This example demonstrates how to get a thread.
+
+---
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Get a Thread Example"
+	output={`{
+	id: "1e3af16c-bfe6-4129-8a2a-4c098fc6933d",
+	object: "thread",
+	created_at: 1743212406,
+	metadata: {
+		company: "langbase",
+	}
+}`}
+explanation={`
+This code demonstrates how to retrieve a thread in Langbase. Here's a step-by-step guide:
+
+1. Thread Identification:
+   - Specifies the thread ID of the thread to be retrieved
+
+2. Execution:
+   - The get request is executed using the Langbase SDK
+   - Outputs the response to confirm successful retrieval
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Get a Thread Example" exampleTitle="Get a Thread Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.threads.get({
+		threadId: 'REPLACE_WITH_THREAD_ID',
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Get a Thread Example" exampleTitle="Get a Thread Example">
+```python {{ title: 'index.py' }}
+import json
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+def main():
+    load_dotenv()
+
+    # Get API key from environment variable
+    langbase_api_key = os.getenv("LANGBASE_API_KEY")
+
+    # Initialize the client
+    langbase = Langbase(api_key=langbase_api_key)
+
+    # Thread ID to retrieve
+    thread_id = "thread_123"  # Replace with your thread ID
+
+    # Get the specific thread
+    try:
+        thread = langbase.threads.get(thread_id=thread_id)
+
+        print(json.dumps(thread, indent=2))
+
+    except Exception as e:
+        print(f"Error getting thread: {e}")
+
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>
+
+
+---

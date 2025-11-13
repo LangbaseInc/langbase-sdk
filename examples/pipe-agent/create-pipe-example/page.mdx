@@ -1,0 +1,105 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Create a Pipe Agent',
+    description: `An example of how to create a pipe agent.`,
+    section: 'Examples',
+    slug: '/examples/pipe-agent/create-pipe-example'
+});
+
+# Create a Pipe Agent
+
+This example demonstrates how to create a private pipe in Langbase.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Create Pipe Example"
+	output={`{
+		name: "summary-agent",
+		description: "AI pipe for summarization",
+		status: "private",
+		type: 'generate',
+		owner_login: "your-login",
+		api_key: "pipe_22SZSTjjUu3ntHpg.....",
+		url: "https://langbase.com/your-login/summary-agent"
+}`}
+explanation={`
+This code illustrates the creation of a simple pipe using Langbase. Here's a step-by-step guide:
+
+1. Pipe Agent Creation:
+   - Initializes a new pipe named "summary-agent"
+   - Sets the pipe's status to private
+
+2. Execution:
+   - The pipe is created using the Langbase SDK
+   - Outputs the response to confirm successful creation
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Create Pipe Example" exampleTitle="Create Pipe Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.pipes.create({
+		name: 'summary-agent',
+		status: 'private',
+		description: 'An AI pipe agent that summarizes text',
+		description: 'An AI pipe agent that summarizes text',
+		messages: [{
+			role: 'system',
+			content: 'You are a helpful assistant that helps user to summarize text.',
+		}]
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Create Pipe Agent Example" exampleTitle="Create Pipe Agent Example">
+```python {{ title: 'index.py' }}
+import os
+import json
+from langbase import Langbase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main():
+    response = langbase.pipes.create(
+        name='summary-agent',
+        status='private',
+        description='An AI pipe agent that summarizes text',
+        messages=[{
+            'role': 'system',
+            'content': 'You are a helpful assistant that helps user to summarize text.',
+        }],
+        upsert=True
+    )
+
+    print(json.dumps(response, indent=2))
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

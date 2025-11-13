@@ -1,0 +1,228 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Run Pipe Agent Streaming Chat',
+    description: `An example of running a pipe agent streaming chat.`,
+    section: 'Examples',
+    slug: '/examples/pipe-agent/run-pipe-agent-streaming-chat'
+});
+
+
+# Run Pipe Agent Streaming Chat
+
+This example demonstrates how to use streaming responses with a Langbase pipe agent while maintaining conversation context.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Run Pipe Agent Streaming Chat Example"
+	output={`
+That sounds interesting! What does Langbase do? Are you looking for help with branding, marketing, or something else related to your company?
+
+Your company's name is Langbase. If you need assistance with anything related to it, feel free to ask!
+`}
+explanation={`
+This code illustrates how to run a Pipe agent streaming chat using Langbase. Follow these steps to maintain a seamless conversation:
+
+1. Create Summary Agent:
+   - Calls the langbase.pipes.create() to create a 'summary-agent'.
+
+2. Run the Pipe Agent with the User Message:
+   - Call langbase.pipes.run() with the 'summary-agent'.
+   - The agent will process the message and provide a streaming response.
+
+3. Maintain Conversation Context using threadId:
+   - Execute the run method again, utilizing the threadId from the initial response to maintain the conversation's context.
+   - The agent will handle the follow-up message within the same thread.
+
+3. Handle the Stream:
+   - Convert the stream to a stream runner.
+   - Use event listeners to handle the stream events.
+   - Write the content to the console.
+
+4. Complete the Execution:
+   - The Langbase SDK handles the stream.
+   - Display the streaming responses to observe the agent's output.
+`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Run Pipe Agent Streaming Chat Example" exampleTitle="Run Pipe Agent Streaming Chat Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase, getRunner} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	await createSummaryAgent();
+
+	// Message 1: Tell something to the LLM.
+	const response1 = await langbase.pipes.run({
+		stream: true,
+		name: 'summary-agent',
+		messages: [
+			{
+				role: 'user',
+				content: 'My company is called Langbase'
+			}
+		]
+	});
+
+	const runner = await getRunner(response1.stream);
+	for await (const chunk of runner) {
+		if (chunk.choices[0]?.delta?.content) {
+			process.stdout.write(chunk.choices[0].delta.content);
+		}
+	}
+	console.log("\n");
+
+
+	const threadId = response1.threadId;
+
+	// Message 2: Ask something about the first message.
+	// Continue the conversation in the same thread by sending
+	// `threadId` from the second message onwards.
+	const response2 = await langbase.pipes.run({
+		stream: true,
+		name: 'summary-agent',
+		threadId: threadId!,
+		messages: [
+			{
+				role: 'user',
+				content: 'Tell me the name of my company?'
+			}
+		]
+	});
+
+	const runner2 = getRunner(response2.stream);
+
+	runner2.on('content', content => {
+		process.stdout.write(content);
+	});
+}
+
+/**
+ * Creates a summary agent pipe if it doesn't already exist.
+ *
+ * This function checks if a pipe with the name 'summary-agent' exists in the system.
+ * If the pipe doesn't exist, it creates a new private pipe with a system message
+ * configuring it as a helpful assistant.
+ *
+ * @async
+ * @returns {Promise<void>} A promise that resolves when the operation is complete
+ * @throws {Error} Logs any errors encountered during the creation process
+ */
+async function createSummaryAgent() {
+    try {
+        await langbase.pipes.create({
+            name: 'summary-agent',
+			upsert: true,
+            status: 'private',
+            messages: [
+                {
+                    role: 'system',
+                    content: 'You are a helpful assistant that help users summarize text.',
+                },
+            ],
+        });
+    } catch (error) {
+        console.error('Error creating summary agent:', error);
+    }
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Run Pipe Agent Streaming Chat Example" exampleTitle="Run Pipe Agent Streaming Chat Example">
+```python {{ title: 'index.py' }}
+import os
+from langbase import Langbase, get_runner
+from dotenv import load_dotenv
+
+load_dotenv()
+
+langbase = Langbase(api_key=os.getenv('LANGBASE_API_KEY'))
+
+def main():
+    create_summary_agent()
+
+    # Message 1: Tell something to the LLM.
+    response1 = langbase.pipes.run(
+        stream=True,
+        name='summary-agent-ex',
+        messages=[
+            {
+                'role': 'user',
+                'content': 'My company is called Langbase'
+            }
+        ]
+    )
+
+    runner1 = get_runner(response1)
+    for content in runner1.text_generator():
+        print(content, end="", flush=True)
+    print("\n")
+
+    thread_id = response1.get('thread_id')
+
+    # Message 2: Ask something about the first message, continuing the same thread.
+    response2 = langbase.pipes.run(
+        stream=True,
+        name='summary-agent-ex',
+        thread_id=thread_id,
+        messages=[
+            {
+                'role': 'user',
+                'content': 'Tell me the name of my company?'
+            }
+        ]
+    )
+
+    runner2 = get_runner(response2)
+    for content in runner2.text_generator():
+        print(content, end="", flush=True)
+    print("\n")
+
+def create_summary_agent():
+    """
+    Creates a summary agent pipe if it doesn't already exist.
+
+    This function checks if a pipe with the name 'summary-agent' exists in the system.
+    If the pipe doesn't exist, it creates a new private pipe with a system message
+    configuring it as a helpful assistant.
+
+    Returns:
+        None
+    """
+    try:
+        langbase.pipes.create(
+            name='summary-agent-ex',
+            upsert=True,
+            status='private',
+            messages=[
+                {
+                    'role': 'system',
+                    'content': 'You are a helpful assistant that help users summarize text.',
+                }
+            ]
+        )
+    except Exception as error:
+        print(f'Error creating summary agent: {error}')
+
+if __name__ == '__main__':
+   main()
+```
+</CodeGroup>
+</LanguageContent>
+</RunExample>
+
+
+</LanguageProvider>

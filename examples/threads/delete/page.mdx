@@ -1,0 +1,103 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+
+export const metadata = generateMetadata({
+    title: 'Delete a Thread',
+    description: `An example of how to delete a thread.`,
+    section: 'Examples',
+    slug: '/examples/threads/delete'
+});
+
+
+# Delete a Thread
+
+This example demonstrates how to delete a thread.
+
+---
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Delete a Thread Example"
+	output={`{ "success": true }`}
+explanation={`
+This code demonstrates how to delete a thread in Langbase. Here's a step-by-step guide:
+
+1. Thread Identification:
+   - Specifies the thread ID of the thread to be deleted
+
+2. Execution:
+   - The delete request is executed using the Langbase SDK
+   - Outputs the response to confirm successful deletion
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Delete a Thread Example" exampleTitle="Delete a Thread Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.threads.delete({
+		threadId: 'REPLACE_WITH_THREAD_ID',
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Delete a Thread Example" exampleTitle="Delete a Thread Example">
+```python {{ title: 'index.py' }}
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+def main():
+    load_dotenv()
+
+    # Get API key from environment variable
+    langbase_api_key = os.getenv("LANGBASE_API_KEY")
+
+    # Initialize the client
+    langbase = Langbase(api_key=langbase_api_key)
+
+    # Thread ID to delete
+    thread_id = "thread_123"  # Replace with your actual thread ID
+
+    # Delete the thread
+    try:
+        response = langbase.threads.delete(thread_id=thread_id)
+
+        if response.get("success", False):
+            print(f"Successfully deleted thread {thread_id}")
+        else:
+            print(f"Failed to delete thread {thread_id}")
+            if "message" in response:
+                print(f"Message: {response['message']}")
+
+    except Exception as e:
+        print(f"Error deleting thread: {e}")
+
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>
+
+
+---

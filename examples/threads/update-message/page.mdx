@@ -1,0 +1,117 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Update a Thread',
+    description: `An example of how to update a thread.`,
+    section: 'Examples',
+    slug: '/examples/threads/update-message'
+});
+
+
+# Update a Thread
+
+This example demonstrates how to update a thread.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/pipe"
+
+	title="Update a Thread Example"
+	output={`{
+	id: "1e3af16c-bfe6-4129-8a2a-4c098fc6933d",
+	object: "thread",
+	metadata: {
+		company: "langbase",
+		about: "Langbase is the most powerful serverless platform for building AI agents with memory.",
+	}
+}`}
+explanation={`
+This code demonstrates how to update a thread in Langbase. Here's a step-by-step guide:
+
+1. Thread Identification:
+   - Specifies the thread ID of the thread to be updated
+
+2. Metadata and Message Update:
+   - Updates the thread's metadata and messages with new information
+
+3. Execution:
+   - The update request is executed using the Langbase SDK
+   - Outputs the response to confirm successful update
+	`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Update a Thread Example" exampleTitle="Update a Thread Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.threads.update({
+		threadId: 'REPLACE_WITH_THREAD_ID',
+		metadata: {
+			company: 'langbase',
+			about: 'Langbase is the most powerful serverless platform for building AI agents with memory.',
+		},
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Update Message in a Thread Example" exampleTitle="Update Message in a Thread Example">
+```python {{ title: 'index.py' }}
+import json
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+def main():
+    load_dotenv()
+
+    # Get API key from environment variable
+    langbase_api_key = os.getenv("LANGBASE_API_KEY")
+
+    # Initialize the client
+    langbase = Langbase(api_key=langbase_api_key)
+
+    # Thread ID to update
+    thread_id = "thread_123"  # Replace with your actual thread ID
+
+    # New metadata to set for the thread
+    updated_metadata = {
+        "company": "langbase",
+        "about": "Langbase is the most powerful serverless platform for building AI agents with memory.",
+    }
+
+    # Update the thread metadata
+    try:
+        updated_thread = langbase.threads.update(
+            thread_id=thread_id,
+            metadata=updated_metadata,
+        )
+
+        print(json.dumps(updated_thread, indent=2))
+
+    except Exception as e:
+        print(f"Error updating thread: {e}")
+
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>

@@ -1,0 +1,100 @@
+import { generateMetadata } from '@/lib/generate-metadata';
+import { LanguageProvider, SimpleLanguageToggle, LanguageContent } from '@/components/LanguageToggle';
+export const metadata = generateMetadata({
+    title: 'Create a Memory',
+    description: `An example of how to create a memory.`,
+    section: 'Examples',
+    slug: '/examples/memory/create-memory'
+});
+
+
+# Create a Memory
+
+This example demonstrates how to create a memory.
+
+<LanguageProvider defaultLanguage='typescript'>
+
+<RunExample api="/docs/api/memory"
+
+	title="Create Memory Example"
+	output={`{
+    name: "memory-sdk",
+    owner_login: "user-4543",
+    embedding_model: "cohere:embed-multilingual-v3.0",
+    chunk_size: 1024,
+    chunk_overlap: 256
+}`}
+explanation={`
+This code illustrates the creation of a memory using Langbase. Here's a step-by-step guide:
+
+1. Memory Creation:
+   - Initializes a new memory named "memory-sdk"
+   - Sets the embedding model to "cohere:embed-multilingual-v3.0"
+
+2. Execution:
+   - The memory is created using the Langbase SDK
+   - Outputs the response to confirm successful creation`}
+>
+
+
+<LanguageContent language="typescript">
+<CodeGroup title="Create Memory Example" exampleTitle="Create Memory Example">
+```ts {{ title: 'index.ts' }}
+import 'dotenv/config';
+import {Langbase} from 'langbase';
+
+const langbase = new Langbase({
+	apiKey: process.env.LANGBASE_API_KEY!,
+});
+
+async function main() {
+	const response = await langbase.memories.create({
+		name: 'memory-sdk',
+		embedding_model: 'openai:text-embedding-3-large'
+	});
+
+	console.log(response);
+}
+
+main();
+```
+</CodeGroup>
+</LanguageContent>
+
+<LanguageContent language="python">
+<CodeGroup title="Create Memory Example" exampleTitle="Create Memory Example">
+```python {{ title: 'index.py' }}
+import json
+import os
+from dotenv import load_dotenv
+from langbase import Langbase
+
+def main():
+    load_dotenv()
+
+    # Get API key from environment variable
+    langbase_api_key = os.getenv("LANGBASE_API_KEY")
+
+    # Initialize the client
+    langbase = Langbase(api_key=langbase_api_key)
+
+    # Create the memory
+    try:
+        response = langbase.memories.create(
+            name="memory-sdk",
+            embedding_model="openai:text-embedding-3-large",
+        )
+
+        print(json.dumps(response, indent=2))
+
+    except Exception as e:
+        print(f"Error creating memory: {e}")
+
+if __name__ == "__main__":
+    main()
+```
+</CodeGroup>
+</LanguageContent>
+
+</RunExample>
+</LanguageProvider>
