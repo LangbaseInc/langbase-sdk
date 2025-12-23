@@ -371,6 +371,34 @@ export interface MemoryRetryDocEmbedOptions {
 	documentName: string;
 }
 
+export interface MemoryUploadTextOptions {
+	memoryName: string;
+	text: string;
+	documentName?: string;
+	meta?: Record<string, string>;
+}
+
+export interface MemoryUploadFromSearchOptions {
+	memoryName: string;
+	query: string;
+	service: 'exa';
+	totalResults?: number;
+	domains?: string[];
+	apiKey: string;
+	documentNamePrefix?: string;
+	meta?: Record<string, string>;
+}
+
+export interface MemoryUploadFromCrawlOptions {
+	memoryName: string;
+	url: string[];
+	maxPages?: number;
+	apiKey: string;
+	service?: 'spider' | 'firecrawl';
+	documentNamePrefix?: string;
+	meta?: Record<string, string>;
+}
+
 export interface MemoryCreateResponse extends MemoryBaseResponse {
 	chunk_size: number;
 	chunk_overlap: number;
@@ -554,6 +582,9 @@ export class Langbase {
 			options: MemoryRetrieveOptions,
 		) => Promise<MemoryRetrieveResponse[]>;
 		list: () => Promise<MemoryListResponse[]>;
+		uploadText: (options: MemoryUploadTextOptions) => Promise<Response>;
+		uploadFromSearch: (options: MemoryUploadFromSearchOptions) => Promise<Response[]>;
+		uploadFromCrawl: (options: MemoryUploadFromCrawlOptions) => Promise<Response[]>;
 		documents: {
 			list: (
 				options: MemoryListDocOptions,
@@ -702,6 +733,9 @@ export class Langbase {
 			delete: this.deleteMemory.bind(this),
 			retrieve: this.retrieveMemory.bind(this),
 			list: this.listMemory.bind(this),
+			uploadText: this.uploadText.bind(this),
+			uploadFromSearch: this.uploadFromSearch.bind(this),
+			uploadFromCrawl: this.uploadFromCrawl.bind(this),
 			documents: {
 				list: this.listDocs.bind(this),
 				delete: this.deleteDoc.bind(this),
@@ -961,6 +995,157 @@ export class Langbase {
 				},
 				body: options.document as any,
 			});
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	/**
+	 * Uploads text content directly to memory without file handling.
+	 *
+	 * @param {MemoryUploadTextOptions} options - The options for uploading text content.
+	 * @param {string} options.memoryName - The name of the memory to upload the text to.
+	 * @param {string} options.text - The text content to upload.
+	 * @param {string} [options.documentName] - Optional name for the document. If not provided, generates from timestamp.
+	 * @param {Record<string, string>} [options.meta] - Optional metadata associated with the text.
+	 * @returns {Promise<Response>} The response from the upload request.
+	 * @throws Will throw an error if the upload fails.
+	 */
+	private async uploadText(
+		options: MemoryUploadTextOptions,
+	): Promise<Response> {
+		try {
+			// Generate document name if not provided
+			const documentName = options.documentName || `text-${Date.now()}.txt`;
+			
+			const response = (await this.request.post({
+				endpoint: `/v1/memory/documents`,
+				body: {
+					memoryName: options.memoryName,
+					fileName: documentName,
+					meta: options.meta,
+				},
+			})) as unknown as {signedUrl: string};
+
+			const uploadUrl = response.signedUrl;
+
+			return await fetch(uploadUrl, {
+				method: 'PUT',
+				headers: {
+					Authorization: `Bearer ${this.apiKey}`,
+					'Content-Type': 'text/plain',
+				},
+				body: options.text,
+			});
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	/**
+	 * Searches the web and uploads results to memory.
+	 *
+	 * @param {MemoryUploadFromSearchOptions} options - The options for searching and uploading to memory.
+	 * @param {string} options.memoryName - The name of the memory to upload the search results to.
+	 * @param {string} options.query - The search query to perform.
+	 * @param {string} options.service - The search service to use (currently only 'exa').
+	 * @param {number} [options.totalResults] - The number of search results to retrieve.
+	 * @param {string[]} [options.domains] - Optional list of domains to restrict search to.
+	 * @param {string} options.apiKey - API key for the search service.
+	 * @param {string} [options.documentNamePrefix] - Optional prefix for document names.
+	 * @param {Record<string, string>} [options.meta] - Optional metadata for all uploaded documents.
+	 * @returns {Promise<Response[]>} Array of responses from the upload requests.
+	 * @throws Will throw an error if the search or upload fails.
+	 */
+	private async uploadFromSearch(
+		options: MemoryUploadFromSearchOptions,
+	): Promise<Response[]> {
+		try {
+			// Perform web search
+			const searchResults = await this.webSearch({
+				query: options.query,
+				service: options.service,
+				totalResults: options.totalResults,
+				domains: options.domains,
+				apiKey: options.apiKey,
+			});
+
+			// Upload each search result to memory
+			const uploadPromises = searchResults.map(async (result, index) => {
+				const documentName = `${options.documentNamePrefix || 'search'}-${index + 1}-${Date.now()}.txt`;
+				
+				// Combine URL and content for better context
+				const content = `URL: ${result.url}\n\nContent:\n${result.content}`;
+				
+				return this.uploadText({
+					memoryName: options.memoryName,
+					text: content,
+					documentName: documentName,
+					meta: {
+						...options.meta,
+						source: 'web-search',
+						query: options.query,
+						url: result.url,
+						searchService: options.service,
+					},
+				});
+			});
+
+			return await Promise.all(uploadPromises);
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	/**
+	 * Crawls URLs and uploads the content to memory.
+	 *
+	 * @param {MemoryUploadFromCrawlOptions} options - The options for crawling and uploading to memory.
+	 * @param {string} options.memoryName - The name of the memory to upload the crawled content to.
+	 * @param {string[]} options.url - Array of URLs to crawl.
+	 * @param {number} [options.maxPages] - Maximum number of pages to crawl per URL.
+	 * @param {string} options.apiKey - API key for the crawl service.
+	 * @param {'spider' | 'firecrawl'} [options.service] - The crawl service to use.
+	 * @param {string} [options.documentNamePrefix] - Optional prefix for document names.
+	 * @param {Record<string, string>} [options.meta] - Optional metadata for all uploaded documents.
+	 * @returns {Promise<Response[]>} Array of responses from the upload requests.
+	 * @throws Will throw an error if the crawl or upload fails.
+	 */
+	private async uploadFromCrawl(
+		options: MemoryUploadFromCrawlOptions,
+	): Promise<Response[]> {
+		try {
+			// Perform web crawl
+			const crawlResults = await this.webCrawl({
+				url: options.url,
+				maxPages: options.maxPages,
+				apiKey: options.apiKey,
+				service: options.service,
+			});
+
+			// Upload each crawl result to memory
+			const uploadPromises = crawlResults.map(async (result, index) => {
+				const urlDomain = new URL(result.url).hostname.replace('www.', '');
+				const documentName = `${options.documentNamePrefix || 'crawl'}-${urlDomain}-${index + 1}-${Date.now()}.txt`;
+				
+				// Combine URL and content for better context
+				const content = `URL: ${result.url}\n\nContent:\n${result.content}`;
+				
+				return this.uploadText({
+					memoryName: options.memoryName,
+					text: content,
+					documentName: documentName,
+					meta: {
+						...options.meta,
+						source: 'web-crawl',
+						url: result.url,
+						crawlService: options.service || 'spider',
+						domain: urlDomain,
+					},
+				});
+			});
+
+			return await Promise.all(uploadPromises);
 		} catch (error) {
 			throw error;
 		}
