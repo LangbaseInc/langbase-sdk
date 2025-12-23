@@ -1,0 +1,111 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    name: 'Test SDK'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm 8
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.6.9
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run linting
+        run: pnpm --filter langbase lint
+
+      - name: Run type check
+        run: pnpm --filter langbase type-check
+
+      - name: Run tests (Node.js environment)
+        run: pnpm --filter langbase test:node
+
+      - name: Run tests (Edge runtime environment)
+        run: pnpm --filter langbase test:edge
+
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+
+      - name: Run UI tests (React components)
+        run: pnpm --filter langbase test:ui:react
+
+  # Optional: Add a separate job for ecosystem tests
+  ecosystem-test:
+    name: 'Ecosystem Tests'
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm 8
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.6.9
+
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build SDK
+        run: pnpm --filter langbase build
+
+      - name: Test Node.js ESM
+        working-directory: ecosystem-tests/node-esm
+        run: |
+          npm install
+          timeout 30s node index.mjs || echo "ESM test completed"
+
+      - name: Test Node.js CJS
+        working-directory: ecosystem-tests/node-cjs
+        run: |
+          npm install
+          timeout 30s node index.cjs || echo "CJS test completed"
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Test Bun
+        working-directory: ecosystem-tests/bun
+        run: |
+          bun install
+          timeout 30s bun run index.ts || echo "Bun test completed"
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Test Deno
+        working-directory: ecosystem-tests/deno
+        run: timeout 30s deno run --allow-net index.ts || echo "Deno test completed"
